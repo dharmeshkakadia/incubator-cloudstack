@@ -19,8 +19,8 @@ package com.cloud.ucs.manager;
 import org.apache.cloudstack.api.ApiConstants;
 import org.apache.cloudstack.api.BaseResponse;
 import org.apache.cloudstack.api.EntityReference;
+import org.apache.serializer.Param;
 
-import com.cloud.serializer.Param;
 import com.cloud.ucs.database.UcsBladeVO;
 import com.google.gson.annotations.SerializedName;
 @EntityReference(value=UcsBladeVO.class)
@@ -48,7 +48,7 @@ public class UcsBladeResponse extends BaseResponse {
     public void setId(String id) {
         this.id = id;
     }
-    
+
     public String getUcsManagerId() {
         return ucsManagerId;
     }
@@ -80,5 +80,5 @@ public class UcsBladeResponse extends BaseResponse {
     public void setAssociatedProfileDn(String associatedProfileDn) {
         this.associatedProfileDn = associatedProfileDn;
     }
-    
+
 }

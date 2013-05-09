@@ -18,10 +18,13 @@
  */
 package org.apache.cloudstack.engine.subsystem.api.storage;
 
+import java.util.Map;
+
+import org.apache.agent.api.to.VirtualMachineTO;
 import org.apache.cloudstack.engine.cloud.entity.api.VolumeEntity;
 import org.apache.cloudstack.framework.async.AsyncCallFuture;
-
-import com.cloud.exception.ConcurrentOperationException;
+import org.apache.exception.ConcurrentOperationException;
+import org.apache.host.Host;
 
 
 public interface VolumeService {
@@ -70,6 +73,8 @@ public interface VolumeService {
 
     AsyncCallFuture<VolumeApiResult> createVolumeFromTemplateAsync(VolumeInfo volume, long dataStoreId, TemplateInfo template);
     AsyncCallFuture<VolumeApiResult> copyVolume(VolumeInfo srcVolume, DataStore destStore);
+    AsyncCallFuture<VolumeApiResult> migrateVolume(VolumeInfo srcVolume, DataStore destStore);
+    AsyncCallFuture<CommandResult> migrateVolumes(Map<VolumeInfo, DataStore> volumeMap, VirtualMachineTO vmTo, Host srcHost, Host destHost);
 
     boolean destroyVolume(long volumeId) throws ConcurrentOperationException;
 

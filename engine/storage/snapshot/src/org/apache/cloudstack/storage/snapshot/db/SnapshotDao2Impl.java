@@ -18,9 +18,9 @@
  */
 package org.apache.cloudstack.storage.snapshot.db;
 
+import org.apache.utils.db.GenericDaoBase;
 import org.springframework.stereotype.Component;
 
-import com.cloud.utils.db.GenericDaoBase;
 
 @Component
 public class SnapshotDao2Impl extends GenericDaoBase<SnapshotVO, Long> implements SnapshotDao2 {

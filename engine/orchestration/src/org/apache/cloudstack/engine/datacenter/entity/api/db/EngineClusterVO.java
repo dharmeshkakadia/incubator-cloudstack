@@ -29,14 +29,14 @@ import javax.persistence.TemporalType;
 import org.apache.cloudstack.api.Identity;
 import org.apache.cloudstack.engine.datacenter.entity.api.DataCenterResourceEntity.State;
 import org.apache.cloudstack.engine.datacenter.entity.api.DataCenterResourceEntity.State.Event;
+import org.apache.hypervisor.Hypervisor.HypervisorType;
+import org.apache.org.Cluster;
+import org.apache.org.Grouping;
+import org.apache.org.Managed.ManagedState;
+import org.apache.utils.NumbersUtil;
+import org.apache.utils.db.GenericDao;
+import org.apache.utils.db.StateMachine;
 
-import com.cloud.hypervisor.Hypervisor.HypervisorType;
-import com.cloud.org.Cluster;
-import com.cloud.org.Grouping;
-import com.cloud.org.Managed.ManagedState;
-import com.cloud.utils.NumbersUtil;
-import com.cloud.utils.db.GenericDao;
-import com.cloud.utils.db.StateMachine;
 
 @Entity
 @Table(name="cluster")

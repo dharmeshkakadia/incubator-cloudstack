@@ -23,6 +23,12 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
+import org.apache.agent.AgentManager;
+import org.apache.agent.api.Answer;
+import org.apache.agent.api.DeleteSnapshotBackupCommand;
+import org.apache.agent.api.storage.DeleteVolumeCommand;
+import org.apache.agent.api.to.S3TO;
+import org.apache.agent.api.to.SwiftTO;
 import org.apache.cloudstack.engine.subsystem.api.storage.CommandResult;
 import org.apache.cloudstack.engine.subsystem.api.storage.CopyCommandResult;
 import org.apache.cloudstack.engine.subsystem.api.storage.CreateCmdResult;
@@ -33,36 +39,32 @@ import org.apache.cloudstack.engine.subsystem.api.storage.EndPoint;
 import org.apache.cloudstack.engine.subsystem.api.storage.VolumeInfo;
 import org.apache.cloudstack.framework.async.AsyncCompletionCallback;
 import org.apache.cloudstack.framework.async.AsyncRpcConext;
+import org.apache.cloudstack.storage.datastore.db.PrimaryDataStoreDao;
+import org.apache.cloudstack.storage.datastore.db.StoragePoolVO;
 import org.apache.cloudstack.storage.image.ImageDataStoreDriver;
+import org.apache.host.HostVO;
+import org.apache.host.dao.HostDao;
 import org.apache.log4j.Logger;
+import org.apache.storage.RegisterVolumePayload;
+import org.apache.storage.SnapshotVO;
+import org.apache.storage.Storage.ImageFormat;
+import org.apache.storage.VMTemplateStorageResourceAssoc;
+import org.apache.storage.VMTemplateVO;
+import org.apache.storage.VMTemplateZoneVO;
+import org.apache.storage.VolumeHostVO;
+import org.apache.storage.VolumeVO;
+import org.apache.storage.dao.SnapshotDao;
+import org.apache.storage.dao.VMTemplateDao;
+import org.apache.storage.dao.VMTemplateHostDao;
+import org.apache.storage.dao.VMTemplateZoneDao;
+import org.apache.storage.dao.VolumeDao;
+import org.apache.storage.dao.VolumeHostDao;
+import org.apache.storage.download.DownloadMonitor;
+import org.apache.storage.s3.S3Manager;
+import org.apache.storage.snapshot.SnapshotManager;
+import org.apache.storage.swift.SwiftManager;
+import org.apache.utils.exception.CloudRuntimeException;
 
-import com.cloud.agent.AgentManager;
-import com.cloud.agent.api.Answer;
-import com.cloud.agent.api.DeleteSnapshotBackupCommand;
-import com.cloud.agent.api.storage.DeleteVolumeCommand;
-import com.cloud.agent.api.to.S3TO;
-import com.cloud.agent.api.to.SwiftTO;
-import com.cloud.host.HostVO;
-import com.cloud.host.dao.HostDao;
-import com.cloud.storage.RegisterVolumePayload;
-import com.cloud.storage.Storage.ImageFormat;
-import com.cloud.storage.SnapshotVO;
-import com.cloud.storage.VMTemplateStorageResourceAssoc;
-import com.cloud.storage.VMTemplateVO;
-import com.cloud.storage.VMTemplateZoneVO;
-import com.cloud.storage.VolumeHostVO;
-import com.cloud.storage.VolumeVO;
-import com.cloud.storage.dao.SnapshotDao;
-import com.cloud.storage.dao.VMTemplateDao;
-import com.cloud.storage.dao.VMTemplateHostDao;
-import com.cloud.storage.dao.VMTemplateZoneDao;
-import com.cloud.storage.dao.VolumeDao;
-import com.cloud.storage.dao.VolumeHostDao;
-import com.cloud.storage.download.DownloadMonitor;
-import com.cloud.storage.s3.S3Manager;
-import com.cloud.storage.snapshot.SnapshotManager;
-import com.cloud.storage.swift.SwiftManager;
-import com.cloud.utils.exception.CloudRuntimeException;
 
 public class AncientImageDataStoreDriverImpl implements ImageDataStoreDriver {
     private static final Logger s_logger = Logger
@@ -80,6 +82,7 @@ public class AncientImageDataStoreDriverImpl implements ImageDataStoreDriver {
     @Inject SnapshotDao snapshotDao;
     @Inject AgentManager agentMgr;
     @Inject SnapshotManager snapshotMgr;
+    @Inject PrimaryDataStoreDao primaryDataStoreDao;
 	@Inject
     private SwiftManager _swiftMgr;
     @Inject 
@@ -196,9 +199,10 @@ public class AncientImageDataStoreDriverImpl implements ImageDataStoreDriver {
     		}
     		SwiftTO swift = _swiftMgr.getSwiftTO(snapshot.getSwiftId());
     		S3TO s3 = _s3Mgr.getS3TO();
-
+            VolumeVO volume = volumeDao.findById(volumeId);
+            StoragePoolVO pool = primaryDataStoreDao.findById(volume.getPoolId());
     		DeleteSnapshotBackupCommand cmd = new DeleteSnapshotBackupCommand(
-    				swift, s3, secondaryStoragePoolUrl, dcId, accountId, volumeId,
+    				pool, swift, s3, secondaryStoragePoolUrl, dcId, accountId, volumeId,
     				backupOfSnapshot, false);
     		Answer answer = agentMgr.sendToSSVM(dcId, cmd);
 

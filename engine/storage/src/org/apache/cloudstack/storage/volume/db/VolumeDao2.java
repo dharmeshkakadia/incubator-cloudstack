@@ -20,13 +20,13 @@ import java.util.List;
 
 import org.apache.cloudstack.engine.subsystem.api.storage.type.VolumeType;
 import org.apache.cloudstack.storage.volume.VolumeEvent;
+import org.apache.hypervisor.Hypervisor.HypervisorType;
+import org.apache.storage.Volume;
+import org.apache.storage.Storage.ImageFormat;
+import org.apache.utils.Pair;
+import org.apache.utils.db.GenericDao;
+import org.apache.utils.fsm.StateDao;
 
-import com.cloud.hypervisor.Hypervisor.HypervisorType;
-import com.cloud.storage.Storage.ImageFormat;
-import com.cloud.storage.Volume;
-import com.cloud.utils.Pair;
-import com.cloud.utils.db.GenericDao;
-import com.cloud.utils.fsm.StateDao;
 
 public interface VolumeDao2 extends GenericDao<VolumeVO, Long>, StateDao<Volume.State, Volume.Event, VolumeVO> {
 

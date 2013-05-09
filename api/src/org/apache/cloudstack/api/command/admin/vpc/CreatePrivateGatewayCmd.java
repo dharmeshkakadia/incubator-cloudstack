@@ -16,6 +16,7 @@
 // under the License.
 package org.apache.cloudstack.api.command.admin.vpc;
 
+import org.apache.async.AsyncJob;
 import org.apache.cloudstack.api.APICommand;
 import org.apache.cloudstack.api.ApiConstants;
 import org.apache.cloudstack.api.ApiErrorCode;
@@ -26,18 +27,17 @@ import org.apache.cloudstack.api.ServerApiException;
 import org.apache.cloudstack.api.response.PhysicalNetworkResponse;
 import org.apache.cloudstack.api.response.PrivateGatewayResponse;
 import org.apache.cloudstack.api.response.VpcResponse;
+import org.apache.event.EventTypes;
+import org.apache.exception.ConcurrentOperationException;
+import org.apache.exception.InsufficientCapacityException;
+import org.apache.exception.InvalidParameterValueException;
+import org.apache.exception.ResourceAllocationException;
+import org.apache.exception.ResourceUnavailableException;
 import org.apache.log4j.Logger;
+import org.apache.network.vpc.PrivateGateway;
+import org.apache.network.vpc.Vpc;
+import org.apache.user.Account;
 
-import com.cloud.async.AsyncJob;
-import com.cloud.event.EventTypes;
-import com.cloud.exception.ConcurrentOperationException;
-import com.cloud.exception.InsufficientCapacityException;
-import com.cloud.exception.InvalidParameterValueException;
-import com.cloud.exception.ResourceAllocationException;
-import com.cloud.exception.ResourceUnavailableException;
-import com.cloud.network.vpc.PrivateGateway;
-import com.cloud.network.vpc.Vpc;
-import com.cloud.user.Account;
 
 @APICommand(name = "createPrivateGateway", description="Creates a private gateway", responseObject=PrivateGatewayResponse.class)
 public class CreatePrivateGatewayCmd extends BaseAsyncCreateCmd {
@@ -69,6 +69,11 @@ public class CreatePrivateGatewayCmd extends BaseAsyncCreateCmd {
             required=true, description="the VPC network belongs to")
     private Long vpcId;
 
+    @Parameter(name=ApiConstants.SOURCE_NAT_SUPPORTED, type=CommandType.BOOLEAN, required=false,
+            description="source NAT supported value. Default value false. If 'true' source NAT is enabled on the private gateway" +
+                    " 'false': sourcenat is not supported")
+    private Boolean isSourceNat;
+
     /////////////////////////////////////////////////////
     /////////////////// Accessors ///////////////////////
     /////////////////////////////////////////////////////
@@ -97,6 +102,13 @@ public class CreatePrivateGatewayCmd extends BaseAsyncCreateCmd {
         return vpcId;
     }
 
+    public Boolean getIsSourceNat () {
+        if (isSourceNat == null) {
+            return false;
+        }
+        return true;
+    }
+
     /////////////////////////////////////////////////////
     /////////////// API Implementation///////////////////
     /////////////////////////////////////////////////////
@@ -111,7 +123,7 @@ public class CreatePrivateGatewayCmd extends BaseAsyncCreateCmd {
         PrivateGateway result = null;
         try {
             result = _vpcService.createVpcPrivateGateway(getVpcId(), getPhysicalNetworkId(),
-                    getVlan(), getStartIp(), getGateway(), getNetmask(), getEntityOwnerId());
+                    getVlan(), getStartIp(), getGateway(), getNetmask(), getEntityOwnerId(), getIsSourceNat());
         } catch (InsufficientCapacityException ex){
             s_logger.info(ex);
             s_logger.trace(ex);

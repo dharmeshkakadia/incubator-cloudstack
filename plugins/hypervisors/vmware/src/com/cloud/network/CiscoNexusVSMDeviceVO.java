@@ -27,8 +27,8 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 import org.apache.cloudstack.api.Identity;
-import com.cloud.utils.db.Encrypt;
 import org.apache.cloudstack.api.InternalIdentity;
+import org.apache.utils.db.Encrypt;
 
 /**
  * CiscoNexusVSMDeviceVO contains information on external Cisco Nexus 1000v VSM devices added into a deployment.

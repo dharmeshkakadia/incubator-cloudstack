@@ -28,52 +28,55 @@ import javax.ejb.Local;
 import javax.inject.Inject;
 import javax.naming.ConfigurationException;
 
+import org.apache.host.HostVO;
+import org.apache.host.dao.HostDao;
+import org.apache.hypervisor.Hypervisor;
+import org.apache.hypervisor.Hypervisor.HypervisorType;
+import org.apache.hypervisor.dao.HypervisorCapabilitiesDao;
+import org.apache.hypervisor.vmware.mo.ClusterMO;
+import org.apache.hypervisor.vmware.mo.HostMO;
+import org.apache.hypervisor.vmware.mo.VirtualSwitchType;
+import org.apache.hypervisor.vmware.util.VmwareContext;
 import org.apache.log4j.Logger;
+import org.apache.network.NetworkModel;
+import org.apache.network.PhysicalNetwork;
+import org.apache.network.Networks.TrafficType;
+import org.apache.resource.Discoverer;
+import org.apache.resource.DiscovererBase;
+import org.apache.resource.ResourceManager;
+import org.apache.resource.ResourceStateAdapter;
+import org.apache.resource.ServerResource;
+import org.apache.resource.UnableDeleteHostException;
+import org.apache.storage.VMTemplateVO;
+import org.apache.storage.Storage.ImageFormat;
+import org.apache.storage.Storage.TemplateType;
+import org.apache.storage.dao.VMTemplateDao;
+import org.apache.user.Account;
+import org.apache.utils.UriUtils;
+import org.apache.agent.api.StartupCommand;
+import org.apache.agent.api.StartupRoutingCommand;
+import org.apache.alert.AlertManager;
 import org.apache.cloudstack.api.ApiConstants;
+import org.apache.configuration.Config;
+import org.apache.configuration.dao.ConfigurationDao;
+import org.apache.dc.ClusterDetailsDao;
+import org.apache.dc.ClusterVO;
+import org.apache.dc.DataCenterVO;
+import org.apache.dc.DataCenter.NetworkType;
+import org.apache.dc.dao.ClusterDao;
+import org.apache.dc.dao.DataCenterDao;
+import org.apache.exception.DiscoveredWithErrorException;
+import org.apache.exception.DiscoveryException;
+import org.apache.exception.InvalidParameterValueException;
+import org.apache.exception.ResourceInUseException;
 
-import com.cloud.agent.api.StartupCommand;
-import com.cloud.agent.api.StartupRoutingCommand;
-import com.cloud.alert.AlertManager;
-import com.cloud.configuration.Config;
-import com.cloud.configuration.dao.ConfigurationDao;
-import com.cloud.dc.ClusterDetailsDao;
-import com.cloud.dc.ClusterVO;
-import com.cloud.dc.DataCenter.NetworkType;
-import com.cloud.dc.DataCenterVO;
-import com.cloud.dc.dao.ClusterDao;
-import com.cloud.dc.dao.DataCenterDao;
-import com.cloud.exception.DiscoveredWithErrorException;
-import com.cloud.exception.DiscoveryException;
-import com.cloud.exception.InvalidParameterValueException;
-import com.cloud.host.HostVO;
-import com.cloud.host.dao.HostDao;
-import com.cloud.hypervisor.Hypervisor;
-import com.cloud.hypervisor.Hypervisor.HypervisorType;
-import com.cloud.hypervisor.dao.HypervisorCapabilitiesDao;
 import com.cloud.hypervisor.vmware.manager.VmwareManager;
-import com.cloud.hypervisor.vmware.mo.ClusterMO;
-import com.cloud.hypervisor.vmware.mo.HostMO;
-import com.cloud.hypervisor.vmware.mo.VirtualSwitchType;
 import com.cloud.hypervisor.vmware.resource.VmwareContextFactory;
 import com.cloud.hypervisor.vmware.resource.VmwareResource;
-import com.cloud.hypervisor.vmware.util.VmwareContext;
-import com.cloud.network.NetworkModel;
-import com.cloud.network.Networks.TrafficType;
-import com.cloud.network.PhysicalNetwork;
 import com.cloud.network.VmwareTrafficLabel;
 import com.cloud.network.dao.CiscoNexusVSMDeviceDao;
-import com.cloud.resource.Discoverer;
-import com.cloud.resource.DiscovererBase;
-import com.cloud.resource.ResourceManager;
-import com.cloud.resource.ResourceStateAdapter;
-import com.cloud.resource.ServerResource;
-import com.cloud.resource.UnableDeleteHostException;
-import com.cloud.storage.Storage.ImageFormat;
-import com.cloud.storage.Storage.TemplateType;
-import com.cloud.storage.VMTemplateVO;
-import com.cloud.storage.dao.VMTemplateDao;
-import com.cloud.user.Account;
-import com.cloud.utils.UriUtils;
+import com.cloud.network.element.CiscoNexusVSMElement;
+import com.cloud.network.element.CiscoNexusVSMElementService;
 
 import com.vmware.vim25.ClusterDasConfigInfo;
 import com.vmware.vim25.ManagedObjectReference;
@@ -103,6 +106,8 @@ public class VmwareServerDiscoverer extends DiscovererBase implements
 	ResourceManager _resourceMgr;
 	@Inject
 	CiscoNexusVSMDeviceDao _nexusDao;
+	@Inject
+	CiscoNexusVSMElementService _nexusElement;
 	@Inject
     NetworkModel _netmgr;
     @Inject
@@ -135,14 +140,14 @@ public class VmwareServerDiscoverer extends DiscovererBase implements
 			return null;
 		}
 
-		List<HostVO> hosts = _resourceMgr.listAllHostsInCluster(clusterId);
+        List<HostVO> hosts = _resourceMgr.listAllHostsInCluster(clusterId);
         if (hosts != null && hosts.size() > 0) {
             int maxHostsPerCluster = _hvCapabilitiesDao.getMaxHostsPerCluster(hosts.get(0).getHypervisorType(), hosts.get(0).getHypervisorVersion());
-            if (hosts.size() > maxHostsPerCluster) {
-                   String msg = "VMware cluster " + cluster.getName() + " is too big to add new host now. (current configured cluster size: " + maxHostsPerCluster + ")";
-			s_logger.error(msg);
-			throw new DiscoveredWithErrorException(msg);
-		}
+            if (hosts.size() >= maxHostsPerCluster) {
+                String msg = "VMware cluster " + cluster.getName() + " is too big to add new host, current size: " + hosts.size() + ", max. size: " + maxHostsPerCluster;
+                s_logger.error(msg);
+                throw new DiscoveredWithErrorException(msg);
+            }
         }
 
 		String privateTrafficLabel = null;
@@ -255,7 +260,17 @@ public class VmwareServerDiscoverer extends DiscovererBase implements
             guestTrafficLabel = _netmgr.getDefaultGuestTrafficLabel(dcId, HypervisorType.VMware);
 			if (guestTrafficLabel != null) {
                 s_logger.info("Detected guest network label : " + guestTrafficLabel);
-			}
+            }
+            String vsmIp = _urlParams.get("vsmipaddress");
+            String vsmUser = _urlParams.get("vsmusername");
+            String vsmPassword = _urlParams.get("vsmpassword");
+            String clusterName = cluster.getName();
+            try {
+                _nexusElement.validateVsmCluster(vsmIp, vsmUser, vsmPassword, clusterId, clusterName);
+            } catch(ResourceInUseException ex) {
+                DiscoveryException discEx = new DiscoveryException(ex.getLocalizedMessage() + ". The resource is " + ex.getResourceName());
+                throw discEx;
+            }
             vsmCredentials = _vmwareMgr.getNexusVSMCredentialsByClusterId(clusterId);
 		}
 
@@ -494,7 +509,7 @@ public class VmwareServerDiscoverer extends DiscovererBase implements
 	@Override
 	public DeleteHostAnswer deleteHost(HostVO host, boolean isForced,
 			boolean isForceDeleteStorage) throws UnableDeleteHostException {
-		if (host.getType() != com.cloud.host.Host.Type.Routing
+		if (host.getType() != org.apache.host.Host.Type.Routing
 				|| host.getHypervisorType() != HypervisorType.VMware) {
 			return null;
 		}

@@ -21,18 +21,18 @@ import java.util.List;
 
 import javax.ejb.Local;
 
+import org.apache.utils.db.Attribute;
+import org.apache.utils.db.Filter;
+import org.apache.utils.db.GenericDaoBase;
+import org.apache.utils.db.SearchBuilder;
+import org.apache.utils.db.SearchCriteria;
+import org.apache.utils.db.Transaction;
 import org.springframework.stereotype.Component;
 
 import com.cloud.bridge.model.MultiPartPartsVO;
 import com.cloud.bridge.model.MultiPartUploadsVO;
 import com.cloud.bridge.model.SBucketVO;
 import com.cloud.bridge.util.OrderedPair;
-import com.cloud.utils.db.Attribute;
-import com.cloud.utils.db.Filter;
-import com.cloud.utils.db.GenericDaoBase;
-import com.cloud.utils.db.SearchBuilder;
-import com.cloud.utils.db.SearchCriteria;
-import com.cloud.utils.db.Transaction;
 
 @Component
 @Local(value={MultiPartUploadsDao.class})

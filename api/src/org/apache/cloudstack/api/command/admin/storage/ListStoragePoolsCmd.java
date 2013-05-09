@@ -16,6 +16,7 @@
 // under the License.
 package org.apache.cloudstack.api.command.admin.storage;
 
+import org.apache.async.AsyncJob;
 import org.apache.cloudstack.api.APICommand;
 import org.apache.cloudstack.api.ApiConstants;
 import org.apache.cloudstack.api.BaseListCmd;
@@ -27,7 +28,6 @@ import org.apache.cloudstack.api.response.StoragePoolResponse;
 import org.apache.cloudstack.api.response.ZoneResponse;
 import org.apache.log4j.Logger;
 
-import com.cloud.async.AsyncJob;
 
 @APICommand(name = "listStoragePools", description="Lists storage pools.", responseObject=StoragePoolResponse.class)
 public class ListStoragePoolsCmd extends BaseListCmd {
@@ -60,6 +60,9 @@ public class ListStoragePoolsCmd extends BaseListCmd {
             description="the Zone ID for the storage pool")
     private Long zoneId;
 
+    @Parameter(name=ApiConstants.ZONE_TYPE, type=CommandType.STRING, description="the network type of the zone that the virtual machine belongs to")
+    private String zoneType;
+    
     @Parameter(name=ApiConstants.ID, type=CommandType.UUID, entityType = StoragePoolResponse.class,
             description="the ID of the storage pool")
     private Long id;
@@ -92,6 +95,10 @@ public class ListStoragePoolsCmd extends BaseListCmd {
         return zoneId;
     }
 
+    public String getZoneType() {
+        return zoneType;
+    }
+    
     public Long getId() {
         return id;
     }

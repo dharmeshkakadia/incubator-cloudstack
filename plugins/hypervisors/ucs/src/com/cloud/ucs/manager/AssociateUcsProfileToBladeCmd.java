@@ -14,7 +14,7 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
-// 
+//
 package com.cloud.ucs.manager;
 
 import javax.inject.Inject;
@@ -25,28 +25,28 @@ import org.apache.cloudstack.api.ApiErrorCode;
 import org.apache.cloudstack.api.BaseCmd;
 import org.apache.cloudstack.api.Parameter;
 import org.apache.cloudstack.api.ServerApiException;
+import org.apache.exception.ConcurrentOperationException;
+import org.apache.exception.InsufficientCapacityException;
+import org.apache.exception.NetworkRuleConflictException;
+import org.apache.exception.ResourceAllocationException;
+import org.apache.exception.ResourceUnavailableException;
 import org.apache.log4j.Logger;
+import org.apache.user.Account;
 
-import com.cloud.exception.ConcurrentOperationException;
-import com.cloud.exception.InsufficientCapacityException;
-import com.cloud.exception.NetworkRuleConflictException;
-import com.cloud.exception.ResourceAllocationException;
-import com.cloud.exception.ResourceUnavailableException;
-import com.cloud.user.Account;
 @APICommand(name="associatesUscProfileToBlade", description="associate a profile to a blade", responseObject=UcsBladeResponse.class)
 public class AssociateUcsProfileToBladeCmd extends BaseCmd {
     public static final Logger s_logger = Logger.getLogger(AssociateUcsProfileToBladeCmd.class);
-    
+
     @Inject
     private UcsManager mgr;
-    
+
     @Parameter(name=ApiConstants.UCS_MANAGER_ID, type=CommandType.UUID, description="ucs manager id", entityType=UcsManagerResponse.class, required=true)
     private Long ucsManagerId;
     @Parameter(name=ApiConstants.UCS_PROFILE_DN, type=CommandType.STRING, description="profile dn", required=true)
     private String profileDn;
     @Parameter(name=ApiConstants.UCS_BLADE_ID, type=CommandType.UUID, entityType=UcsBladeResponse.class, description="blade id", required=true)
     private Long bladeId;
-    
+
     @Override
     public void execute() throws ResourceUnavailableException, InsufficientCapacityException, ServerApiException, ConcurrentOperationException,
             ResourceAllocationException, NetworkRuleConflictException {
@@ -56,7 +56,7 @@ public class AssociateUcsProfileToBladeCmd extends BaseCmd {
             this.setResponseObject(rsp);
         } catch (Exception e) {
             s_logger.warn("Exception: ", e);
-            throw new ServerApiException(ApiErrorCode.INTERNAL_ERROR, e.getMessage());   
+            throw new ServerApiException(ApiErrorCode.INTERNAL_ERROR, e.getMessage());
         }
     }
 

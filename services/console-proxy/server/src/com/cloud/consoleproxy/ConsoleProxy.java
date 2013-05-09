@@ -17,6 +17,8 @@
 package com.cloud.consoleproxy;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -32,6 +34,7 @@ import java.util.concurrent.Executor;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.xml.DOMConfigurator;
+import org.apache.utils.PropertiesUtil;
 
 import com.cloud.consoleproxy.util.Logger;
 import com.google.gson.Gson;
@@ -131,7 +134,7 @@ public class ConsoleProxy {
         if(s != null && s.equalsIgnoreCase("true")) {
             s_logger.info("Premium setting will override settings from consoleproxy.properties, listen at port 443");
             httpListenPort = 443;
-            factoryClzName = "com.cloud.consoleproxy.ConsoleProxySecureServerFactoryImpl";
+            factoryClzName = "org.apache.consoleproxy.ConsoleProxySecureServerFactoryImpl";
         } else {
             factoryClzName = ConsoleProxyBaseServerFactoryImpl.class.getName();
         }
@@ -264,7 +267,7 @@ public class ConsoleProxy {
         ConsoleProxy.ksBits = ksBits;
         ConsoleProxy.ksPassword = ksPassword;
         try {
-            Class<?> contextClazz = Class.forName("com.cloud.agent.resource.consoleproxy.ConsoleProxyResource");
+            Class<?> contextClazz = Class.forName("org.apache.agent.resource.consoleproxy.ConsoleProxyResource");
             authMethod = contextClazz.getDeclaredMethod("authenticateConsoleAccess", String.class, String.class, String.class, String.class, String.class, Boolean.class);
             reportMethod = contextClazz.getDeclaredMethod("reportLoadInfo", String.class);
             ensureRouteMethod = contextClazz.getDeclaredMethod("ensureRoute", String.class);
@@ -282,8 +285,17 @@ public class ConsoleProxy {
         InputStream confs = ConsoleProxy.class.getResourceAsStream("/conf/consoleproxy.properties");
         Properties props = new Properties();
         if (confs == null) {
-            s_logger.info("Can't load consoleproxy.properties from classpath, will use default configuration");
-        } else {
+            final File file = PropertiesUtil.findConfigFile("consoleproxy.properties");
+            if (file == null)
+                s_logger.info("Can't load consoleproxy.properties from classpath, will use default configuration");
+            else
+                try {
+                    confs = new FileInputStream(file);
+                } catch (FileNotFoundException e) {
+                    s_logger.info("Ignoring file not found exception and using defaults");
+                }
+        } 
+        if (confs != null) {
             try {
                 props.load(confs);
                 

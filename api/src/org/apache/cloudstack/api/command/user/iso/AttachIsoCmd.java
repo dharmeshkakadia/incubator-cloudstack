@@ -25,12 +25,12 @@ import org.apache.cloudstack.api.ServerApiException;
 import org.apache.cloudstack.api.command.user.vm.DeployVMCmd;
 import org.apache.cloudstack.api.response.TemplateResponse;
 import org.apache.cloudstack.api.response.UserVmResponse;
+import org.apache.event.EventTypes;
+import org.apache.exception.InvalidParameterValueException;
 import org.apache.log4j.Logger;
+import org.apache.user.UserContext;
+import org.apache.uservm.UserVm;
 
-import com.cloud.event.EventTypes;
-import com.cloud.exception.InvalidParameterValueException;
-import com.cloud.user.UserContext;
-import com.cloud.uservm.UserVm;
 
 @APICommand(name = "attachIso", description="Attaches an ISO to a virtual machine.", responseObject=UserVmResponse.class)
 public class AttachIsoCmd extends BaseAsyncCmd {

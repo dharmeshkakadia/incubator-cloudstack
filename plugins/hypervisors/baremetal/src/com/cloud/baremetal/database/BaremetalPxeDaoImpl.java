@@ -24,15 +24,15 @@ import java.util.Map;
 import javax.ejb.Local;
 import javax.naming.ConfigurationException;
 
+import org.apache.utils.db.DB;
+import org.apache.utils.db.Filter;
+import org.apache.utils.db.GenericDaoBase;
+import org.apache.utils.db.GenericSearchBuilder;
+import org.apache.utils.db.SearchBuilder;
+import org.apache.utils.db.SearchCriteria;
+import org.apache.utils.db.SearchCriteria2;
 import org.springframework.stereotype.Component;
 
-import com.cloud.utils.db.DB;
-import com.cloud.utils.db.Filter;
-import com.cloud.utils.db.GenericDaoBase;
-import com.cloud.utils.db.GenericSearchBuilder;
-import com.cloud.utils.db.SearchBuilder;
-import com.cloud.utils.db.SearchCriteria;
-import com.cloud.utils.db.SearchCriteria2;
 
 @Component
 @Local(value = {BaremetalPxeDao.class})

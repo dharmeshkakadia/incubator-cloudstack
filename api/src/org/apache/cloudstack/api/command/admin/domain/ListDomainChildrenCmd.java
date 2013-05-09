@@ -25,10 +25,10 @@ import org.apache.cloudstack.api.BaseListCmd;
 import org.apache.cloudstack.api.Parameter;
 import org.apache.cloudstack.api.response.DomainResponse;
 import org.apache.cloudstack.api.response.ListResponse;
+import org.apache.domain.Domain;
 import org.apache.log4j.Logger;
+import org.apache.utils.Pair;
 
-import com.cloud.domain.Domain;
-import com.cloud.utils.Pair;
 
 @APICommand(name = "listDomainChildren", description="Lists all children domains belonging to a specified domain", responseObject=DomainResponse.class)
 public class ListDomainChildrenCmd extends BaseListCmd {

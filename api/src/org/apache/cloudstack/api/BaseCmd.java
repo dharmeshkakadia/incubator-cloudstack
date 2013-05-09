@@ -27,52 +27,53 @@ import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 
+import org.apache.cloudstack.affinity.AffinityGroupService;
 import org.apache.cloudstack.query.QueryService;
-import org.apache.cloudstack.region.RegionService;
 import org.apache.cloudstack.usage.UsageService;
+import org.apache.configuration.ConfigurationService;
+import org.apache.dao.EntityManager;
+import org.apache.domain.Domain;
+import org.apache.exception.ConcurrentOperationException;
+import org.apache.exception.InsufficientCapacityException;
+import org.apache.exception.InvalidParameterValueException;
+import org.apache.exception.NetworkRuleConflictException;
+import org.apache.exception.PermissionDeniedException;
+import org.apache.exception.ResourceAllocationException;
+import org.apache.exception.ResourceUnavailableException;
 import org.apache.log4j.Logger;
+import org.apache.network.NetworkModel;
+import org.apache.network.NetworkService;
+import org.apache.network.NetworkUsageService;
+import org.apache.network.StorageNetworkService;
+import org.apache.network.VpcVirtualNetworkApplianceService;
+import org.apache.network.as.AutoScaleService;
+import org.apache.network.firewall.FirewallService;
+import org.apache.network.firewall.NetworkACLService;
+import org.apache.network.lb.LoadBalancingRulesService;
+import org.apache.network.rules.RulesService;
+import org.apache.network.security.SecurityGroupService;
+import org.apache.network.vpc.VpcProvisioningService;
+import org.apache.network.vpc.VpcService;
+import org.apache.network.vpn.RemoteAccessVpnService;
+import org.apache.network.vpn.Site2SiteVpnService;
+import org.apache.projects.Project;
+import org.apache.projects.ProjectService;
+import org.apache.resource.ResourceService;
+import org.apache.server.ManagementService;
+import org.apache.server.TaggedResourceService;
+import org.apache.storage.DataStoreProviderApiService;
+import org.apache.storage.StorageService;
+import org.apache.storage.VolumeApiService;
+import org.apache.storage.snapshot.SnapshotService;
+import org.apache.template.TemplateService;
+import org.apache.user.Account;
+import org.apache.user.AccountService;
+import org.apache.user.DomainService;
+import org.apache.user.ResourceLimitService;
+import org.apache.utils.Pair;
+import org.apache.vm.UserVmService;
+import org.apache.vm.snapshot.VMSnapshotService;
 
-import com.cloud.configuration.ConfigurationService;
-import com.cloud.consoleproxy.ConsoleProxyService;
-import com.cloud.dao.EntityManager;
-import com.cloud.domain.Domain;
-import com.cloud.exception.ConcurrentOperationException;
-import com.cloud.exception.InsufficientCapacityException;
-import com.cloud.exception.InvalidParameterValueException;
-import com.cloud.exception.NetworkRuleConflictException;
-import com.cloud.exception.PermissionDeniedException;
-import com.cloud.exception.ResourceAllocationException;
-import com.cloud.exception.ResourceUnavailableException;
-import com.cloud.network.NetworkService;
-import com.cloud.network.NetworkUsageService;
-import com.cloud.network.StorageNetworkService;
-import com.cloud.network.VpcVirtualNetworkApplianceService;
-import com.cloud.network.as.AutoScaleService;
-import com.cloud.network.firewall.FirewallService;
-import com.cloud.network.firewall.NetworkACLService;
-import com.cloud.network.lb.LoadBalancingRulesService;
-import com.cloud.network.rules.RulesService;
-import com.cloud.network.security.SecurityGroupService;
-import com.cloud.network.vpc.VpcService;
-import com.cloud.network.vpn.RemoteAccessVpnService;
-import com.cloud.network.vpn.Site2SiteVpnService;
-import com.cloud.projects.Project;
-import com.cloud.projects.ProjectService;
-import com.cloud.resource.ResourceService;
-import com.cloud.server.ManagementService;
-import com.cloud.server.TaggedResourceService;
-import com.cloud.storage.DataStoreProviderApiService;
-import com.cloud.storage.StorageService;
-import com.cloud.storage.VolumeApiService;
-import com.cloud.storage.snapshot.SnapshotService;
-import com.cloud.template.TemplateService;
-import com.cloud.user.Account;
-import com.cloud.user.AccountService;
-import com.cloud.user.DomainService;
-import com.cloud.user.ResourceLimitService;
-import com.cloud.utils.Pair;
-import com.cloud.vm.UserVmService;
-import com.cloud.vm.snapshot.VMSnapshotService;
 
 public abstract class BaseCmd {
     private static final Logger s_logger = Logger.getLogger(BaseCmd.class.getName());
@@ -95,6 +96,11 @@ public abstract class BaseCmd {
     private Object _responseObject = null;
     private Map<String, String> fullUrlParams;
 
+    public enum HTTPMethod {
+        GET, POST, PUT, DELETE
+    }
+    private HTTPMethod httpMethod;
+
     @Parameter(name = "response", type = CommandType.STRING)
     private String responseType;
 
@@ -109,7 +115,6 @@ public abstract class BaseCmd {
     @Inject public TemplateService _templateService;
     @Inject public SecurityGroupService _securityGroupService;
     @Inject public SnapshotService _snapshotService;
-    @Inject public ConsoleProxyService _consoleProxyService;
     @Inject public VpcVirtualNetworkApplianceService _routerService;
     @Inject public ResponseGenerator _responseGenerator;
     @Inject public EntityManager _entityMgr;
@@ -133,10 +138,32 @@ public abstract class BaseCmd {
     @Inject public NetworkUsageService _networkUsageService;
     @Inject public VMSnapshotService _vmSnapshotService;
     @Inject public DataStoreProviderApiService dataStoreProviderApiService;
+    @Inject public VpcProvisioningService _vpcProvSvc;
+    @Inject public AffinityGroupService _affinityGroupService;
+    @Inject public NetworkModel _ntwkModel;
 
     public abstract void execute() throws ResourceUnavailableException, InsufficientCapacityException, ServerApiException, ConcurrentOperationException, ResourceAllocationException, NetworkRuleConflictException;
 
     public void configure() {
+    }
+
+    public HTTPMethod getHttpMethod() {
+        return httpMethod;
+    }
+
+    public void setHttpMethod(String method) {
+        if (method != null) {
+            if (method.equalsIgnoreCase("GET"))
+                httpMethod = HTTPMethod.GET;
+            else if (method.equalsIgnoreCase("PUT"))
+                httpMethod = HTTPMethod.PUT;
+            else if (method.equalsIgnoreCase("POST"))
+                httpMethod = HTTPMethod.POST;
+            else if (method.equalsIgnoreCase("DELETE"))
+                httpMethod = HTTPMethod.DELETE;
+        } else {
+            httpMethod = HTTPMethod.GET;
+	}
     }
 
     public String getResponseType() {
@@ -155,7 +182,7 @@ public abstract class BaseCmd {
     /**
      * For commands the API framework needs to know the owner of the object being acted upon. This method is
      * used to determine that information.
-     * 
+     *
      * @return the id of the account that owns the object being acted upon
      */
     public abstract long getEntityOwnerId();
@@ -468,7 +495,7 @@ public abstract class BaseCmd {
                 if (!enabledOnly || account.getState() == Account.State.enabled) {
                     return account.getId();
                 } else {
-                    throw new PermissionDeniedException("Can't add resources to the account id=" + account.getId() + " in state=" + account.getState() + " as it's no longer active");                    
+                    throw new PermissionDeniedException("Can't add resources to the account id=" + account.getId() + " in state=" + account.getState() + " as it's no longer active");
                 }
             } else {
                 // idList is not used anywhere, so removed it now
@@ -485,7 +512,7 @@ public abstract class BaseCmd {
                     return project.getProjectAccountId();
                 } else {
                     PermissionDeniedException ex = new PermissionDeniedException("Can't add resources to the project with specified projectId in state=" + project.getState() + " as it's no longer active");
-                    ex.addProxyObject(project, projectId, "projectId");                    
+                    ex.addProxyObject(project, projectId, "projectId");
                     throw ex;
                 }
             } else {

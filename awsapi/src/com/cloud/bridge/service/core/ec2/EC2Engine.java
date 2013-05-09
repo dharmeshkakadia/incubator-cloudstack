@@ -38,6 +38,7 @@ import javax.naming.ConfigurationException;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.log4j.Logger;
+import org.apache.utils.component.ManagerBase;
 import org.springframework.stereotype.Component;
 import org.xml.sax.SAXException;
 
@@ -75,7 +76,6 @@ import com.cloud.stack.models.CloudStackUser;
 import com.cloud.stack.models.CloudStackUserVm;
 import com.cloud.stack.models.CloudStackVolume;
 import com.cloud.stack.models.CloudStackZone;
-import com.cloud.utils.component.ManagerBase;
 
 /**
  * EC2Engine processes the ec2 commands and calls their cloudstack analogs

@@ -18,9 +18,9 @@ package com.cloud.ovm.object;
 
 import java.util.Map;
 
+import org.apache.utils.Pair;
 import org.apache.xmlrpc.XmlRpcException;
 
-import com.cloud.utils.Pair;
 
 public class OvmStoragePool extends OvmObject {
 	public static final String NFS = "OVSSPNFS";

@@ -28,9 +28,9 @@ import org.apache.cloudstack.api.response.ApiDiscoveryResponse;
 import org.apache.cloudstack.api.response.ListResponse;
 import org.apache.cloudstack.discovery.ApiDiscoveryService;
 import org.apache.log4j.Logger;
+import org.apache.user.User;
+import org.apache.user.UserContext;
 
-import com.cloud.user.User;
-import com.cloud.user.UserContext;
 
 @APICommand(name = "listApis", responseObject = ApiDiscoveryResponse.class, description = "lists all available apis on the server, provided by the Api Discovery plugin", since = "4.1.0")
 public class ListApisCmd extends BaseCmd {

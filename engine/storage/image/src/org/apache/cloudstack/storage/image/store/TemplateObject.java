@@ -32,13 +32,13 @@ import org.apache.cloudstack.storage.datastore.ObjectInDataStoreManager;
 import org.apache.cloudstack.storage.image.manager.ImageDataManager;
 import org.apache.log4j.Logger;
 
-import com.cloud.storage.VMTemplateVO;
-import com.cloud.storage.dao.VMTemplateDao;
-import com.cloud.storage.dao.VMTemplatePoolDao;
-import com.cloud.utils.component.ComponentContext;
-import com.cloud.utils.exception.CloudRuntimeException;
-import com.cloud.utils.fsm.NoTransitionException;
-import com.cloud.utils.storage.encoding.EncodingType;
+import org.apache.storage.VMTemplateVO;
+import org.apache.storage.dao.VMTemplateDao;
+import org.apache.storage.dao.VMTemplatePoolDao;
+import org.apache.utils.component.ComponentContext;
+import org.apache.utils.exception.CloudRuntimeException;
+import org.apache.utils.fsm.NoTransitionException;
+import org.apache.utils.storage.encoding.EncodingType;
 
 public class TemplateObject implements TemplateInfo {
     private static final Logger s_logger = Logger

@@ -19,8 +19,8 @@
 package org.apache.cloudstack.engine.cloud.entity.api;
 
 import org.apache.cloudstack.engine.entity.api.CloudStackEntity;
+import org.apache.storage.Snapshot;
 
-import com.cloud.storage.Snapshot;
 
 public interface SnapshotEntity extends CloudStackEntity, Snapshot {
     /**

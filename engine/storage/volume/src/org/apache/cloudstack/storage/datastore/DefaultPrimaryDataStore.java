@@ -45,20 +45,20 @@ import org.apache.cloudstack.engine.subsystem.api.storage.disktype.DiskFormat;
 import org.apache.cloudstack.storage.datastore.db.PrimaryDataStoreDao;
 import org.apache.cloudstack.storage.datastore.db.StoragePoolVO;
 import org.apache.cloudstack.storage.volume.VolumeObject;
+import org.apache.hypervisor.Hypervisor.HypervisorType;
 import org.apache.log4j.Logger;
+import org.apache.storage.Storage.StoragePoolType;
+import org.apache.storage.StoragePoolHostVO;
+import org.apache.storage.StoragePoolStatus;
+import org.apache.storage.VMTemplateStoragePoolVO;
+import org.apache.storage.VolumeVO;
+import org.apache.utils.component.ComponentContext;
+import org.apache.utils.exception.CloudRuntimeException;
+import org.apache.utils.storage.encoding.EncodingType;
 
-import com.cloud.hypervisor.Hypervisor.HypervisorType;
-import com.cloud.storage.Storage.StoragePoolType;
-import com.cloud.storage.StoragePoolHostVO;
-import com.cloud.storage.StoragePoolStatus;
-import com.cloud.storage.VMTemplateStoragePoolVO;
-import com.cloud.storage.VolumeVO;
-import com.cloud.storage.dao.StoragePoolHostDao;
-import com.cloud.storage.dao.VMTemplatePoolDao;
-import com.cloud.storage.dao.VolumeDao;
-import com.cloud.utils.component.ComponentContext;
-import com.cloud.utils.exception.CloudRuntimeException;
-import com.cloud.utils.storage.encoding.EncodingType;
+import org.apache.storage.dao.StoragePoolHostDao;
+import org.apache.storage.dao.VMTemplatePoolDao;
+import org.apache.storage.dao.VolumeDao;
 
 public class DefaultPrimaryDataStore implements PrimaryDataStore {
     private static final Logger s_logger = Logger

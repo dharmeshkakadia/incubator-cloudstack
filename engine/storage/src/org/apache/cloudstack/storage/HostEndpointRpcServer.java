@@ -18,10 +18,10 @@
  */
 package org.apache.cloudstack.storage;
 
+import org.apache.agent.api.Answer;
+import org.apache.agent.api.Command;
 import org.apache.cloudstack.framework.async.AsyncCompletionCallback;
 
-import com.cloud.agent.api.Answer;
-import com.cloud.agent.api.Command;
 
 public interface HostEndpointRpcServer {
     void sendCommandAsync(HypervisorHostEndPoint ep, final Command command, final AsyncCompletionCallback<Answer> callback);

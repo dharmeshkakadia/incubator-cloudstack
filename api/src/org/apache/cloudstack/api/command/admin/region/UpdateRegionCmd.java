@@ -28,8 +28,8 @@ import org.apache.cloudstack.api.response.RegionResponse;
 import org.apache.cloudstack.region.Region;
 import org.apache.cloudstack.region.RegionService;
 import org.apache.log4j.Logger;
+import org.apache.user.Account;
 
-import com.cloud.user.Account;
 
 @APICommand(name = "updateRegion", description="Updates a region", responseObject=RegionResponse.class)
 public class UpdateRegionCmd extends BaseCmd {

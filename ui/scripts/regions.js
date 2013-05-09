@@ -18,6 +18,10 @@
   cloudStack.sections.regions = {
     title: 'label.menu.regions',
     id: 'regions',
+    sectionSelect: {
+      label: 'label.select-view',
+      preFilter: function() { return ['regions']; }
+    },
     regionSelector: {
       dataProvider: function(args) {
         $.ajax({
@@ -27,169 +31,617 @@
 
             args.response.success({
               data: regions ? regions : [
-                { id: -1, name: '(Default)' }
+                { id: -1, name: _l('label.no.data') }
               ]
             });
           }
-        }); 
+        });
       }
     },
-    listView: {
-      section: 'regions',
-      fields: {
-        name: { label: 'label.name' },
-        id: { label: 'ID' },
-        endpoint: { label: 'label.endpoint' }
-      },
-      actions: {
-        add: {
-          label: 'label.add.region',
-          messages: {
-            notification: function() { return 'label.add.region'; }
+    sections: {
+      regions: {
+        id: 'regions',
+        type: 'select',
+        title: 'label.menu.regions',
+        listView: {
+          section: 'regions',
+          id: 'regions',
+          label: 'label.menu.regions',
+          fields: {
+            name: { label: 'label.name' },
+            id: { label: 'ID' },
+            endpoint: { label: 'label.endpoint' }
           },
-          createForm: {
-            title: 'label.add.region',
-            desc: 'message.add.region',
-            fields: {
-              id: { label: 'label.id', validation: { required: true } },
-              name: { label: 'label.name', validation: { required: true } },
-              endpoint: { label: 'label.endpoint', validation: { required: true } }             
+          actions: {
+            add: {
+              label: 'label.add.region',
+							preFilter: function(args) {
+                if(isAdmin())
+                  return true;
+                else
+                  return false;
+              },
+              messages: {
+                notification: function() { return 'label.add.region'; }
+              },
+              createForm: {
+                title: 'label.add.region',
+                desc: 'message.add.region',
+                fields: {
+                  id: { label: 'label.id', validation: { required: true } },
+                  name: { label: 'label.name', validation: { required: true } },
+                  endpoint: { label: 'label.endpoint', validation: { required: true } }
+                }
+              },
+              action: function(args) {
+                var data = {
+                  id: args.data.id,
+                  name: args.data.name,
+                  endpoint: args.data.endpoint
+                };
+
+                $.ajax({
+                  url: createURL('addRegion'),
+                  data: data,
+                  success: function(json) {
+                    var item = json.addregionresponse.region;
+                    args.response.success({data: item});
+                    $(window).trigger('cloudStack.refreshRegions');
+                  },
+                  error: function(json) {
+                    args.response.error(parseXMLHttpResponse(json));
+                  }
+                });
+              },
+              notification: {
+                poll: function(args) {
+                  args.complete();
+                }
+              }
             }
           },
-          action: function(args) {					  
-						var data = {							
-							id: args.data.id,
-							name: args.data.name,
-							endpoint: args.data.endpoint
-						};		
-						
+          dataProvider: function(args) {
             $.ajax({
-              url: createURL('addRegion'),
-              data: data,
-              success: function(json) {							 
-                var item = json.addregionresponse.region;
-                args.response.success({data: item});               
-                $(window).trigger('cloudStack.refreshRegions');
+              url: createURL('listRegions&listAll=true'),
+              success: function(json) {
+                var items = json.listregionsresponse.region;
+                args.response.success({								 
+                  data: items
+                });
               },
               error: function(json) {
                 args.response.error(parseXMLHttpResponse(json));
-              } 
-            });
-          },										
-					notification: {
-						poll: function(args) {
-							args.complete();
-						}
-					}			
-        }
-      },
-      dataProvider: function(args) {
-        $.ajax({
-          url: createURL('listRegions&listAll=true'),
-          success: function(json) {
-            var regions = json.listregionsresponse.region
-
-            args.response.success({
-              data: regions ? regions : []
+              }
             });
           },
-          error: function(json) {
-            args.response.error(parseXMLHttpResponse(json));
-          } 
-        });
-      },
-      detailView: {
-        name: 'Region details',
-        actions: {
-          edit: {
-            label: 'label.edit.region',
-            action: function(args) {
-							var data = {
-							  id: args.context.regions[0].id,
-								name: args.data.name,
-								endpoint: args.data.endpoint
-							};							
-						
-              $.ajax({
-                url: createURL('updateRegion'),
-                data: data,
-                success: function(json) {
-                  args.response.success();
-                  $(window).trigger('cloudStack.refreshRegions');
-                },
-                error: function(json) {
-                  args.response.error(parseXMLHttpResponse(json));
-                } 
-              });
-            }
-          },
-          remove: {
-            label: 'label.remove.region',
-            messages: {
-              notification: function() { return 'label.remove.region'; },
-              confirm: function() { return 'message.remove.region'; }
-            },						
-						preAction: function(args) {
-						  var region = args.context.regions[0];							
-														
-							/* e.g.
-							region.endpoint	== "http://localhost:8080/client/" 
-							document.location.href == "http://localhost:8080/client/#" 
-							*/
-							if(document.location.href.indexOf(region.endpoint) != -1) {	
-							  cloudStack.dialog.notice({ message: _l('You can not remove the region that you are currently in.') });
-                return false;
-							}						
-              return true;
-            },	
-            action: function(args) {
-              var region = args.context.regions[0];
+          detailView: {
+            name: 'Region details',
+            viewAll: { path: 'regions.GSLB', label: 'GSLB' },
+            actions: {
+              edit: {
+                label: 'label.edit.region',
+                action: function(args) {
+                  var data = {
+                    id: args.context.regions[0].id,
+                    name: args.data.name,
+                    endpoint: args.data.endpoint
+                  };
 
-              $.ajax({ 
-                url: createURL('removeRegion'),
-                data: { id: region.id },
-                success: function(json) {
-                  args.response.success();
-                  $(window).trigger('cloudStack.refreshRegions');
+                  $.ajax({
+                    url: createURL('updateRegion'),
+                    data: data,
+                    success: function(json) {
+                      args.response.success();
+                      $(window).trigger('cloudStack.refreshRegions');
+                    },
+                    error: function(json) {
+                      args.response.error(parseXMLHttpResponse(json));
+                    }
+                  });
+                }
+              },
+              remove: {
+                label: 'label.remove.region',
+                messages: {
+                  notification: function() { return 'label.remove.region'; },
+                  confirm: function() { return 'message.remove.region'; }
                 },
-                error: function(json) {
-                  args.response.error(parseXMLHttpResponse(json));
-                } 
-              });
+                preAction: function(args) {
+                  var region = args.context.regions[0];
+
+                  /* e.g.
+                  region.endpoint	== "http://localhost:8080/client/"
+                  document.location.href == "http://localhost:8080/client/#"
+                  */
+                  /*
+                  if(document.location.href.indexOf(region.endpoint) != -1) {
+                    cloudStack.dialog.notice({ message: _l('You can not remove the region that you are currently in.') });
+                    return false;
+                  }
+                  */
+                  return true;
+                },
+                action: function(args) {
+                  var region = args.context.regions[0];
+
+                  $.ajax({
+                    url: createURL('removeRegion'),
+                    data: { id: region.id },
+                    success: function(json) {
+                      args.response.success();
+                      $(window).trigger('cloudStack.refreshRegions');
+                    },
+                    error: function(json) {
+                      args.response.error(parseXMLHttpResponse(json));
+                    }
+                  });
+                }
+              }
+            },
+            tabs: {
+              details: {
+                title: 'label.details',
+                fields: [
+                  {
+                    id: { label: 'label.id' }
+                  },
+                  {
+                    name: { label: 'label.name', isEditable: true },
+                    endpoint: { label: 'label.endpoint', isEditable: true }
+                  }
+                ],
+                dataProvider: function(args) {
+                  $.ajax({
+                    url: createURL('listRegions&listAll=true'),
+                    data: { id: args.context.regions[0].id },
+                    success: function(json) {
+                      var region = json.listregionsresponse.region
+
+                      args.response.success({
+											  actionFilter: regionActionfilter,
+                        data: region ? region[0] : {}
+                      });
+                    },
+                    error: function(json) {
+                      args.response.error(parseXMLHttpResponse(json));
+                    }
+                  });
+                }
+              }
             }
           }
-        },
-        tabs: {
-          details: {
-            title: 'label.details',
-            fields: [
-              {
-                id: { label: 'label.id' }
-              },
-              {
-							  name: { label: 'label.name', isEditable: true },
-                endpoint: { label: 'label.endpoint', isEditable: true }                
-              }
-            ],
-            dataProvider: function(args) {								  
-              $.ajax({
-                url: createURL('listRegions&listAll=true'),
-                data: { id: args.context.regions[0].id },
-                success: function(json) {
-                  var region = json.listregionsresponse.region
+        }
+      },
+      GSLB: {
+        id: 'GSLB',
+        type: 'select',
+        title: 'GSLB',
+        listView: {
+          id: 'GSLB',
+          label: 'GSLB',
+          fields: {
+            name: { label: 'label.name' },
+						gslbdomainname: { label: 'GSLB Domain Name' },
+						gslblbmethod: { label: 'Algorithm' }
+          },										
+					actions: {
+            add: {
+              label: 'Add GSLB',
 
+              messages: {
+                confirm: function(args) {
+                  return 'Add GSLB';
+                },
+                notification: function(args) {
+                  return 'Add GSLB';
+                }
+              },
+
+              createForm: {
+                title: 'Add GSLB',
+                fields: {
+                  name: {
+                    label: 'label.name',                    
+                    validation: { required: true }
+                  },									
+                  description: {
+                    label: 'label.description'  
+                  }, 	
+                  gslbdomainname: {
+                    label: 'GSLB Domain Name',
+                    validation: { required: true }										
+                  },			
+									gslblbmethod: {					
+										label: 'Algorithm',					
+										select: function(args) {
+											var array1 = [{id: 'roundrobin', description: 'roundrobin'}, {id: 'leastconn', description: 'leastconn'}, {id: 'proximity', description: 'proximity'}];
+											args.response.success({
+												data: array1
+											});														
+										}
+									},															
+									gslbservicetype: {					
+										label: 'Service Type',					
+										select: function(args) {
+											var array1 = [{id: 'tcp', description: 'tcp'}, {id: 'udp', description: 'udp'}];
+											args.response.success({
+												data: array1
+											});														
+										},
+										validation: { required: true }				
+									},		
+									domainid: {					
+										label: 'Domain',					
+										select: function(args) {
+											if(isAdmin() || isDomainAdmin()) {
+												$.ajax({
+													url: createURL('listDomains'),
+													data: { 
+														listAll: true,
+														details: 'min'
+													},
+													success: function(json) {
+														var array1 = [{id: '', description: ''}];
+														var domains = json.listdomainsresponse.domain;
+														if(domains != null && domains.length > 0) {
+															for(var i = 0; i < domains.length; i++) {
+																array1.push({id: domains[i].id, description: domains[i].path});
+															}
+														}
+														args.response.success({
+															data: array1
+														});
+													}
+												});
+											}
+											else {
+												args.response.success({
+													data: null
+												});
+											}
+										},
+										isHidden: function(args) {
+											if(isAdmin() || isDomainAdmin())
+												return false;
+											else
+												return true;
+										}
+									},	
+									account: { 
+										label: 'Account',
+										isHidden: function(args) {
+											if(isAdmin() || isDomainAdmin())
+												return false;
+											else
+												return true;
+										}			
+									}		
+                }
+              },
+              action: function(args) {                
+								var data = {
+								  name: args.data.name,									
+									regionid: args.context.regions[0].id,
+									gslblbmethod: args.data.gslblbmethod,
+									gslbstickysessionmethodname: 'sourceip',
+									gslbdomainname: args.data.gslbdomainname,
+									gslbservicetype: args.data.gslbservicetype
+								};	
+                if(args.data.description != null && args.data.description.length > 0)
+								  $.extend(data, { description: args.data.description }); 
+                if(args.data.domainid != null && args.data.domainid.length > 0)
+								  $.extend(data, { domainid: args.data.domainid });  								  		
+                if(args.data.account != null && args.data.account.length > 0)
+								  $.extend(data, { account: args.data.account });   
+								
+                $.ajax({
+                  url: createURL('createGlobalLoadBalancerRule'),
+                  data: data,                 
+                  success: function(json) {		
+										var jid = json.creategloballoadbalancerruleresponse.jobid;										              
+										args.response.success(
+											{_custom:
+											 {jobId: jid,
+												getUpdatedItem: function(json) {	                          									  
+													return json.queryasyncjobresultresponse.jobresult.globalloadbalancer;
+												}
+											 }
+											}
+										);										
+                  }
+                });
+              },
+              notification: {
+                poll: pollAsyncJobResult
+              }
+            }
+          },
+										
+          dataProvider: function(args) {
+            if('regions' in args.context) {
+              var data = {
+                regionid: args.context.regions[0].id
+              };
+              $.ajax({
+                url: createURL('listGlobalLoadBalancerRules'),
+                data: data,
+                success: function(json) {                  
+                  var items = json.listgloballoadbalancerrulesresponse.globalloadbalancerrule;
                   args.response.success({
-                    data: region ? region[0] : {}
+                    data: items
+                  });
+                }
+              });
+            }
+            else {
+              args.response.success({
+                data: null
+              });
+            }
+          },
+										
+					detailView: {
+            name: 'GSLB details',
+            viewAll: { path: 'regions.lbUnderGSLB', label: 'assigned load balancing' },
+            actions: {              
+							remove: {
+                label: 'delete GSLB',
+                messages: {
+                  confirm: function(args) {
+                    return 'Please confirm you want to delete this GSLB';
+                  },
+                  notification: function(args) {
+                    return 'delete GSLB';
+                  }
+                },
+                action: function(args) {								  
+									var data = {
+									  id: args.context.GSLB[0].id
+									};
+                  $.ajax({
+                    url: createURL("deleteGlobalLoadBalancerRule"),
+                    data: data,                    
+                    success: function(json) {                      
+											var jid = json.deletegloballoadbalancerruleresponse.jobid;
+                      args.response.success({
+											  _custom: {
+												  jobId: jid
+												}
+											});											
+                    }
                   });
                 },
-                error: function(json) {
-                  args.response.error(parseXMLHttpResponse(json));
-                } 
-              });  
+                notification: {
+                  poll: pollAsyncJobResult
+                }
+              }
+						},												
+						tabs: {
+              details: {
+                title: 'label.details',
+                fields: [
+								 {
+								   name: { label: 'label.name' }
+								 },
+                 {									  
+                    description: { label: 'label.description' },
+						        gslbdomainname: { label: 'GSLB Domain Name' },
+						        gslblbmethod: { label: 'Algorithm' },
+                    gslbservicetype: { label: 'Service Type' },										
+                    id: { label: 'ID' }										
+                  }
+                ],
+                dataProvider: function(args) {									  
+									var data = {
+										id: args.context.GSLB[0].id
+									};
+									$.ajax({
+										url: createURL('listGlobalLoadBalancerRules'),
+										data: data,
+										success: function(json) {                  
+											var item = json.listgloballoadbalancerrulesresponse.globalloadbalancerrule[0];
+											args.response.success({
+												data: item
+											});
+										}
+									});									
+                }
+              }
+            }						
+					}					
+        }
+      },
+						
+     lbUnderGSLB: {
+        id: 'lbUnderGSLB',
+        type: 'select',
+        title: 'assigned load balancing',
+        listView: {
+          section: 'lbUnderGSLB',
+          id: 'lbUnderGSLB',
+          label: 'assigned load balancing',
+          fields: {
+            name: { label: 'label.name' },
+            publicport: { label: 'label.public.port' },
+	          privateport: { label: 'label.private.port' },
+	          algorithm: { label: 'label.algorithm' }
+          },					
+	        dataProvider: function(args) {		
+	          var data = {
+              id: args.context.GSLB[0].id
+            };
+            $.ajax({
+              url: createURL('listGlobalLoadBalancerRules'),
+              data: data,
+              success: function(json) {    
+                var items = json.listgloballoadbalancerrulesresponse.globalloadbalancerrule[0].loadbalancerrule;
+                args.response.success({
+                  data: items
+                });
+              }
+            });	          
+          },	        
+	        actions: {            
+            add: {
+              label: 'assign more load balancing',
+              messages: {                
+                notification: function(args) {
+                  return 'assign more load balancing';
+                }
+              },
+              createForm: {
+                title: 'assign more load balancing',              
+                fields: {                  
+                  loadbalancerrule: {
+                    label: 'load balancing rule',                    
+                    select: function(args) {		
+		      var data = {
+			globalloadbalancerruleid: args.context.GSLB[0].id,
+			listAll: true
+		      };
+		      $.ajax({
+			url: createURL('listLoadBalancerRules'),
+			data: data,
+			success: function(json) {
+			  var allLbRules = json.listloadbalancerrulesresponse.loadbalancerrule;
+                          var assignedLbRules = args.context.GSLB[0].loadbalancerrule;
+                          var items = [];
+                          if(allLbRules != null) {
+                            for(var i = 0; i < allLbRules.length; i++) {  
+                              var isAssigned = false;                            
+                              if(assignedLbRules != null) {
+                                for(var k = 0; k < assignedLbRules.length; k++) {
+                                  if(allLbRules[i].id == assignedLbRules[k].id) {
+                                    isAssigned = true;
+                                    break; 
+                                  }
+                                }
+                              }
+                              if(isAssigned == false) {
+                                items.push(allLbRules[i]);
+                              }
+                            }
+                          }                        
+			  args.response.success({								 
+			    data: items,
+			    descriptionField: 'name'
+			  });													
+			}
+		      });																						
+                    }
+                  }  
+                }
+              },
+              action: function(args) {							  
+		var data = {
+		  id: args.context.GSLB[0].id,
+		  loadbalancerrulelist: args.data.loadbalancerrule
+		};			
+                $.ajax({
+                  url: createURL('assignToGlobalLoadBalancerRule'),
+                  data: data,                 
+                  success: function(json) {
+                    var jid = json.assigntogloballoadbalancerruleresponse.jobid;
+                    args.response.success(
+                      {_custom:
+                       {jobId: jid,
+                        getUpdatedItem: function(json) {
+                          return json.queryasyncjobresultresponse.jobresult.loadbalancerrule;
+                        }
+                       }
+                      }
+                    );
+                  }
+                });
+              },
+              notification: {
+                poll: pollAsyncJobResult
+              }
+            }
+					},						
+									
+					detailView: {
+            name: 'load balancing details',            
+            actions: {              
+              remove: {
+                label: 'remove load balancing from this GSLB',
+                messages: {
+                  notification: function() { 
+									  return 'remove load balancing from GSLB'; 
+									},
+                  confirm: function() { 
+									  return 'Please confirm you want to remove load balancing from GSLB'; 
+									}
+                },               
+                action: function(args) {								                
+                  $.ajax({
+                    url: createURL('removeFromGlobalLoadBalancerRule'),
+                    data: { 
+										  id: args.context.lbUnderGSLB[0].id 
+										},
+                    success: function(json) {                      							
+                      var jid = json.removefromloadbalancerruleresponse.jobid;
+                      args.response.success({
+											  _custom: {
+												  jobId: jid
+												}
+											});												
+                    }
+                  });
+                },		
+								notification: {
+                  poll: pollAsyncJobResult
+                }								
+              }
+            },
+            tabs: {
+              details: {
+                title: 'label.details',
+                fields: [
+                  {
+                    name: { label: 'label.name' }
+                  },
+                  {																
+										publicport: { label: 'label.public.port' },
+										privateport: { label: 'label.private.port' },
+										algorithm: { label: 'label.algorithm' },
+										publicip: { label: 'label.public.ip' },	
+                    state: { label: 'label.state' },												
+										id: { label: 'label.id' },
+                    cidrlist: { label: 'label.cidr' },
+                    domain: { label: 'label.domain' },
+                    account: { label: 'label.account' }                    								
+                  }
+                ],
+                dataProvider: function(args) {									
+									$.ajax({
+										url: createURL('listLoadBalancerRules'),
+										data: {
+										  id: args.context.lbUnderGSLB[0].id 
+										},
+										success: function(json) {
+											var item = json.listloadbalancerrulesresponse.loadbalancerrule[0];
+											args.response.success({								 
+												data: item
+											});
+										}
+									});		
+                }
+              }
             }
           }
-        }
-      }
+				}
+			}			
     }
   };
+		
+	var regionActionfilter = function(args) {	  
+    var allowedActions = [];    
+    if(isAdmin()) {        
+      allowedActions.push("edit");
+			allowedActions.push("remove");
+    } 
+    return allowedActions;
+  }	
+	
 })(cloudStack);

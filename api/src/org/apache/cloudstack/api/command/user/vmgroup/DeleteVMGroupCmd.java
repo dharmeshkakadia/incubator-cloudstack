@@ -25,9 +25,9 @@ import org.apache.cloudstack.api.ServerApiException;
 import org.apache.cloudstack.api.response.InstanceGroupResponse;
 import org.apache.cloudstack.api.response.SuccessResponse;
 import org.apache.log4j.Logger;
+import org.apache.user.Account;
+import org.apache.vm.InstanceGroup;
 
-import com.cloud.user.Account;
-import com.cloud.vm.InstanceGroup;
 
 @APICommand(name = "deleteInstanceGroup", description="Deletes a vm group", responseObject=SuccessResponse.class)
 public class DeleteVMGroupCmd extends BaseCmd{

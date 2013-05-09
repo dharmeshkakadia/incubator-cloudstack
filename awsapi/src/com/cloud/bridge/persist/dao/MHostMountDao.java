@@ -16,8 +16,9 @@
 // under the License.
 package com.cloud.bridge.persist.dao;
 
+import org.apache.utils.db.GenericDao;
+
 import com.cloud.bridge.model.MHostMountVO;
-import com.cloud.utils.db.GenericDao;
 
 public interface MHostMountDao extends GenericDao<MHostMountVO, Long> {
 

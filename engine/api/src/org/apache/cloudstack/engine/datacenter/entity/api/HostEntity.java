@@ -16,10 +16,10 @@
 // under the License.
 package org.apache.cloudstack.engine.datacenter.entity.api;
 
-import com.cloud.hypervisor.Hypervisor.HypervisorType;
+import org.apache.hypervisor.Hypervisor.HypervisorType;
 
 public interface HostEntity extends DataCenterResourceEntity {
-	
+
     /**
      * @return total amount of memory.
      */
@@ -49,7 +49,7 @@ public interface HostEntity extends DataCenterResourceEntity {
      * @return type of hypervisor
      */
     HypervisorType getHypervisorType();
-    
+
     /**
      * @return the mac address of the host.
      */
@@ -58,4 +58,3 @@ public interface HostEntity extends DataCenterResourceEntity {
     Long getClusterId();
 
 }
-

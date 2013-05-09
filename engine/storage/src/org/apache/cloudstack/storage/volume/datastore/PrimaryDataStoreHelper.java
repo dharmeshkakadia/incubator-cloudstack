@@ -23,6 +23,13 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import org.apache.agent.api.Answer;
+import org.apache.agent.api.DeleteStoragePoolCommand;
+import org.apache.agent.api.StoragePoolInfo;
+import org.apache.alert.AlertManager;
+import org.apache.capacity.Capacity;
+import org.apache.capacity.CapacityVO;
+import org.apache.capacity.dao.CapacityDao;
 import org.apache.cloudstack.engine.subsystem.api.storage.DataStore;
 import org.apache.cloudstack.engine.subsystem.api.storage.DataStoreManager;
 import org.apache.cloudstack.engine.subsystem.api.storage.DataStoreRole;
@@ -33,23 +40,16 @@ import org.apache.cloudstack.storage.command.AttachPrimaryDataStoreCmd;
 import org.apache.cloudstack.storage.datastore.db.PrimaryDataStoreDao;
 import org.apache.cloudstack.storage.datastore.db.StoragePoolVO;
 import org.apache.log4j.Logger;
+import org.apache.storage.StorageManager;
+import org.apache.storage.StoragePool;
+import org.apache.storage.StoragePoolHostVO;
+import org.apache.storage.StoragePoolStatus;
+import org.apache.storage.dao.StoragePoolHostDao;
+import org.apache.utils.db.DB;
+import org.apache.utils.db.Transaction;
+import org.apache.utils.exception.CloudRuntimeException;
 import org.springframework.stereotype.Component;
 
-import com.cloud.agent.api.Answer;
-import com.cloud.agent.api.DeleteStoragePoolCommand;
-import com.cloud.agent.api.StoragePoolInfo;
-import com.cloud.alert.AlertManager;
-import com.cloud.capacity.Capacity;
-import com.cloud.capacity.CapacityVO;
-import com.cloud.capacity.dao.CapacityDao;
-import com.cloud.storage.StorageManager;
-import com.cloud.storage.StoragePool;
-import com.cloud.storage.StoragePoolHostVO;
-import com.cloud.storage.StoragePoolStatus;
-import com.cloud.storage.dao.StoragePoolHostDao;
-import com.cloud.utils.db.DB;
-import com.cloud.utils.db.Transaction;
-import com.cloud.utils.exception.CloudRuntimeException;
 
 @Component
 public class PrimaryDataStoreHelper {

@@ -35,63 +35,62 @@ import javax.ejb.Local;
 import javax.inject.Inject;
 import javax.naming.ConfigurationException;
 
+import org.apache.agent.AgentManager;
+import org.apache.agent.Listener;
+import org.apache.agent.api.AgentControlAnswer;
+import org.apache.agent.api.AgentControlCommand;
+import org.apache.agent.api.Answer;
+import org.apache.agent.api.Command;
+import org.apache.agent.api.StartupCommand;
+import org.apache.agent.api.StartupRoutingCommand;
+import org.apache.cluster.ClusterManager;
+import org.apache.configuration.Config;
+import org.apache.configuration.dao.ConfigurationDao;
+import org.apache.dc.ClusterDetailsDao;
+import org.apache.dc.ClusterVO;
+import org.apache.dc.ClusterVSMMapVO;
+import org.apache.dc.dao.ClusterDao;
+import org.apache.dc.dao.ClusterVSMMapDao;
+import org.apache.exception.DiscoveredWithErrorException;
+import org.apache.host.HostVO;
+import org.apache.host.Status;
+import org.apache.host.dao.HostDao;
+import org.apache.hypervisor.Hypervisor.HypervisorType;
+import org.apache.hypervisor.dao.HypervisorCapabilitiesDao;
+import org.apache.hypervisor.vmware.mo.DiskControllerType;
+import org.apache.hypervisor.vmware.mo.HostFirewallSystemMO;
+import org.apache.hypervisor.vmware.mo.HostMO;
+import org.apache.hypervisor.vmware.mo.HypervisorHostHelper;
+import org.apache.hypervisor.vmware.mo.TaskMO;
+import org.apache.hypervisor.vmware.mo.VirtualEthernetCardType;
+import org.apache.hypervisor.vmware.mo.VmwareHostType;
+import org.apache.hypervisor.vmware.util.VmwareClient;
+import org.apache.hypervisor.vmware.util.VmwareContext;
 import org.apache.log4j.Logger;
+import org.apache.network.NetworkModel;
+import org.apache.org.Cluster.ClusterType;
+import org.apache.secstorage.CommandExecLogDao;
+import org.apache.serializer.GsonHelper;
+import org.apache.server.ConfigurationServer;
+import org.apache.storage.JavaStorageLayer;
+import org.apache.storage.StorageLayer;
+import org.apache.storage.secondary.SecondaryStorageVmManager;
+import org.apache.utils.FileUtil;
+import org.apache.utils.NumbersUtil;
+import org.apache.utils.Pair;
+import org.apache.utils.component.Manager;
+import org.apache.utils.component.ManagerBase;
+import org.apache.utils.concurrency.NamedThreadFactory;
+import org.apache.utils.db.DB;
+import org.apache.utils.db.GlobalLock;
+import org.apache.utils.exception.CloudRuntimeException;
+import org.apache.utils.script.Script;
+import org.apache.utils.ssh.SshHelper;
+import org.apache.vm.DomainRouterVO;
 
-import com.cloud.agent.AgentManager;
-import com.cloud.agent.Listener;
-import com.cloud.agent.api.AgentControlAnswer;
-import com.cloud.agent.api.AgentControlCommand;
-import com.cloud.agent.api.Answer;
-import com.cloud.agent.api.Command;
-import com.cloud.agent.api.StartupCommand;
-import com.cloud.agent.api.StartupRoutingCommand;
-import com.cloud.cluster.ClusterManager;
-import com.cloud.configuration.Config;
-import com.cloud.configuration.dao.ConfigurationDao;
-import com.cloud.dc.ClusterDetailsDao;
-import com.cloud.dc.ClusterVO;
-import com.cloud.dc.ClusterVSMMapVO;
-import com.cloud.dc.dao.ClusterDao;
-import com.cloud.dc.dao.ClusterVSMMapDao;
-import com.cloud.exception.DiscoveredWithErrorException;
-import com.cloud.host.HostVO;
-import com.cloud.host.Status;
-import com.cloud.host.dao.HostDao;
-import com.cloud.hypervisor.Hypervisor.HypervisorType;
-import com.cloud.hypervisor.dao.HypervisorCapabilitiesDao;
 import com.cloud.hypervisor.vmware.VmwareCleanupMaid;
-import com.cloud.hypervisor.vmware.mo.DiskControllerType;
-import com.cloud.hypervisor.vmware.mo.HostFirewallSystemMO;
-import com.cloud.hypervisor.vmware.mo.HostMO;
-import com.cloud.hypervisor.vmware.mo.HypervisorHostHelper;
-import com.cloud.hypervisor.vmware.mo.TaskMO;
-import com.cloud.hypervisor.vmware.mo.VirtualEthernetCardType;
-import com.cloud.hypervisor.vmware.mo.VmwareHostType;
-import com.cloud.utils.ssh.SshHelper;
-import com.cloud.hypervisor.vmware.util.VmwareClient;
-import com.cloud.hypervisor.vmware.util.VmwareContext;
 import com.cloud.network.CiscoNexusVSMDeviceVO;
-import com.cloud.network.NetworkModel;
 import com.cloud.network.dao.CiscoNexusVSMDeviceDao;
-import com.cloud.org.Cluster.ClusterType;
-import com.cloud.secstorage.CommandExecLogDao;
-import com.cloud.serializer.GsonHelper;
-import com.cloud.server.ConfigurationServer;
-import com.cloud.storage.JavaStorageLayer;
-import com.cloud.storage.StorageLayer;
-import com.cloud.storage.secondary.SecondaryStorageVmManager;
-import com.cloud.utils.FileUtil;
-import com.cloud.utils.NumbersUtil;
-import com.cloud.utils.Pair;
-import com.cloud.utils.component.Manager;
-import com.cloud.utils.component.ManagerBase;
-import com.cloud.utils.concurrency.NamedThreadFactory;
-import com.cloud.utils.db.DB;
-import com.cloud.utils.db.GlobalLock;
-import com.cloud.utils.exception.CloudRuntimeException;
-import com.cloud.utils.script.Script;
-import com.cloud.utils.ssh.SshHelper;
-import com.cloud.vm.DomainRouterVO;
 import com.google.gson.Gson;
 import com.vmware.vim25.AboutInfo;
 import com.vmware.vim25.HostConnectSpec;
@@ -317,8 +316,7 @@ public class VmwareManagerImpl extends ManagerBase implements VmwareManager, Vmw
         }
 
         s_logger.info("Preparing network on host " + hostMo.getContext().toString() + " for " + privateTrafficLabel);
-            HypervisorHostHelper.prepareNetwork(vSwitchName, "cloud.private", hostMo, vlanId, null, null, 180000, false);
-
+        HypervisorHostHelper.prepareNetwork(vSwitchName, "cloud.private", hostMo, vlanId, null, null, 180000, false);
     }
 
     @Override
@@ -355,10 +353,10 @@ public class VmwareManagerImpl extends ManagerBase implements VmwareManager, Vmw
                     String version = about.getApiVersion();
                     int maxHostsPerCluster = _hvCapabilitiesDao.getMaxHostsPerCluster(HypervisorType.VMware, version);
                     if (hosts.size() > maxHostsPerCluster) {
-                        String msg = "vCenter cluster size is too big (current configured cluster size: " + maxHostsPerCluster + ")";
-                    s_logger.error(msg);
-                    throw new DiscoveredWithErrorException(msg);
-                }
+                        String msg = "Failed to add VMware cluster as size is too big, current size: " + hosts.size() + ", max. size: " + maxHostsPerCluster;
+                        s_logger.error(msg);
+                        throw new DiscoveredWithErrorException(msg);
+                    }
                 }
 
                 for(ManagedObjectReference morHost: hosts) {
@@ -495,7 +493,8 @@ public class VmwareManagerImpl extends ManagerBase implements VmwareManager, Vmw
                         s_logger.info("Inject SSH key pairs before copying systemvm.iso into secondary storage");
                         _configServer.updateKeyPairs();
 
-
+                        s_logger.info("Copy System VM patch ISO file to secondary storage. source ISO: " + srcIso.getAbsolutePath() +
+                        	", destination: " + destIso.getAbsolutePath());
                         try {
                             FileUtil.copyfile(srcIso, destIso);
                         } catch(IOException e) {

@@ -23,15 +23,15 @@ import org.apache.cloudstack.api.ResponseGenerator;
 import org.apache.cloudstack.api.ServerApiException;
 import org.apache.cloudstack.api.command.admin.swift.AddSwiftCmd;
 import org.apache.cloudstack.api.response.SwiftResponse;
+import org.apache.exception.DiscoveryException;
+import org.apache.resource.ResourceService;
+import org.apache.storage.Swift;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.Mockito;
 
-import com.cloud.exception.DiscoveryException;
-import com.cloud.resource.ResourceService;
-import com.cloud.storage.Swift;
 
 public class AddSwiftCmdTest extends TestCase {
 

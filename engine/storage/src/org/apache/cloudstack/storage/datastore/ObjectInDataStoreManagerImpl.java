@@ -32,18 +32,18 @@ import org.apache.cloudstack.engine.subsystem.api.storage.VolumeDataFactory;
 import org.apache.cloudstack.storage.db.ObjectInDataStoreDao;
 import org.apache.cloudstack.storage.db.ObjectInDataStoreVO;
 import org.apache.log4j.Logger;
+import org.apache.storage.VMTemplateStoragePoolVO;
+import org.apache.storage.dao.VMTemplateHostDao;
+import org.apache.storage.dao.VMTemplatePoolDao;
+import org.apache.storage.dao.VolumeHostDao;
+import org.apache.utils.db.SearchCriteria2;
+import org.apache.utils.db.SearchCriteriaService;
+import org.apache.utils.db.SearchCriteria.Op;
+import org.apache.utils.exception.CloudRuntimeException;
+import org.apache.utils.fsm.NoTransitionException;
+import org.apache.utils.fsm.StateMachine2;
 import org.springframework.stereotype.Component;
 
-import com.cloud.storage.VMTemplateStoragePoolVO;
-import com.cloud.storage.dao.VMTemplateHostDao;
-import com.cloud.storage.dao.VMTemplatePoolDao;
-import com.cloud.storage.dao.VolumeHostDao;
-import com.cloud.utils.db.SearchCriteria.Op;
-import com.cloud.utils.db.SearchCriteria2;
-import com.cloud.utils.db.SearchCriteriaService;
-import com.cloud.utils.exception.CloudRuntimeException;
-import com.cloud.utils.fsm.NoTransitionException;
-import com.cloud.utils.fsm.StateMachine2;
 
 @Component
 public class ObjectInDataStoreManagerImpl implements ObjectInDataStoreManager {

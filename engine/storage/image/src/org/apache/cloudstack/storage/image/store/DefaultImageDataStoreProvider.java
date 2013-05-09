@@ -33,8 +33,8 @@ import org.apache.cloudstack.storage.image.datastore.ImageDataStoreManager;
 import org.apache.cloudstack.storage.image.driver.DefaultImageDataStoreDriverImpl;
 import org.apache.cloudstack.storage.image.store.lifecycle.DefaultImageDataStoreLifeCycle;
 import org.apache.cloudstack.storage.image.store.lifecycle.ImageDataStoreLifeCycle;
+import org.apache.utils.component.ComponentContext;
 
-import com.cloud.utils.component.ComponentContext;
 
 public class DefaultImageDataStoreProvider implements ImageDataStoreProvider {
     private final String name = "default image data store";

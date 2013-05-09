@@ -20,16 +20,16 @@ package org.apache.cloudstack.storage;
 
 import javax.inject.Inject;
 
+import org.apache.agent.AgentManager;
+import org.apache.agent.api.Answer;
+import org.apache.agent.api.Command;
 import org.apache.cloudstack.engine.subsystem.api.storage.EndPoint;
 import org.apache.cloudstack.framework.async.AsyncCompletionCallback;
+import org.apache.exception.AgentUnavailableException;
+import org.apache.exception.OperationTimedoutException;
 import org.apache.log4j.Logger;
+import org.apache.utils.component.ComponentContext;
 
-import com.cloud.agent.AgentManager;
-import com.cloud.agent.api.Answer;
-import com.cloud.agent.api.Command;
-import com.cloud.exception.AgentUnavailableException;
-import com.cloud.exception.OperationTimedoutException;
-import com.cloud.utils.component.ComponentContext;
 
 public class HypervisorHostEndPoint implements EndPoint {
     private static final Logger s_logger = Logger.getLogger(HypervisorHostEndPoint.class);

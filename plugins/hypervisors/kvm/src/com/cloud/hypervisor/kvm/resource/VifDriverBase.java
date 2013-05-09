@@ -19,8 +19,9 @@
 
 package com.cloud.hypervisor.kvm.resource;
 
-import com.cloud.agent.api.to.NicTO;
-import com.cloud.exception.InternalErrorException;
+
+import org.apache.agent.api.to.NicTO;
+import org.apache.exception.InternalErrorException;
 import org.libvirt.LibvirtException;
 
 import javax.naming.ConfigurationException;

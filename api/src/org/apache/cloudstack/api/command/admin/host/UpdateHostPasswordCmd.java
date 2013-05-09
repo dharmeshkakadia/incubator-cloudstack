@@ -24,8 +24,8 @@ import org.apache.cloudstack.api.response.ClusterResponse;
 import org.apache.cloudstack.api.response.HostResponse;
 import org.apache.cloudstack.api.response.SuccessResponse;
 import org.apache.log4j.Logger;
+import org.apache.user.Account;
 
-import com.cloud.user.Account;
 
 @APICommand(name = "updateHostPassword", description = "Update password of a host/pool on management server.", responseObject = SuccessResponse.class)
 public class UpdateHostPasswordCmd extends BaseCmd {

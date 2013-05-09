@@ -23,19 +23,21 @@
   <context:annotation-config />
 
   <!-- @DB support -->
-  <aop:config proxy-target-class="true">
-    <aop:aspect id="dbContextBuilder" ref="transactionContextBuilder">
-      <aop:pointcut id="captureAnyMethod" expression="execution(* *(..))" />
+  <bean id="componentContext" class="org.apache.utils.component.ComponentContext" />
 
-      <aop:around pointcut-ref="captureAnyMethod" method="AroundAnyMethod" />
-    </aop:aspect>
+  <bean id="transactionContextBuilder" class="org.apache.utils.db.TransactionContextBuilder" />
+  <bean id="actionEventInterceptor" class="org.apache.event.ActionEventInterceptor" />
+  <bean id="instantiatePostProcessor" class="org.apache.utils.component.ComponentInstantiationPostProcessor">
+    <property name="Interceptors">
+        <list>
+            <ref bean="transactionContextBuilder" />
+            <ref bean="actionEventInterceptor" />
+        </list>
+    </property>
+  </bean>
 
-  </aop:config>
-
-  <bean id="transactionContextBuilder" class="com.cloud.utils.db.TransactionContextBuilder" />
-  <bean id="componentContext" class="com.cloud.utils.component.ComponentContext"/>
   <bean id="CSTestConfiguration"
-    class="com.cloud.vm.dao.UserVmCloneSettingDaoTestConfiguration" />
+    class="org.apache.vm.dao.UserVmCloneSettingDaoTestConfiguration" />
   <bean class="org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor" >
     <property name="requiredParameterValue" value="false" />
   </bean>

@@ -24,9 +24,9 @@ import java.util.Set;
 import org.apache.cloudstack.api.ApiConstants;
 import org.apache.cloudstack.api.BaseResponse;
 import org.apache.cloudstack.api.EntityReference;
+import org.apache.serializer.Param;
+import org.apache.storage.Volume;
 
-import com.cloud.serializer.Param;
-import com.cloud.storage.Volume;
 import com.google.gson.annotations.SerializedName;
 
 @EntityReference(value=Volume.class)
@@ -47,6 +47,10 @@ public class VolumeResponse extends BaseResponse implements ControlledViewEntity
     @SerializedName(ApiConstants.ZONE_NAME)
     @Param(description = "name of the availability zone")
     private String zoneName;
+    
+    @SerializedName(ApiConstants.ZONE_TYPE)
+    @Param(description = "network type of the availability zone")
+    private String zoneType;
 
     @SerializedName(ApiConstants.TYPE)
     @Param(description = "type of the disk volume (ROOT or DATADISK)")
@@ -198,6 +202,10 @@ public class VolumeResponse extends BaseResponse implements ControlledViewEntity
         this.zoneName = zoneName;
     }
 
+    public void setZoneType(String zoneType) {
+        this.zoneType = zoneType;
+    }
+    
     public void setVolumeType(String volumeType) {
         this.volumeType = volumeType;
     }

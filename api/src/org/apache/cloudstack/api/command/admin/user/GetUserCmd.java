@@ -21,10 +21,10 @@ import org.apache.cloudstack.api.ApiConstants;
 import org.apache.cloudstack.api.BaseCmd;
 import org.apache.cloudstack.api.Parameter;
 import org.apache.cloudstack.api.response.UserResponse;
+import org.apache.exception.InvalidParameterValueException;
 import org.apache.log4j.Logger;
+import org.apache.user.UserAccount;
 
-import com.cloud.exception.InvalidParameterValueException;
-import com.cloud.user.UserAccount;
 
 @APICommand(name = "getUser", description="Find user account by API key", responseObject=UserResponse.class)
 public class GetUserCmd extends BaseCmd {

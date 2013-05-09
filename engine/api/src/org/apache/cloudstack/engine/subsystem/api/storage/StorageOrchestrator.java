@@ -24,8 +24,8 @@ import org.apache.cloudstack.engine.cloud.entity.api.TemplateEntity;
 import org.apache.cloudstack.engine.cloud.entity.api.VolumeEntity;
 import org.apache.cloudstack.engine.subsystem.api.storage.disktype.DiskFormat;
 import org.apache.cloudstack.engine.subsystem.api.storage.type.VolumeType;
+import org.apache.deploy.DeploymentPlan;
 
-import com.cloud.deploy.DeploymentPlan;
 
 public interface StorageOrchestrator {
 

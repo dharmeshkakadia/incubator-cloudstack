@@ -29,55 +29,55 @@ import java.util.Map;
 import javax.ejb.Local;
 import javax.naming.ConfigurationException;
 
+import org.apache.agent.IAgentControl;
+import org.apache.agent.api.Answer;
+import org.apache.agent.api.CheckNetworkAnswer;
+import org.apache.agent.api.CheckNetworkCommand;
+import org.apache.agent.api.CheckVirtualMachineAnswer;
+import org.apache.agent.api.CheckVirtualMachineCommand;
+import org.apache.agent.api.Command;
+import org.apache.agent.api.MaintainAnswer;
+import org.apache.agent.api.MaintainCommand;
+import org.apache.agent.api.MigrateAnswer;
+import org.apache.agent.api.MigrateCommand;
+import org.apache.agent.api.PingCommand;
+import org.apache.agent.api.PingRoutingCommand;
+import org.apache.agent.api.PrepareForMigrationAnswer;
+import org.apache.agent.api.PrepareForMigrationCommand;
+import org.apache.agent.api.ReadyAnswer;
+import org.apache.agent.api.ReadyCommand;
+import org.apache.agent.api.RebootAnswer;
+import org.apache.agent.api.RebootCommand;
+import org.apache.agent.api.SecurityGroupRulesCmd;
+import org.apache.agent.api.StartAnswer;
+import org.apache.agent.api.StartCommand;
+import org.apache.agent.api.StartupCommand;
+import org.apache.agent.api.StartupRoutingCommand;
+import org.apache.agent.api.StopAnswer;
+import org.apache.agent.api.StopCommand;
+import org.apache.agent.api.baremetal.IpmISetBootDevCommand;
+import org.apache.agent.api.baremetal.IpmiBootorResetCommand;
+import org.apache.agent.api.baremetal.IpmISetBootDevCommand.BootDev;
+import org.apache.agent.api.to.VirtualMachineTO;
 import org.apache.cloudstack.api.ApiConstants;
+import org.apache.host.Host.Type;
+import org.apache.hypervisor.Hypervisor;
 import org.apache.log4j.Logger;
+import org.apache.resource.ServerResource;
+import org.apache.server.ManagementServer;
+import org.apache.utils.component.ComponentContext;
+import org.apache.utils.component.ManagerBase;
+import org.apache.utils.exception.CloudRuntimeException;
+import org.apache.utils.script.OutputInterpreter;
+import org.apache.utils.script.Script;
+import org.apache.utils.script.Script2;
+import org.apache.utils.script.Script2.ParamType;
+import org.apache.vm.VMInstanceVO;
+import org.apache.vm.VirtualMachine;
+import org.apache.vm.VirtualMachine.State;
+import org.apache.vm.dao.VMInstanceDao;
 
-import com.cloud.agent.IAgentControl;
-import com.cloud.agent.api.Answer;
-import com.cloud.agent.api.CheckNetworkAnswer;
-import com.cloud.agent.api.CheckNetworkCommand;
-import com.cloud.agent.api.CheckVirtualMachineAnswer;
-import com.cloud.agent.api.CheckVirtualMachineCommand;
-import com.cloud.agent.api.Command;
-import com.cloud.agent.api.MaintainAnswer;
-import com.cloud.agent.api.MaintainCommand;
-import com.cloud.agent.api.MigrateAnswer;
-import com.cloud.agent.api.MigrateCommand;
-import com.cloud.agent.api.PingCommand;
-import com.cloud.agent.api.PingRoutingCommand;
-import com.cloud.agent.api.PrepareForMigrationAnswer;
-import com.cloud.agent.api.PrepareForMigrationCommand;
-import com.cloud.agent.api.ReadyAnswer;
-import com.cloud.agent.api.ReadyCommand;
-import com.cloud.agent.api.RebootAnswer;
-import com.cloud.agent.api.RebootCommand;
-import com.cloud.agent.api.SecurityGroupRulesCmd;
-import com.cloud.agent.api.StartAnswer;
-import com.cloud.agent.api.StartCommand;
-import com.cloud.agent.api.StartupCommand;
-import com.cloud.agent.api.StartupRoutingCommand;
-import com.cloud.agent.api.StopAnswer;
-import com.cloud.agent.api.StopCommand;
-import com.cloud.agent.api.baremetal.IpmISetBootDevCommand;
-import com.cloud.agent.api.baremetal.IpmISetBootDevCommand.BootDev;
-import com.cloud.agent.api.baremetal.IpmiBootorResetCommand;
-import com.cloud.agent.api.to.VirtualMachineTO;
 import com.cloud.baremetal.manager.BaremetalManager;
-import com.cloud.host.Host.Type;
-import com.cloud.hypervisor.Hypervisor;
-import com.cloud.resource.ServerResource;
-import com.cloud.server.ManagementServer;
-import com.cloud.utils.component.ComponentContext;
-import com.cloud.utils.component.ManagerBase;
-import com.cloud.utils.exception.CloudRuntimeException;
-import com.cloud.utils.script.OutputInterpreter;
-import com.cloud.utils.script.Script;
-import com.cloud.utils.script.Script2;
-import com.cloud.utils.script.Script2.ParamType;
-import com.cloud.vm.VMInstanceVO;
-import com.cloud.vm.VirtualMachine;
-import com.cloud.vm.VirtualMachine.State;
-import com.cloud.vm.dao.VMInstanceDao;
 
 import edu.emory.mathcs.backport.java.util.concurrent.TimeUnit;
 
@@ -173,7 +173,7 @@ public class BareMetalResourceBase extends ManagerBase implements ServerResource
 		if (_uuid == null) {
 			throw new ConfigurationException("Unable to get the uuid");
 		}
-		
+
 		if (echoScAgent != null) {
 		    _isEchoScAgent = Boolean.valueOf(echoScAgent);
 		}
@@ -289,7 +289,7 @@ public class BareMetalResourceBase extends ManagerBase implements ServerResource
 
 	@Override
 	public Type getType() {
-		return com.cloud.host.Host.Type.Routing;
+		return org.apache.host.Host.Type.Routing;
 	}
 
 	protected State getVmState() {
@@ -416,7 +416,7 @@ public class BareMetalResourceBase extends ManagerBase implements ServerResource
 	protected CheckNetworkAnswer execute(CheckNetworkCommand cmd) {
 		return new CheckNetworkAnswer(cmd, true, "Success");
 	}
-	
+
 	protected Answer execute(SecurityGroupRulesCmd cmd) {
 	    SecurityGroupHttpClient hc = new SecurityGroupHttpClient();
 	    return hc.call(cmd.getGuestIp(), cmd);
@@ -532,7 +532,7 @@ public class BareMetalResourceBase extends ManagerBase implements ServerResource
 					return new StartAnswer(cmd, "IPMI power on failed");
 				}
 			}
-			
+
 			if (_isEchoScAgent) {
 			    SecurityGroupHttpClient hc = new SecurityGroupHttpClient();
 			    boolean echoRet = hc.echo(vm.getNics()[0].getIp(), TimeUnit.MINUTES.toMillis(30), TimeUnit.MINUTES.toMillis(1));

@@ -24,9 +24,9 @@ import org.apache.cloudstack.api.Parameter;
 import org.apache.cloudstack.api.ServerApiException;
 import org.apache.cloudstack.api.response.NetworkOfferingResponse;
 import org.apache.log4j.Logger;
+import org.apache.offering.NetworkOffering;
+import org.apache.user.Account;
 
-import com.cloud.offering.NetworkOffering;
-import com.cloud.user.Account;
 
 @APICommand(name = "updateNetworkOffering", description="Updates a network offering.", responseObject=NetworkOfferingResponse.class)
 public class UpdateNetworkOfferingCmd extends BaseCmd {

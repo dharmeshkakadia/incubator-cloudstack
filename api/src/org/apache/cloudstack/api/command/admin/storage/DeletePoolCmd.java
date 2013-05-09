@@ -25,10 +25,10 @@ import org.apache.cloudstack.api.ServerApiException;
 import org.apache.cloudstack.api.response.StoragePoolResponse;
 import org.apache.cloudstack.api.response.SuccessResponse;
 import org.apache.log4j.Logger;
+import org.apache.storage.StoragePool;
+import org.apache.storage.StoragePoolStatus;
+import org.apache.user.Account;
 
-import com.cloud.storage.StoragePool;
-import com.cloud.storage.StoragePoolStatus;
-import com.cloud.user.Account;
 
 @APICommand(name = "deleteStoragePool", description = "Deletes a storage pool.", responseObject = SuccessResponse.class)
 public class DeletePoolCmd extends BaseCmd {

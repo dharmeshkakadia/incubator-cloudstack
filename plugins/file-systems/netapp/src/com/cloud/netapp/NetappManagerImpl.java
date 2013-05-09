@@ -38,20 +38,20 @@ import netapp.manage.NaException;
 import netapp.manage.NaProtocolException;
 import netapp.manage.NaServer;
 
+import org.apache.exception.InvalidParameterValueException;
+import org.apache.exception.ResourceAllocationException;
+import org.apache.exception.ResourceInUseException;
 import org.apache.log4j.Logger;
+import org.apache.utils.component.ManagerBase;
+import org.apache.utils.db.DB;
+import org.apache.utils.db.Transaction;
+import org.apache.utils.exception.CloudRuntimeException;
 import org.springframework.stereotype.Component;
 
 import com.cloud.api.commands.netapp.*;
-import com.cloud.exception.InvalidParameterValueException;
-import com.cloud.exception.ResourceAllocationException;
-import com.cloud.exception.ResourceInUseException;
 import com.cloud.netapp.dao.LunDao;
 import com.cloud.netapp.dao.PoolDao;
 import com.cloud.netapp.dao.VolumeDao;
-import com.cloud.utils.component.ManagerBase;
-import com.cloud.utils.db.DB;
-import com.cloud.utils.db.Transaction;
-import com.cloud.utils.exception.CloudRuntimeException;
 
 @Component
 @Local(value = { NetappManager.class })

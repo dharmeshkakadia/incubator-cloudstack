@@ -18,7 +18,7 @@
  */
 package org.apache.cloudstack.storage.snapshot.db;
 
-import com.cloud.utils.db.GenericDao;
+import org.apache.utils.db.GenericDao;
 
 public interface SnapshotDao2 extends GenericDao<SnapshotVO, Long> {
 

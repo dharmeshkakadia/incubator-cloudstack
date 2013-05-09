@@ -24,20 +24,20 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import org.apache.cloudstack.engine.cloud.entity.api.db.VMEntityVO;
+import org.apache.deploy.DeploymentPlan;
+import org.apache.deploy.DeploymentPlanner.ExcludeList;
+import org.apache.exception.AgentUnavailableException;
+import org.apache.exception.ConcurrentOperationException;
+import org.apache.exception.InsufficientCapacityException;
+import org.apache.exception.OperationTimedoutException;
+import org.apache.exception.ResourceUnavailableException;
+import org.apache.vm.VirtualMachineProfile;
 import org.springframework.stereotype.Component;
 
-import com.cloud.deploy.DeploymentPlan;
-import com.cloud.deploy.DeploymentPlanner.ExcludeList;
-import com.cloud.exception.AgentUnavailableException;
-import com.cloud.exception.ConcurrentOperationException;
-import com.cloud.exception.InsufficientCapacityException;
-import com.cloud.exception.OperationTimedoutException;
-import com.cloud.exception.ResourceUnavailableException;
-import com.cloud.vm.VirtualMachineProfile;
 
 @Component
 public class VirtualMachineEntityImpl implements VirtualMachineEntity {
-	
+
 	@Inject private VMEntityManager manager;
 
 	private VMEntityVO vmEntityVO;
@@ -61,10 +61,10 @@ public class VirtualMachineEntityImpl implements VirtualMachineEntity {
 
 		manager.saveVirtualMachine(vmEntityVO);
 	}
-	
+
 	public VirtualMachineEntityImpl(String vmId, VMEntityManager manager) {
 		this.manager = manager;
-    	this.vmEntityVO = this.manager.loadVirtualMachine(vmId);
+	this.vmEntityVO = this.manager.loadVirtualMachine(vmId);
     }
 
 	public VirtualMachineEntityImpl(String vmId, String owner, String hostName, String displayName, int cpu, int speed, long memory, List<String> computeTags, List<String> rootDiskTags, List<String> networks, VMEntityManager manager) {
@@ -76,7 +76,7 @@ public class VirtualMachineEntityImpl implements VirtualMachineEntity {
 		this.vmEntityVO.setComputeTags(computeTags);
 		this.vmEntityVO.setRootDiskTags(rootDiskTags);
 		this.vmEntityVO.setNetworkIds(networks);
-		
+
 		manager.saveVirtualMachine(vmEntityVO);
     }
 
@@ -206,7 +206,7 @@ public class VirtualMachineEntityImpl implements VirtualMachineEntity {
 
 	@Override
 	public void deploy(String reservationId, String caller, Map<VirtualMachineProfile.Param, Object> params) throws InsufficientCapacityException, ResourceUnavailableException{
-	    manager.deployVirtualMachine(reservationId, caller, params);
+        manager.deployVirtualMachine(reservationId, this.vmEntityVO, caller, params);
 	}
 
 	@Override

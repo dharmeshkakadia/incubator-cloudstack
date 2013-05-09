@@ -29,16 +29,16 @@ import org.apache.cloudstack.api.response.PhysicalNetworkResponse;
 import org.apache.cloudstack.api.response.ProjectResponse;
 import org.apache.cloudstack.api.response.VpcResponse;
 import org.apache.cloudstack.api.response.ZoneResponse;
+import org.apache.exception.ConcurrentOperationException;
+import org.apache.exception.InsufficientCapacityException;
+import org.apache.exception.InvalidParameterValueException;
+import org.apache.exception.ResourceAllocationException;
 import org.apache.log4j.Logger;
+import org.apache.network.Network;
+import org.apache.network.Network.GuestType;
+import org.apache.offering.NetworkOffering;
+import org.apache.user.UserContext;
 
-import com.cloud.exception.ConcurrentOperationException;
-import com.cloud.exception.InsufficientCapacityException;
-import com.cloud.exception.InvalidParameterValueException;
-import com.cloud.exception.ResourceAllocationException;
-import com.cloud.network.Network;
-import com.cloud.network.Network.GuestType;
-import com.cloud.offering.NetworkOffering;
-import com.cloud.user.UserContext;
 
 @APICommand(name = "createNetwork", description="Creates a network", responseObject=NetworkResponse.class)
 public class CreateNetworkCmd extends BaseCmd {

@@ -50,7 +50,10 @@
 							
             if(currentRegion != null)	{						
 						  $regionSwitcherButton.find('.title').html(_s(currentRegion.name)).attr('title', _s(currentRegion.name));   
-            }							
+            }		
+            else {
+              $regionSwitcherButton.find('.title').html('').attr('title', '');   
+            }						
           }
         }
       });
@@ -86,8 +89,8 @@
       closeRegionSelector({
         complete: function() {
           $('#container').prepend($('<div>').addClass('loading-overlay'));
-          
-          document.location.href = url + g_regionUrlParam;
+          //window.name = g_loginCmdText;
+          document.location.href = url;
         }
       });
     };

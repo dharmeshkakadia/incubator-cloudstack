@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.async.AsyncJob;
 import org.apache.cloudstack.api.APICommand;
 import org.apache.cloudstack.api.ApiConstants;
 import org.apache.cloudstack.api.BaseListTaggedResourcesCmd;
@@ -28,12 +29,11 @@ import org.apache.cloudstack.api.response.ListResponse;
 import org.apache.cloudstack.api.response.TemplateResponse;
 import org.apache.cloudstack.api.response.ZoneResponse;
 import org.apache.log4j.Logger;
+import org.apache.template.VirtualMachineTemplate.TemplateFilter;
+import org.apache.user.Account;
+import org.apache.user.UserContext;
+import org.apache.utils.Pair;
 
-import com.cloud.async.AsyncJob;
-import com.cloud.template.VirtualMachineTemplate.TemplateFilter;
-import com.cloud.user.Account;
-import com.cloud.user.UserContext;
-import com.cloud.utils.Pair;
 
 @APICommand(name = "listTemplates", description="List all public, private, and privileged templates.", responseObject=TemplateResponse.class)
 public class ListTemplatesCmd extends BaseListTaggedResourcesCmd {
@@ -68,6 +68,10 @@ public class ListTemplatesCmd extends BaseListTaggedResourcesCmd {
     @Parameter(name=ApiConstants.ZONE_ID, type=CommandType.UUID, entityType = ZoneResponse.class,
             description="list templates by zoneId")
     private Long zoneId;
+    
+    @Parameter(name=ApiConstants.ZONE_TYPE, type=CommandType.STRING, description="the network type of the zone that the virtual machine belongs to")
+    private String zoneType;
+    
     /////////////////////////////////////////////////////
     /////////////////// Accessors ///////////////////////
     /////////////////////////////////////////////////////
@@ -92,6 +96,10 @@ public class ListTemplatesCmd extends BaseListTaggedResourcesCmd {
         return zoneId;
     }
 
+    public String getZoneType() {
+        return zoneType;
+    }
+    
     public boolean listInReadyState() {
 
         Account account = UserContext.current().getCaller();

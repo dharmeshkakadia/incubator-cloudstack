@@ -26,12 +26,12 @@ import org.apache.cloudstack.api.Parameter;
 import org.apache.cloudstack.api.ServerApiException;
 import org.apache.cloudstack.api.response.TrafficMonitorResponse;
 import org.apache.cloudstack.api.response.ZoneResponse;
+import org.apache.exception.InvalidParameterValueException;
+import org.apache.host.Host;
 import org.apache.log4j.Logger;
+import org.apache.user.Account;
+import org.apache.utils.exception.CloudRuntimeException;
 
-import com.cloud.exception.InvalidParameterValueException;
-import com.cloud.host.Host;
-import com.cloud.user.Account;
-import com.cloud.utils.exception.CloudRuntimeException;
 
 @APICommand(name = "addTrafficMonitor", description="Adds Traffic Monitor Host for Direct Network Usage", responseObject = TrafficMonitorResponse.class)
 public class AddTrafficMonitorCmd extends BaseCmd {

@@ -26,8 +26,8 @@ import org.apache.cloudstack.api.Parameter;
 import org.apache.cloudstack.api.response.ListResponse;
 import org.apache.cloudstack.api.response.VpcOfferingResponse;
 import org.apache.log4j.Logger;
+import org.apache.network.vpc.VpcOffering;
 
-import com.cloud.network.vpc.VpcOffering;
 
 @APICommand(name = "listVPCOfferings", description="Lists VPC offerings", responseObject=VpcOfferingResponse.class)
 public class ListVPCOfferingsCmd extends BaseListCmd{
@@ -92,7 +92,7 @@ public class ListVPCOfferingsCmd extends BaseListCmd{
 
     @Override
     public void execute(){
-        List<? extends VpcOffering> offerings = _vpcService.listVpcOfferings(getId(), getVpcOffName(), getDisplayText(),
+        List<? extends VpcOffering> offerings = _vpcProvSvc.listVpcOfferings(getId(), getVpcOffName(), getDisplayText(),
                 getSupportedServices(), isDefault, this.getKeyword(), getState(), this.getStartIndex(), this.getPageSizeVal());
         ListResponse<VpcOfferingResponse> response = new ListResponse<VpcOfferingResponse>();
         List<VpcOfferingResponse> offeringResponses = new ArrayList<VpcOfferingResponse>();

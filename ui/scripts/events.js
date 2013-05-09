@@ -73,7 +73,7 @@
                   $.extend(data, { type:args.data.type });
 
                 if(args.data.date != "")
-                  $.extend(data, {date:args.data.date });
+                  $.extend(data, {olderthan:args.data.date });
    
                 $.ajax({
 
@@ -118,7 +118,7 @@
                   $.extend(data, { type:args.data.type });
 
                 if(args.data.date != "")
-                  $.extend(data, {date:args.data.date });
+                  $.extend(data, {olderthan:args.data.date });
 
                 $.ajax({
 
@@ -257,8 +257,6 @@
                        }
 
                        });
-                    $(window).trigger('cloudStack.fullRefresh');
-
                 }
               },
 
@@ -361,7 +359,7 @@
                   $.extend(data, { type:args.data.type });
 
                 if(args.data.date != "")
-                  $.extend(data, {date:args.data.date });
+                  $.extend(data, {olderthan:args.data.date });
 
                 $.ajax({
 
@@ -406,7 +404,7 @@
                   $.extend(data, { type:args.data.type });
 
                 if(args.data.date != "")
-                  $.extend(data, {date:args.data.date });
+                  $.extend(data, {olderthan:args.data.date });
 
                 $.ajax({
 

@@ -18,7 +18,7 @@
  */
 package org.apache.cloudstack.engine.subsystem.api.storage;
 
-import com.cloud.agent.api.Answer;
+import org.apache.agent.api.Answer;
 
 public class CopyCommandResult extends CommandResult {
     private final String path;

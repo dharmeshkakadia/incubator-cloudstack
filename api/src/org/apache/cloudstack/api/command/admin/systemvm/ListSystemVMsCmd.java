@@ -19,6 +19,7 @@ package org.apache.cloudstack.api.command.admin.systemvm;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.async.AsyncJob;
 import org.apache.cloudstack.api.APICommand;
 import org.apache.cloudstack.api.ApiConstants;
 import org.apache.cloudstack.api.BaseListCmd;
@@ -30,10 +31,9 @@ import org.apache.cloudstack.api.response.StoragePoolResponse;
 import org.apache.cloudstack.api.response.SystemVmResponse;
 import org.apache.cloudstack.api.response.ZoneResponse;
 import org.apache.log4j.Logger;
+import org.apache.utils.Pair;
+import org.apache.vm.VirtualMachine;
 
-import com.cloud.async.AsyncJob;
-import com.cloud.utils.Pair;
-import com.cloud.vm.VirtualMachine;
 
 @APICommand(name = "listSystemVms", description="List system virtual machines.", responseObject=SystemVmResponse.class)
 public class ListSystemVMsCmd extends BaseListCmd {
@@ -74,6 +74,9 @@ public class ListSystemVMsCmd extends BaseListCmd {
             description="the storage ID where vm's volumes belong to", since="3.0.1")
     private Long storageId;
 
+    @Parameter(name=ApiConstants.ZONE_TYPE, type=CommandType.STRING, description="the network type of the zone that the virtual machine belongs to")
+    private String zoneType;
+    
     /////////////////////////////////////////////////////
     /////////////////// Accessors ///////////////////////
     /////////////////////////////////////////////////////
@@ -110,6 +113,10 @@ public class ListSystemVMsCmd extends BaseListCmd {
         return storageId;
     }
 
+    public String getZoneType() {
+        return zoneType;
+    }
+    
     /////////////////////////////////////////////////////
     /////////////// API Implementation///////////////////
     /////////////////////////////////////////////////////

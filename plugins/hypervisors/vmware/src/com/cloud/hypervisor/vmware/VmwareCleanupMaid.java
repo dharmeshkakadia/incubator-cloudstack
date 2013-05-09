@@ -21,14 +21,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.hypervisor.vmware.mo.ClusterMO;
+import org.apache.hypervisor.vmware.mo.DatacenterMO;
+import org.apache.hypervisor.vmware.mo.HostMO;
+import org.apache.hypervisor.vmware.mo.VirtualMachineMO;
+import org.apache.hypervisor.vmware.util.VmwareContext;
 import org.apache.log4j.Logger;
 
 import com.cloud.hypervisor.vmware.manager.VmwareManager;
-import com.cloud.hypervisor.vmware.mo.ClusterMO;
-import com.cloud.hypervisor.vmware.mo.DatacenterMO;
-import com.cloud.hypervisor.vmware.mo.HostMO;
-import com.cloud.hypervisor.vmware.mo.VirtualMachineMO;
-import com.cloud.hypervisor.vmware.util.VmwareContext;
 
 public class VmwareCleanupMaid {
     private static final Logger s_logger = Logger.getLogger(VmwareCleanupMaid.class);

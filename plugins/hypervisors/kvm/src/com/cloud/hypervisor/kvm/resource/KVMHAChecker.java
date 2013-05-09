@@ -21,9 +21,9 @@ import java.util.List;
 import java.util.concurrent.Callable;
 
 import org.apache.log4j.Logger;
+import org.apache.utils.script.OutputInterpreter;
+import org.apache.utils.script.Script;
 
-import com.cloud.utils.script.OutputInterpreter;
-import com.cloud.utils.script.Script;
 
 public class KVMHAChecker extends KVMHABase implements Callable<Boolean> {
     private static final Logger s_logger = Logger.getLogger(KVMHAChecker.class);

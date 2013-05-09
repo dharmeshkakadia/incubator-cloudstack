@@ -19,9 +19,9 @@
 
 package com.cloud.hypervisor.kvm.resource;
 
-import com.cloud.network.Networks.TrafficType;
 import com.cloud.hypervisor.kvm.resource.LibvirtComputingResource.BridgeType;
 
+import org.apache.network.Networks.TrafficType;
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
@@ -40,8 +40,8 @@ public class LibvirtVifDriverTest {
     private Map<TrafficType, VifDriver> assertions;
 
     final String LIBVIRT_VIF_DRIVER = "libvirt.vif.driver";
-    final String FAKE_VIF_DRIVER_CLASS_NAME = "com.cloud.hypervisor.kvm.resource.FakeVifDriver";
-    final String NONEXISTENT_VIF_DRIVER_CLASS_NAME = "com.cloud.hypervisor.kvm.resource.NonExistentVifDriver";
+    final String FAKE_VIF_DRIVER_CLASS_NAME = "org.apache.hypervisor.kvm.resource.FakeVifDriver";
+    final String NONEXISTENT_VIF_DRIVER_CLASS_NAME = "org.apache.hypervisor.kvm.resource.NonExistentVifDriver";
 
     private VifDriver fakeVifDriver, bridgeVifDriver, ovsVifDriver;
 

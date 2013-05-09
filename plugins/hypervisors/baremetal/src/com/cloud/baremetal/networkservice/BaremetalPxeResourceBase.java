@@ -26,19 +26,19 @@ import java.util.Map;
 
 import javax.naming.ConfigurationException;
 
+import org.apache.agent.IAgentControl;
+import org.apache.agent.api.Answer;
+import org.apache.agent.api.Command;
+import org.apache.agent.api.PingCommand;
+import org.apache.agent.api.ReadyAnswer;
+import org.apache.agent.api.ReadyCommand;
+import org.apache.agent.api.StartupCommand;
+import org.apache.agent.api.StartupPxeServerCommand;
+import org.apache.host.Host.Type;
 import org.apache.log4j.Logger;
+import org.apache.resource.ServerResource;
+import org.apache.utils.component.ManagerBase;
 
-import com.cloud.agent.IAgentControl;
-import com.cloud.agent.api.Answer;
-import com.cloud.agent.api.Command;
-import com.cloud.agent.api.PingCommand;
-import com.cloud.agent.api.ReadyAnswer;
-import com.cloud.agent.api.ReadyCommand;
-import com.cloud.agent.api.StartupCommand;
-import com.cloud.agent.api.StartupPxeServerCommand;
-import com.cloud.host.Host.Type;
-import com.cloud.resource.ServerResource;
-import com.cloud.utils.component.ManagerBase;
 
 public class BaremetalPxeResourceBase extends ManagerBase implements ServerResource {
 	private static final Logger s_logger = Logger.getLogger(BaremetalPxeResourceBase.class);

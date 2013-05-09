@@ -18,7 +18,8 @@ package org.apache.cloudstack.engine.subsystem.api.storage;
 
 import java.net.URI;
 
-import com.cloud.org.Grouping;
+import org.apache.org.Grouping;
+
 
 public interface StorageSubSystem {
     String getType();

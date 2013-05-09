@@ -37,27 +37,20 @@
   <!--
     @DB support
   -->
-  <aop:config proxy-target-class="true">
-    <aop:aspect id="dbContextBuilder" ref="transactionContextBuilder">
-        <aop:pointcut id="captureAnyMethod"
-            expression="execution(* *(..))" 
-        />
-        
-        <aop:around pointcut-ref="captureAnyMethod" method="AroundAnyMethod"/> 
-    </aop:aspect>
+  <bean id="componentContext" class="org.apache.utils.component.ComponentContext" />
 
-    <aop:aspect id="actionEventInterceptorAspect" ref="actionEventInterceptor">
-        <aop:pointcut id="captureEventMethod"
-            expression="execution(* *(..)) and @annotation(com.cloud.event.ActionEvent)" 
-        />
-        <aop:around pointcut-ref="captureEventMethod" method="AroundAnyMethod"/> 
-    </aop:aspect>
-
-  </aop:config>
+  <bean id="transactionContextBuilder" class="org.apache.utils.db.TransactionContextBuilder" />
+  <bean id="actionEventInterceptor" class="org.apache.event.ActionEventInterceptor" />
+  <bean id="instantiatePostProcessor" class="org.apache.utils.component.ComponentInstantiationPostProcessor">
+    <property name="Interceptors">
+        <list>
+            <ref bean="transactionContextBuilder" />
+            <ref bean="actionEventInterceptor" />
+        </list>
+    </property>
+  </bean>
   
-  <bean id="transactionContextBuilder" class="com.cloud.utils.db.TransactionContextBuilder" />
-  <bean id="actionEventInterceptor" class="com.cloud.event.ActionEventInterceptor" />
-  <bean class="com.cloud.network.security.SecurityGroupManagerTestConfiguration" />
+  <bean class="org.apache.network.security.SecurityGroupManagerTestConfiguration" />
 
   <!--
     RPC/Async/EventBus
@@ -89,6 +82,6 @@
 
   <bean id="eventBus" class = "org.apache.cloudstack.framework.eventbus.EventBusBase" />
 
-  <bean id="apiServlet" class = "com.cloud.api.ApiServlet" />
+  <bean id="apiServlet" class = "org.apache.api.ApiServlet" />
 
 </beans>

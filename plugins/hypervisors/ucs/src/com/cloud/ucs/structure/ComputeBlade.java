@@ -14,14 +14,15 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
-// 
+//
 package com.cloud.ucs.structure;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import com.cloud.utils.xmlobject.XmlObject;
-import com.cloud.utils.xmlobject.XmlObjectParser;
+import org.apache.utils.xmlobject.XmlObject;
+import org.apache.utils.xmlobject.XmlObjectParser;
+
 
 public class ComputeBlade {
     String adminPower;
@@ -43,7 +44,7 @@ public class ComputeBlade {
     String operPower;
     String totalMemory;
     String uuid;
-    
+
     public static List<ComputeBlade> fromXmString(String xmlstr) {
         XmlObject root = XmlObjectParser.parseFromString(xmlstr);
         List<XmlObject> lst = root.getAsList("outConfigs.computeBlade");
@@ -56,12 +57,12 @@ public class ComputeBlade {
         }
         return blades;
     }
-    
+
     public static ComputeBlade fromXmlObject(XmlObject obj) {
         ComputeBlade ret = new ComputeBlade();
         return obj.evaluateObject(ret);
     }
-    
+
     public String getAdminPower() {
         return adminPower;
     }

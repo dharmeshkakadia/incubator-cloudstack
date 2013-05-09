@@ -33,11 +33,11 @@ import org.apache.cloudstack.engine.subsystem.api.storage.DataObjectInStore;
 import org.apache.cloudstack.engine.subsystem.api.storage.DataObjectType;
 import org.apache.cloudstack.engine.subsystem.api.storage.DataStoreRole;
 import org.apache.cloudstack.engine.subsystem.api.storage.ObjectInDataStoreStateMachine;
+import org.apache.storage.Storage;
+import org.apache.storage.VMTemplateStorageResourceAssoc.Status;
+import org.apache.utils.db.GenericDaoBase;
+import org.apache.utils.fsm.StateObject;
 
-import com.cloud.storage.Storage;
-import com.cloud.storage.VMTemplateStorageResourceAssoc.Status;
-import com.cloud.utils.db.GenericDaoBase;
-import com.cloud.utils.fsm.StateObject;
 
 @Entity
 @Table(name = "object_datastore_ref")

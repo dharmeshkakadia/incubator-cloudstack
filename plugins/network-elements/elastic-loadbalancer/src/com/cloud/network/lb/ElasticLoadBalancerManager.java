@@ -19,13 +19,14 @@ package com.cloud.network.lb;
 import java.util.List;
 
 import org.apache.cloudstack.api.command.user.loadbalancer.CreateLoadBalancerRuleCmd;
-import com.cloud.exception.InsufficientAddressCapacityException;
-import com.cloud.exception.NetworkRuleConflictException;
-import com.cloud.exception.ResourceUnavailableException;
-import com.cloud.network.Network;
-import com.cloud.network.rules.FirewallRule;
-import com.cloud.network.rules.LoadBalancer;
-import com.cloud.user.Account;
+import org.apache.exception.InsufficientAddressCapacityException;
+import org.apache.exception.NetworkRuleConflictException;
+import org.apache.exception.ResourceUnavailableException;
+import org.apache.network.Network;
+import org.apache.network.rules.FirewallRule;
+import org.apache.network.rules.LoadBalancer;
+import org.apache.user.Account;
+
 
 public interface ElasticLoadBalancerManager {
     public static final int DEFAULT_ELB_VM_RAMSIZE = 128;            // 512 MB

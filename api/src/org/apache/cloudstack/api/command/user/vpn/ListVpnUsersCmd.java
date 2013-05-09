@@ -26,9 +26,9 @@ import org.apache.cloudstack.api.Parameter;
 import org.apache.cloudstack.api.response.ListResponse;
 import org.apache.cloudstack.api.response.VpnUsersResponse;
 import org.apache.log4j.Logger;
+import org.apache.network.VpnUser;
+import org.apache.utils.Pair;
 
-import com.cloud.network.VpnUser;
-import com.cloud.utils.Pair;
 
 @APICommand(name = "listVpnUsers", description="Lists vpn users", responseObject=VpnUsersResponse.class)
 public class ListVpnUsersCmd extends BaseListProjectAndAccountResourcesCmd {

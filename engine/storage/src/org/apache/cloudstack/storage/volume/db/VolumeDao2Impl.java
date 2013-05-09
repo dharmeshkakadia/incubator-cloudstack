@@ -30,29 +30,29 @@ import org.apache.cloudstack.engine.subsystem.api.storage.type.RootDisk;
 import org.apache.cloudstack.engine.subsystem.api.storage.type.VolumeType;
 import org.apache.cloudstack.storage.volume.VolumeEvent;
 
+import org.apache.hypervisor.Hypervisor.HypervisorType;
 import org.apache.log4j.Logger;
+import org.apache.server.ResourceTag.TaggedResourceType;
+import org.apache.storage.Volume;
+import org.apache.storage.Storage.ImageFormat;
+import org.apache.tags.dao.ResourceTagDao;
+import org.apache.tags.dao.ResourceTagsDaoImpl;
+import org.apache.utils.Pair;
+import org.apache.utils.db.DB;
+import org.apache.utils.db.GenericDaoBase;
+import org.apache.utils.db.GenericSearchBuilder;
+import org.apache.utils.db.SearchBuilder;
+import org.apache.utils.db.SearchCriteria;
+import org.apache.utils.db.SearchCriteria2;
+import org.apache.utils.db.SearchCriteriaService;
+import org.apache.utils.db.Transaction;
+import org.apache.utils.db.UpdateBuilder;
+import org.apache.utils.db.SearchCriteria.Func;
+import org.apache.utils.db.SearchCriteria.Op;
+import org.apache.utils.exception.CloudRuntimeException;
 import org.springframework.stereotype.Component;
 
-import com.cloud.hypervisor.Hypervisor.HypervisorType;
-import com.cloud.server.ResourceTag.TaggedResourceType;
-import com.cloud.storage.Storage.ImageFormat;
-import com.cloud.storage.Volume;
-import com.cloud.tags.dao.ResourceTagDao;
-import com.cloud.tags.dao.ResourceTagsDaoImpl;
-import com.cloud.utils.Pair;
 
-import com.cloud.utils.db.DB;
-import com.cloud.utils.db.GenericDaoBase;
-import com.cloud.utils.db.GenericSearchBuilder;
-import com.cloud.utils.db.SearchBuilder;
-import com.cloud.utils.db.SearchCriteria;
-import com.cloud.utils.db.SearchCriteria.Func;
-import com.cloud.utils.db.SearchCriteria.Op;
-import com.cloud.utils.db.SearchCriteria2;
-import com.cloud.utils.db.SearchCriteriaService;
-import com.cloud.utils.db.Transaction;
-import com.cloud.utils.db.UpdateBuilder;
-import com.cloud.utils.exception.CloudRuntimeException;
 
 @Local(value = VolumeDao2.class)
 @Component

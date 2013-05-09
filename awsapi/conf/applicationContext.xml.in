@@ -37,17 +37,19 @@
   <!--
     @DB support
   -->
-  <aop:config proxy-target-class="true">
-    <aop:aspect id="dbContextBuilder" ref="transactionContextBuilder">
-        <aop:pointcut id="captureAnyMethod"
-            expression="execution(* *(..))" 
-        />
-        
-        <aop:around pointcut-ref="captureAnyMethod" method="AroundAnyMethod"/> 
-    </aop:aspect>
-
-  </aop:config>
   
-  <bean id="transactionContextBuilder" class="com.cloud.utils.db.TransactionContextBuilder" />
-
+   <!--
+    @DB support
+  -->
+  <bean id="componentContext" class="org.apache.utils.component.ComponentContext" />
+  <bean id="transactionContextBuilder" class="org.apache.utils.db.TransactionContextBuilder" />
+ 
+  <bean id="instantiatePostProcessor" class="org.apache.utils.component.ComponentInstantiationPostProcessor">
+    <property name="Interceptors">
+        <list>
+            <ref bean="transactionContextBuilder" />
+        </list>
+    </property>
+  </bean>
+ 
 </beans>

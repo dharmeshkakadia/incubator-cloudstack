@@ -18,9 +18,9 @@
  */
 package org.apache.cloudstack.storage.command;
 
+import org.apache.agent.api.Command;
 import org.apache.cloudstack.storage.to.VolumeTO;
 
-import com.cloud.agent.api.Command;
 
 public class DeleteCommand extends Command implements StorageSubSystemCommand {
     private String uri;

@@ -18,9 +18,10 @@ package org.apache.cloudstack.engine.subsystem.api.storage;
 
 import java.util.Map;
 
-import com.cloud.hypervisor.Hypervisor.HypervisorType;
-import com.cloud.storage.Storage.ImageFormat;
-import com.cloud.template.VirtualMachineTemplate;
+import org.apache.hypervisor.Hypervisor.HypervisorType;
+import org.apache.storage.Storage.ImageFormat;
+import org.apache.template.VirtualMachineTemplate;
+
 
 public class TemplateProfile {	
 	Long userId;

@@ -24,18 +24,19 @@ package com.cloud.baremetal.networkservice;
 
 import java.util.List;
 
+import org.apache.deploy.DeployDestination;
+import org.apache.host.HostVO;
+import org.apache.network.Network;
+import org.apache.network.Network.Provider;
+import org.apache.uservm.UserVm;
+import org.apache.utils.component.Manager;
+import org.apache.utils.component.PluggableService;
+import org.apache.vm.NicProfile;
+import org.apache.vm.ReservationContext;
+import org.apache.vm.UserVmVO;
+import org.apache.vm.VirtualMachineProfile;
+
 import com.cloud.baremetal.database.BaremetalPxeVO;
-import com.cloud.deploy.DeployDestination;
-import com.cloud.host.HostVO;
-import com.cloud.network.Network;
-import com.cloud.network.Network.Provider;
-import com.cloud.uservm.UserVm;
-import com.cloud.utils.component.Manager;
-import com.cloud.utils.component.PluggableService;
-import com.cloud.vm.NicProfile;
-import com.cloud.vm.ReservationContext;
-import com.cloud.vm.UserVmVO;
-import com.cloud.vm.VirtualMachineProfile;
 
 public interface BaremetalPxeManager extends Manager, PluggableService {
     public enum BaremetalPxeType {

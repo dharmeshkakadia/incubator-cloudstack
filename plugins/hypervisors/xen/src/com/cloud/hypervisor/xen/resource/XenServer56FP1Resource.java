@@ -26,18 +26,19 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.ejb.Local;
+
+import org.apache.agent.api.FenceAnswer;
+import org.apache.agent.api.FenceCommand;
+import org.apache.agent.api.to.VirtualMachineTO;
+import org.apache.agent.api.to.VolumeTO;
 import org.apache.log4j.Logger;
+import org.apache.resource.ServerResource;
+import org.apache.storage.Volume;
+import org.apache.template.VirtualMachineTemplate.BootloaderType;
+import org.apache.utils.exception.CloudRuntimeException;
+import org.apache.utils.script.Script;
 import org.apache.xmlrpc.XmlRpcException;
 
-import com.cloud.agent.api.FenceAnswer;
-import com.cloud.agent.api.FenceCommand;
-import com.cloud.agent.api.to.VirtualMachineTO;
-import com.cloud.agent.api.to.VolumeTO;
-import com.cloud.resource.ServerResource;
-import com.cloud.storage.Volume;
-import com.cloud.template.VirtualMachineTemplate.BootloaderType;
-import com.cloud.utils.exception.CloudRuntimeException;
-import com.cloud.utils.script.Script;
 import com.xensource.xenapi.Connection;
 import com.xensource.xenapi.Console;
 import com.xensource.xenapi.Host;
@@ -132,15 +133,21 @@ public class XenServer56FP1Resource extends XenServer56Resource {
         record.affinity = host;
         record.otherConfig.remove("disks");
         record.otherConfig.remove("default_template");
+        record.otherConfig.remove("mac_seed");
         record.isATemplate = false;
         record.nameLabel = vmSpec.getName();
         record.actionsAfterCrash = Types.OnCrashBehaviour.DESTROY;
         record.actionsAfterShutdown = Types.OnNormalExit.DESTROY;
         record.memoryDynamicMax = vmSpec.getMaxRam();
         record.memoryDynamicMin = vmSpec.getMinRam();
-        record.memoryStaticMax = vmSpec.getMaxRam();
-        record.memoryStaticMin = vmSpec.getMinRam();
-        record.VCPUsMax = (long) vmSpec.getCpus();
+        record.memoryStaticMax = 8589934592L; //128GB
+        record.memoryStaticMin = 134217728L; //128MB
+        if (guestOsTypeName.toLowerCase().contains("windows")) {
+            record.VCPUsMax = (long) vmSpec.getCpus();
+        } else {
+            record.VCPUsMax = 32L;
+        }
+
         record.VCPUsAtStartup = (long) vmSpec.getCpus();
         record.consoles.clear();
 

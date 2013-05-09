@@ -24,10 +24,10 @@ import org.apache.cloudstack.api.Parameter;
 import org.apache.cloudstack.api.ServerApiException;
 import org.apache.cloudstack.api.response.SuccessResponse;
 import org.apache.cloudstack.api.response.VpcOfferingResponse;
+import org.apache.event.EventTypes;
 import org.apache.log4j.Logger;
+import org.apache.user.Account;
 
-import com.cloud.event.EventTypes;
-import com.cloud.user.Account;
 
 @APICommand(name = "deleteVPCOffering", description="Deletes VPC offering", responseObject=SuccessResponse.class)
 public class DeleteVPCOfferingCmd extends BaseAsyncCmd{
@@ -66,7 +66,7 @@ public class DeleteVPCOfferingCmd extends BaseAsyncCmd{
 
     @Override
     public void execute(){
-        boolean result = _vpcService.deleteVpcOffering(getId());
+        boolean result = _vpcProvSvc.deleteVpcOffering(getId());
         if (result) {
             SuccessResponse response = new SuccessResponse(getCommandName());
             this.setResponseObject(response);

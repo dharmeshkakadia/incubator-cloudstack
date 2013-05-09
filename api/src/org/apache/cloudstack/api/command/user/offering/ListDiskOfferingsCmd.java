@@ -28,8 +28,8 @@ import org.apache.cloudstack.api.response.DiskOfferingResponse;
 import org.apache.cloudstack.api.response.DomainResponse;
 import org.apache.cloudstack.api.response.ListResponse;
 import org.apache.log4j.Logger;
+import org.apache.offering.DiskOffering;
 
-import com.cloud.offering.DiskOffering;
 
 @APICommand(name = "listDiskOfferings", description="Lists all available disk offerings.", responseObject=DiskOfferingResponse.class)
 public class ListDiskOfferingsCmd extends BaseListCmd {

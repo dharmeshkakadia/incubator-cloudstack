@@ -18,10 +18,11 @@ package com.cloud.netapp.dao;
 
 import java.util.List;
 
+import org.apache.utils.db.GenericDao;
+
 import com.cloud.netapp.LunVO;
 import com.cloud.netapp.NetappVolumeVO;
 import com.cloud.netapp.PoolVO;
-import com.cloud.utils.db.GenericDao;
 
 public interface LunDao extends GenericDao<LunVO, Long> {
 

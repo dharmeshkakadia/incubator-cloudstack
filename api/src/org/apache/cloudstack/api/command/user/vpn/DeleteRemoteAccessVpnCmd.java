@@ -23,13 +23,13 @@ import org.apache.cloudstack.api.Parameter;
 import org.apache.cloudstack.api.response.AccountResponse;
 import org.apache.cloudstack.api.response.IPAddressResponse;
 import org.apache.cloudstack.api.response.SuccessResponse;
+import org.apache.event.EventTypes;
+import org.apache.exception.InvalidParameterValueException;
+import org.apache.exception.ResourceUnavailableException;
 import org.apache.log4j.Logger;
+import org.apache.network.RemoteAccessVpn;
+import org.apache.user.UserContext;
 
-import com.cloud.event.EventTypes;
-import com.cloud.exception.InvalidParameterValueException;
-import com.cloud.exception.ResourceUnavailableException;
-import com.cloud.network.RemoteAccessVpn;
-import com.cloud.user.UserContext;
 
 @APICommand(name = "deleteRemoteAccessVpn", description="Destroys a l2tp/ipsec remote access vpn", responseObject=SuccessResponse.class)
 public class DeleteRemoteAccessVpnCmd extends BaseAsyncCmd {
@@ -63,7 +63,7 @@ public class DeleteRemoteAccessVpnCmd extends BaseAsyncCmd {
     @Override
     public long getEntityOwnerId() {
         if (ownerId == null) {
-            RemoteAccessVpn vpnEntity = _entityMgr.findById(RemoteAccessVpn.class, publicIpId);
+            RemoteAccessVpn vpnEntity = _ravService.getRemoteAccessVpn(publicIpId);
             if(vpnEntity != null)
                 return vpnEntity.getAccountId();
 

@@ -27,38 +27,47 @@ import java.util.Set;
 import javax.ejb.Local;
 import javax.inject.Inject;
 
+import org.apache.configuration.Config;
+import org.apache.dc.ClusterVO;
+import org.apache.dc.ClusterVSMMapVO;
+import org.apache.dc.dao.ClusterDao;
+import org.apache.dc.dao.ClusterVSMMapDao;
+import org.apache.deploy.DeployDestination;
+import org.apache.event.ActionEvent;
+import org.apache.event.EventTypes;
+import org.apache.exception.ConcurrentOperationException;
+import org.apache.exception.InsufficientCapacityException;
+import org.apache.exception.ResourceInUseException;
+import org.apache.exception.ResourceUnavailableException;
 import org.apache.log4j.Logger;
+import org.apache.network.Network;
+import org.apache.network.PhysicalNetworkServiceProvider;
+import org.apache.network.Network.Capability;
+import org.apache.network.Network.Provider;
+import org.apache.network.Network.Service;
+import org.apache.network.element.NetworkElement;
+import org.apache.offering.NetworkOffering;
+import org.apache.org.Cluster;
+import org.apache.server.ManagementService;
+import org.apache.utils.cisco.n1kv.vsm.NetconfHelper;
+import org.apache.utils.component.Manager;
+import org.apache.utils.db.DB;
+import org.apache.utils.db.Transaction;
+import org.apache.utils.exception.CloudRuntimeException;
+import org.apache.vm.NicProfile;
+import org.apache.vm.ReservationContext;
+import org.apache.vm.VirtualMachine;
+import org.apache.vm.VirtualMachineProfile;
 
 import com.cloud.api.commands.DeleteCiscoNexusVSMCmd;
 import com.cloud.api.commands.EnableCiscoNexusVSMCmd;
 import com.cloud.api.commands.DisableCiscoNexusVSMCmd;
 import com.cloud.api.commands.ListCiscoNexusVSMsCmd;
 import com.cloud.api.response.CiscoNexusVSMResponse;
-import com.cloud.deploy.DeployDestination;
-import com.cloud.event.ActionEvent;
-import com.cloud.event.EventTypes;
-import com.cloud.exception.ConcurrentOperationException;
-import com.cloud.exception.InsufficientCapacityException;
-import com.cloud.exception.ResourceUnavailableException;
 import com.cloud.network.CiscoNexusVSMDeviceVO;
 import com.cloud.network.CiscoNexusVSMDevice;
 import com.cloud.network.CiscoNexusVSMDeviceManagerImpl;
-import com.cloud.network.Network;
-import com.cloud.network.PhysicalNetworkServiceProvider;
-import com.cloud.network.Network.Capability;
-import com.cloud.network.Network.Provider;
-import com.cloud.network.Network.Service;
 import com.cloud.network.dao.CiscoNexusVSMDeviceDao;
-import com.cloud.vm.NicProfile;
-import com.cloud.vm.ReservationContext;
-import com.cloud.vm.VirtualMachine;
-import com.cloud.vm.VirtualMachineProfile;
-import com.cloud.offering.NetworkOffering;
-import com.cloud.org.Cluster;
-import com.cloud.utils.component.Manager;
-import com.cloud.exception.ResourceInUseException;
-import com.cloud.utils.exception.CloudRuntimeException;
-import com.cloud.server.ManagementService;
 
 @Local(value = NetworkElement.class)
 public class CiscoNexusVSMElement extends CiscoNexusVSMDeviceManagerImpl implements CiscoNexusVSMElementService, NetworkElement, Manager {
@@ -66,7 +75,11 @@ public class CiscoNexusVSMElement extends CiscoNexusVSMDeviceManagerImpl impleme
     private static final Logger s_logger = Logger.getLogger(CiscoNexusVSMElement.class);
 
     @Inject
-    CiscoNexusVSMDeviceDao _vsmDao;    
+    CiscoNexusVSMDeviceDao _vsmDao;
+    @Inject
+    ClusterDao _clusterDao;
+    @Inject
+    ClusterVSMMapDao _clusterVSMDao;
 
     @Override
     public Map<Service, Map<Capability, String>> getCapabilities() {
@@ -246,5 +259,91 @@ public class CiscoNexusVSMElement extends CiscoNexusVSMDeviceManagerImpl impleme
         cmdList.add(DisableCiscoNexusVSMCmd.class);
         cmdList.add(DeleteCiscoNexusVSMCmd.class);
         return cmdList;
+    }
+
+    @DB
+    public boolean validateVsmCluster(String vsmIp, String vsmUser, String vsmPassword, long clusterId, String clusterName) throws ResourceInUseException {
+        if(vsmIp != null && vsmUser != null && vsmPassword != null) {
+            NetconfHelper netconfClient;
+            try {
+                netconfClient = new NetconfHelper(vsmIp, vsmUser, vsmPassword);
+                netconfClient.disconnect();
+            } catch (CloudRuntimeException e) {
+                String msg = "Invalid credentials supplied for user " + vsmUser + " for Cisco Nexus 1000v VSM at " + vsmIp;
+                s_logger.error(msg);
+                _clusterDao.remove(clusterId);
+                throw new CloudRuntimeException(msg);
+            }
+
+            Transaction txn;
+
+            // If VSM already exists and is mapped to a cluster, fail this operation.
+            CiscoNexusVSMDeviceVO vsm = _vsmDao.getVSMbyIpaddress(vsmIp);
+            if(vsm != null) {
+                List<ClusterVSMMapVO> clusterList = _clusterVSMDao.listByVSMId(vsm.getId());
+                if (clusterList != null && !clusterList.isEmpty()) {
+                    s_logger.error("Failed to add cluster: specified Nexus VSM is already associated with another cluster");
+                    ResourceInUseException ex = new ResourceInUseException("Failed to add cluster: specified Nexus VSM is already associated with another cluster with specified Id");
+                    // get clusterUuid to report error
+                    ClusterVO cluster = _clusterDao.findById(clusterList.get(0).getClusterId());
+                    ex.addProxyObject(cluster.getUuid());
+                    _clusterDao.remove(clusterId);
+                    throw ex;
+                }
+            }
+            // persist credentials to database if the VSM entry is not already in the db.
+            if (_vsmDao.getVSMbyIpaddress(vsmIp) == null) {
+                vsm = new CiscoNexusVSMDeviceVO(vsmIp, vsmUser, vsmPassword);
+                txn = Transaction.currentTxn();
+                try {
+                    txn.start();
+                    vsm = _vsmDao.persist(vsm);
+                    txn.commit();
+                } catch (Exception e) {
+                    txn.rollback();
+                    s_logger.error("Failed to persist Cisco Nexus 1000v VSM details to database. Exception: " + e.getMessage());
+                    throw new CloudRuntimeException(e.getMessage());
+                }
+            }
+            // Create a mapping between the cluster and the vsm.
+            vsm = _vsmDao.getVSMbyIpaddress(vsmIp);
+            if (vsm != null) {
+                ClusterVSMMapVO connectorObj = new ClusterVSMMapVO(clusterId, vsm.getId());
+                txn = Transaction.currentTxn();
+                try {
+                    txn.start();
+                    _clusterVSMDao.persist(connectorObj);
+                    txn.commit();
+                } catch (Exception e) {
+                    txn.rollback();
+                    s_logger.error("Failed to associate Cisco Nexus 1000v VSM with cluster: " + clusterName + ". Exception: " + e.getMessage());
+                    _vsmDao.remove(vsm.getId()); // Removing VSM from virtual_supervisor_module table because association with cluster failed.
+                    // Cluster would be deleted from cluster table by callee.
+                    throw new CloudRuntimeException(e.getMessage());
+                }
+            }
+        } else {
+            String msg;
+            msg = "The global parameter " + Config.VmwareUseNexusVSwitch.toString() +
+                    " is set to \"true\". Following mandatory parameters are not specified. ";
+            if(vsmIp == null) {
+                msg += "vsmipaddress: Management IP address of Cisco Nexus 1000v dvSwitch. ";
+            }
+            if(vsmUser == null) {
+                msg += "vsmusername: Name of a user account with admin privileges over Cisco Nexus 1000v dvSwitch. ";
+            }
+            if(vsmPassword == null) {
+                if(vsmUser != null) {
+                    msg += "vsmpassword: Password of user account " + vsmUser + ". ";
+                } else {
+                    msg += "vsmpassword: Password of user account with admin privileges over Cisco Nexus 1000v dvSwitch. ";
+                }
+            }
+            s_logger.error(msg);
+            // Cleaning up the cluster record as addCluster operation failed because of invalid credentials of Nexus dvSwitch.
+            _clusterDao.remove(clusterId);
+            throw new CloudRuntimeException(msg);
+        }
+        return true;
     }
 }

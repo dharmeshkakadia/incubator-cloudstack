@@ -39,199 +39,205 @@ import java.util.UUID;
 
 import javax.naming.ConfigurationException;
 
+import org.apache.agent.IAgentControl;
+import org.apache.agent.api.Answer;
+import org.apache.agent.api.AttachIsoCommand;
+import org.apache.agent.api.AttachVolumeAnswer;
+import org.apache.agent.api.AttachVolumeCommand;
+import org.apache.agent.api.BackupSnapshotAnswer;
+import org.apache.agent.api.BackupSnapshotCommand;
+import org.apache.agent.api.BumpUpPriorityCommand;
+import org.apache.agent.api.CheckHealthAnswer;
+import org.apache.agent.api.CheckHealthCommand;
+import org.apache.agent.api.CheckNetworkAnswer;
+import org.apache.agent.api.CheckNetworkCommand;
+import org.apache.agent.api.CheckOnHostAnswer;
+import org.apache.agent.api.CheckOnHostCommand;
+import org.apache.agent.api.CheckRouterAnswer;
+import org.apache.agent.api.CheckRouterCommand;
+import org.apache.agent.api.CheckS2SVpnConnectionsAnswer;
+import org.apache.agent.api.CheckS2SVpnConnectionsCommand;
+import org.apache.agent.api.CheckVirtualMachineAnswer;
+import org.apache.agent.api.CheckVirtualMachineCommand;
+import org.apache.agent.api.Command;
+import org.apache.agent.api.CreatePrivateTemplateFromSnapshotCommand;
+import org.apache.agent.api.CreatePrivateTemplateFromVolumeCommand;
+import org.apache.agent.api.CreateStoragePoolCommand;
+import org.apache.agent.api.CreateVMSnapshotAnswer;
+import org.apache.agent.api.CreateVMSnapshotCommand;
+import org.apache.agent.api.CreateVolumeFromSnapshotAnswer;
+import org.apache.agent.api.CreateVolumeFromSnapshotCommand;
+import org.apache.agent.api.DeleteStoragePoolCommand;
+import org.apache.agent.api.DeleteVMSnapshotAnswer;
+import org.apache.agent.api.DeleteVMSnapshotCommand;
+import org.apache.agent.api.GetDomRVersionAnswer;
+import org.apache.agent.api.GetDomRVersionCmd;
+import org.apache.agent.api.GetHostStatsAnswer;
+import org.apache.agent.api.GetHostStatsCommand;
+import org.apache.agent.api.GetStorageStatsAnswer;
+import org.apache.agent.api.GetStorageStatsCommand;
+import org.apache.agent.api.GetVmStatsAnswer;
+import org.apache.agent.api.GetVmStatsCommand;
+import org.apache.agent.api.GetVncPortAnswer;
+import org.apache.agent.api.GetVncPortCommand;
+import org.apache.agent.api.HostStatsEntry;
+import org.apache.agent.api.MaintainAnswer;
+import org.apache.agent.api.MaintainCommand;
+import org.apache.agent.api.ManageSnapshotAnswer;
+import org.apache.agent.api.ManageSnapshotCommand;
+import org.apache.agent.api.MigrateAnswer;
+import org.apache.agent.api.MigrateCommand;
+import org.apache.agent.api.ModifySshKeysCommand;
+import org.apache.agent.api.ModifyStoragePoolAnswer;
+import org.apache.agent.api.ModifyStoragePoolCommand;
+import org.apache.agent.api.NetworkUsageAnswer;
+import org.apache.agent.api.NetworkUsageCommand;
+import org.apache.agent.api.PingCommand;
+import org.apache.agent.api.PingRoutingCommand;
+import org.apache.agent.api.PingTestCommand;
+import org.apache.agent.api.PlugNicAnswer;
+import org.apache.agent.api.PlugNicCommand;
+import org.apache.agent.api.PoolEjectCommand;
+import org.apache.agent.api.PrepareForMigrationAnswer;
+import org.apache.agent.api.PrepareForMigrationCommand;
+import org.apache.agent.api.ReadyAnswer;
+import org.apache.agent.api.ReadyCommand;
+import org.apache.agent.api.RebootAnswer;
+import org.apache.agent.api.RebootCommand;
+import org.apache.agent.api.RebootRouterCommand;
+import org.apache.agent.api.RevertToVMSnapshotAnswer;
+import org.apache.agent.api.RevertToVMSnapshotCommand;
+import org.apache.agent.api.SetupAnswer;
+import org.apache.agent.api.SetupCommand;
+import org.apache.agent.api.SetupGuestNetworkAnswer;
+import org.apache.agent.api.SetupGuestNetworkCommand;
+import org.apache.agent.api.StartAnswer;
+import org.apache.agent.api.StartCommand;
+import org.apache.agent.api.StartupCommand;
+import org.apache.agent.api.StartupRoutingCommand;
+import org.apache.agent.api.StartupStorageCommand;
+import org.apache.agent.api.StopAnswer;
+import org.apache.agent.api.StopCommand;
+import org.apache.agent.api.StoragePoolInfo;
+import org.apache.agent.api.UnPlugNicAnswer;
+import org.apache.agent.api.UnPlugNicCommand;
+import org.apache.agent.api.UnregisterVMCommand;
+import org.apache.agent.api.UpgradeSnapshotCommand;
+import org.apache.agent.api.ValidateSnapshotAnswer;
+import org.apache.agent.api.ValidateSnapshotCommand;
+import org.apache.agent.api.VmStatsEntry;
+import org.apache.agent.api.check.CheckSshAnswer;
+import org.apache.agent.api.check.CheckSshCommand;
+import org.apache.agent.api.routing.DhcpEntryCommand;
+import org.apache.agent.api.routing.IpAssocAnswer;
+import org.apache.agent.api.routing.IpAssocCommand;
+import org.apache.agent.api.routing.IpAssocVpcCommand;
+import org.apache.agent.api.routing.LoadBalancerConfigCommand;
+import org.apache.agent.api.routing.NetworkElementCommand;
+import org.apache.agent.api.routing.RemoteAccessVpnCfgCommand;
+import org.apache.agent.api.routing.SavePasswordCommand;
+import org.apache.agent.api.routing.SetFirewallRulesAnswer;
+import org.apache.agent.api.routing.SetFirewallRulesCommand;
+import org.apache.agent.api.routing.SetNetworkACLAnswer;
+import org.apache.agent.api.routing.SetNetworkACLCommand;
+import org.apache.agent.api.routing.SetPortForwardingRulesAnswer;
+import org.apache.agent.api.routing.SetPortForwardingRulesCommand;
+import org.apache.agent.api.routing.SetPortForwardingRulesVpcCommand;
+import org.apache.agent.api.routing.SetSourceNatAnswer;
+import org.apache.agent.api.routing.SetSourceNatCommand;
+import org.apache.agent.api.routing.SetStaticNatRulesAnswer;
+import org.apache.agent.api.routing.SetStaticNatRulesCommand;
+import org.apache.agent.api.routing.Site2SiteVpnCfgCommand;
+import org.apache.agent.api.routing.VmDataCommand;
+import org.apache.agent.api.routing.VpnUsersCfgCommand;
+import org.apache.agent.api.storage.CopyVolumeAnswer;
+import org.apache.agent.api.storage.CopyVolumeCommand;
+import org.apache.agent.api.storage.CreateAnswer;
+import org.apache.agent.api.storage.CreateCommand;
+import org.apache.agent.api.storage.CreatePrivateTemplateAnswer;
+import org.apache.agent.api.storage.CreateVolumeOVAAnswer;
+import org.apache.agent.api.storage.CreateVolumeOVACommand;
+import org.apache.agent.api.storage.DestroyCommand;
+import org.apache.agent.api.storage.PrepareOVAPackingAnswer;
+import org.apache.agent.api.storage.PrepareOVAPackingCommand;
+import org.apache.agent.api.storage.PrimaryStorageDownloadAnswer;
+import org.apache.agent.api.storage.PrimaryStorageDownloadCommand;
+import org.apache.agent.api.storage.ResizeVolumeAnswer;
+import org.apache.agent.api.storage.ResizeVolumeCommand;
+import org.apache.agent.api.to.FirewallRuleTO;
+import org.apache.agent.api.to.IpAddressTO;
+import org.apache.agent.api.to.NicTO;
+import org.apache.agent.api.to.PortForwardingRuleTO;
+import org.apache.agent.api.to.StaticNatRuleTO;
+import org.apache.agent.api.to.StorageFilerTO;
+import org.apache.agent.api.to.VirtualMachineTO;
+import org.apache.agent.api.to.VolumeTO;
+import org.apache.dc.Vlan;
+import org.apache.dc.DataCenter.NetworkType;
+import org.apache.exception.InternalErrorException;
+import org.apache.host.Host.Type;
+import org.apache.hypervisor.Hypervisor.HypervisorType;
+import org.apache.hypervisor.vmware.mo.ClusterMO;
+import org.apache.hypervisor.vmware.mo.CustomFieldConstants;
+import org.apache.hypervisor.vmware.mo.CustomFieldsManagerMO;
+import org.apache.hypervisor.vmware.mo.DatacenterMO;
+import org.apache.hypervisor.vmware.mo.DatastoreMO;
+import org.apache.hypervisor.vmware.mo.DiskControllerType;
+import org.apache.hypervisor.vmware.mo.HostFirewallSystemMO;
+import org.apache.hypervisor.vmware.mo.HostMO;
+import org.apache.hypervisor.vmware.mo.HypervisorHostHelper;
+import org.apache.hypervisor.vmware.mo.NetworkDetails;
+import org.apache.hypervisor.vmware.mo.VirtualEthernetCardType;
+import org.apache.hypervisor.vmware.mo.VirtualMachineMO;
+import org.apache.hypervisor.vmware.mo.VirtualSwitchType;
+import org.apache.hypervisor.vmware.mo.VmwareHypervisorHost;
+import org.apache.hypervisor.vmware.mo.VmwareHypervisorHostNetworkSummary;
+import org.apache.hypervisor.vmware.mo.VmwareHypervisorHostResourceSummary;
+import org.apache.hypervisor.vmware.util.VmwareContext;
+import org.apache.hypervisor.vmware.util.VmwareGuestOsMapper;
+import org.apache.hypervisor.vmware.util.VmwareHelper;
 import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
+import org.apache.network.HAProxyConfigurator;
+import org.apache.network.LoadBalancerConfigurator;
+import org.apache.network.Networks;
+import org.apache.network.Networks.BroadcastDomainType;
+import org.apache.network.Networks.TrafficType;
+import org.apache.network.rules.FirewallRule;
+import org.apache.resource.ServerResource;
+import org.apache.serializer.GsonHelper;
+import org.apache.storage.Storage;
+import org.apache.storage.Volume;
+import org.apache.storage.Storage.StoragePoolType;
+import org.apache.storage.resource.StoragePoolResource;
+import org.apache.storage.template.TemplateInfo;
+import org.apache.utils.DateUtil;
+import org.apache.utils.Pair;
+import org.apache.utils.StringUtils;
+import org.apache.utils.db.DB;
+import org.apache.utils.exception.CloudRuntimeException;
+import org.apache.utils.exception.ExceptionUtil;
+import org.apache.utils.mgmt.JmxUtil;
+import org.apache.utils.mgmt.PropertyMapDynamicBean;
+import org.apache.utils.net.NetUtils;
+import org.apache.utils.ssh.SshHelper;
+import org.apache.vm.DiskProfile;
+import org.apache.vm.VirtualMachine;
+import org.apache.vm.VirtualMachineName;
+import org.apache.vm.VmDetailConstants;
+import org.apache.vm.VirtualMachine.State;
 
-import com.cloud.agent.IAgentControl;
-import com.cloud.agent.api.Answer;
-import com.cloud.agent.api.AttachIsoCommand;
-import com.cloud.agent.api.AttachVolumeAnswer;
-import com.cloud.agent.api.AttachVolumeCommand;
-import com.cloud.agent.api.BackupSnapshotAnswer;
-import com.cloud.agent.api.BackupSnapshotCommand;
-import com.cloud.agent.api.BumpUpPriorityCommand;
-import com.cloud.agent.api.CheckHealthAnswer;
-import com.cloud.agent.api.CheckHealthCommand;
-import com.cloud.agent.api.CheckNetworkAnswer;
-import com.cloud.agent.api.CheckNetworkCommand;
-import com.cloud.agent.api.CheckOnHostAnswer;
-import com.cloud.agent.api.CheckOnHostCommand;
-import com.cloud.agent.api.CheckRouterAnswer;
-import com.cloud.agent.api.CheckRouterCommand;
-import com.cloud.agent.api.CheckS2SVpnConnectionsAnswer;
-import com.cloud.agent.api.CheckS2SVpnConnectionsCommand;
-import com.cloud.agent.api.CheckVirtualMachineAnswer;
-import com.cloud.agent.api.CheckVirtualMachineCommand;
-import com.cloud.agent.api.Command;
-import com.cloud.agent.api.CreatePrivateTemplateFromSnapshotCommand;
-import com.cloud.agent.api.CreatePrivateTemplateFromVolumeCommand;
-import com.cloud.agent.api.CreateStoragePoolCommand;
-import com.cloud.agent.api.CreateVMSnapshotAnswer;
-import com.cloud.agent.api.CreateVMSnapshotCommand;
-import com.cloud.agent.api.CreateVolumeFromSnapshotAnswer;
-import com.cloud.agent.api.CreateVolumeFromSnapshotCommand;
-import com.cloud.agent.api.DeleteStoragePoolCommand;
-import com.cloud.agent.api.DeleteVMSnapshotAnswer;
-import com.cloud.agent.api.DeleteVMSnapshotCommand;
-import com.cloud.agent.api.GetDomRVersionAnswer;
-import com.cloud.agent.api.GetDomRVersionCmd;
-import com.cloud.agent.api.GetHostStatsAnswer;
-import com.cloud.agent.api.GetHostStatsCommand;
-import com.cloud.agent.api.GetStorageStatsAnswer;
-import com.cloud.agent.api.GetStorageStatsCommand;
-import com.cloud.agent.api.GetVmStatsAnswer;
-import com.cloud.agent.api.GetVmStatsCommand;
-import com.cloud.agent.api.GetVncPortAnswer;
-import com.cloud.agent.api.GetVncPortCommand;
-import com.cloud.agent.api.HostStatsEntry;
-import com.cloud.agent.api.MaintainAnswer;
-import com.cloud.agent.api.MaintainCommand;
-import com.cloud.agent.api.ManageSnapshotAnswer;
-import com.cloud.agent.api.ManageSnapshotCommand;
-import com.cloud.agent.api.MigrateAnswer;
-import com.cloud.agent.api.MigrateCommand;
-import com.cloud.agent.api.ModifySshKeysCommand;
-import com.cloud.agent.api.ModifyStoragePoolAnswer;
-import com.cloud.agent.api.ModifyStoragePoolCommand;
-import com.cloud.agent.api.NetworkUsageAnswer;
-import com.cloud.agent.api.NetworkUsageCommand;
-import com.cloud.agent.api.PingCommand;
-import com.cloud.agent.api.PingRoutingCommand;
-import com.cloud.agent.api.PingTestCommand;
-import com.cloud.agent.api.PlugNicAnswer;
-import com.cloud.agent.api.PlugNicCommand;
-import com.cloud.agent.api.PoolEjectCommand;
-import com.cloud.agent.api.PrepareForMigrationAnswer;
-import com.cloud.agent.api.PrepareForMigrationCommand;
-import com.cloud.agent.api.ReadyAnswer;
-import com.cloud.agent.api.ReadyCommand;
-import com.cloud.agent.api.RebootAnswer;
-import com.cloud.agent.api.RebootCommand;
-import com.cloud.agent.api.RebootRouterCommand;
-import com.cloud.agent.api.RevertToVMSnapshotAnswer;
-import com.cloud.agent.api.RevertToVMSnapshotCommand;
-import com.cloud.agent.api.SetupAnswer;
-import com.cloud.agent.api.SetupCommand;
-import com.cloud.agent.api.SetupGuestNetworkAnswer;
-import com.cloud.agent.api.SetupGuestNetworkCommand;
-import com.cloud.agent.api.StartAnswer;
-import com.cloud.agent.api.StartCommand;
-import com.cloud.agent.api.StartupCommand;
-import com.cloud.agent.api.StartupRoutingCommand;
-import com.cloud.agent.api.StartupStorageCommand;
-import com.cloud.agent.api.StopAnswer;
-import com.cloud.agent.api.StopCommand;
-import com.cloud.agent.api.StoragePoolInfo;
-import com.cloud.agent.api.UnPlugNicAnswer;
-import com.cloud.agent.api.UnPlugNicCommand;
-import com.cloud.agent.api.UpgradeSnapshotCommand;
-import com.cloud.agent.api.ValidateSnapshotAnswer;
-import com.cloud.agent.api.ValidateSnapshotCommand;
-import com.cloud.agent.api.VmStatsEntry;
-import com.cloud.agent.api.check.CheckSshAnswer;
-import com.cloud.agent.api.check.CheckSshCommand;
-import com.cloud.agent.api.routing.DhcpEntryCommand;
-import com.cloud.agent.api.routing.IpAssocAnswer;
-import com.cloud.agent.api.routing.IpAssocCommand;
-import com.cloud.agent.api.routing.IpAssocVpcCommand;
-import com.cloud.agent.api.routing.LoadBalancerConfigCommand;
-import com.cloud.agent.api.routing.NetworkElementCommand;
-import com.cloud.agent.api.routing.RemoteAccessVpnCfgCommand;
-import com.cloud.agent.api.routing.SavePasswordCommand;
-import com.cloud.agent.api.routing.SetFirewallRulesAnswer;
-import com.cloud.agent.api.routing.SetFirewallRulesCommand;
-import com.cloud.agent.api.routing.SetNetworkACLAnswer;
-import com.cloud.agent.api.routing.SetNetworkACLCommand;
-import com.cloud.agent.api.routing.SetPortForwardingRulesAnswer;
-import com.cloud.agent.api.routing.SetPortForwardingRulesCommand;
-import com.cloud.agent.api.routing.SetPortForwardingRulesVpcCommand;
-import com.cloud.agent.api.routing.SetSourceNatAnswer;
-import com.cloud.agent.api.routing.SetSourceNatCommand;
-import com.cloud.agent.api.routing.SetStaticNatRulesAnswer;
-import com.cloud.agent.api.routing.SetStaticNatRulesCommand;
-import com.cloud.agent.api.routing.Site2SiteVpnCfgCommand;
-import com.cloud.agent.api.routing.VmDataCommand;
-import com.cloud.agent.api.routing.VpnUsersCfgCommand;
-import com.cloud.agent.api.storage.CopyVolumeAnswer;
-import com.cloud.agent.api.storage.CopyVolumeCommand;
-import com.cloud.agent.api.storage.CreateAnswer;
-import com.cloud.agent.api.storage.CreateCommand;
-import com.cloud.agent.api.storage.CreatePrivateTemplateAnswer;
-import com.cloud.agent.api.storage.DestroyCommand;
-import com.cloud.agent.api.storage.PrimaryStorageDownloadAnswer;
-import com.cloud.agent.api.storage.PrimaryStorageDownloadCommand;
-import com.cloud.agent.api.storage.ResizeVolumeAnswer;
-import com.cloud.agent.api.storage.ResizeVolumeCommand;
-import com.cloud.agent.api.to.FirewallRuleTO;
-import com.cloud.agent.api.to.IpAddressTO;
-import com.cloud.agent.api.to.NicTO;
-import com.cloud.agent.api.to.PortForwardingRuleTO;
-import com.cloud.agent.api.to.StaticNatRuleTO;
-import com.cloud.agent.api.to.StorageFilerTO;
-import com.cloud.agent.api.to.VirtualMachineTO;
-import com.cloud.agent.api.to.VolumeTO;
-import com.cloud.dc.DataCenter.NetworkType;
-import com.cloud.dc.Vlan;
-import com.cloud.exception.InternalErrorException;
-import com.cloud.host.Host.Type;
-import com.cloud.hypervisor.Hypervisor.HypervisorType;
 import com.cloud.hypervisor.vmware.manager.VmwareHostService;
 import com.cloud.hypervisor.vmware.manager.VmwareManager;
-import com.cloud.hypervisor.vmware.mo.ClusterMO;
-import com.cloud.hypervisor.vmware.mo.CustomFieldConstants;
-import com.cloud.hypervisor.vmware.mo.CustomFieldsManagerMO;
-import com.cloud.hypervisor.vmware.mo.DatacenterMO;
-import com.cloud.hypervisor.vmware.mo.DatastoreMO;
-import com.cloud.hypervisor.vmware.mo.DiskControllerType;
-import com.cloud.hypervisor.vmware.mo.HostFirewallSystemMO;
-import com.cloud.hypervisor.vmware.mo.HostMO;
-import com.cloud.hypervisor.vmware.mo.HypervisorHostHelper;
-import com.cloud.hypervisor.vmware.mo.NetworkDetails;
-import com.cloud.hypervisor.vmware.mo.VirtualEthernetCardType;
-import com.cloud.hypervisor.vmware.mo.VirtualMachineMO;
-import com.cloud.hypervisor.vmware.mo.VirtualSwitchType;
-import com.cloud.hypervisor.vmware.mo.VmwareHypervisorHost;
-import com.cloud.hypervisor.vmware.mo.VmwareHypervisorHostNetworkSummary;
-import com.cloud.hypervisor.vmware.mo.VmwareHypervisorHostResourceSummary;
 import com.cloud.hypervisor.vmware.resource.VmwareContextFactory;
-import com.cloud.hypervisor.vmware.util.VmwareContext;
-import com.cloud.hypervisor.vmware.util.VmwareGuestOsMapper;
-import com.cloud.hypervisor.vmware.util.VmwareHelper;
-import com.cloud.network.HAProxyConfigurator;
-import com.cloud.network.LoadBalancerConfigurator;
-import com.cloud.network.Networks;
-import com.cloud.network.Networks.BroadcastDomainType;
-import com.cloud.network.Networks.TrafficType;
 import com.cloud.network.VmwareTrafficLabel;
-import com.cloud.network.rules.FirewallRule;
-import com.cloud.resource.ServerResource;
-import com.cloud.serializer.GsonHelper;
-import com.cloud.storage.Storage;
-import com.cloud.storage.Storage.StoragePoolType;
-import com.cloud.storage.Volume;
-import com.cloud.storage.resource.StoragePoolResource;
-import com.cloud.storage.template.TemplateInfo;
-import com.cloud.utils.DateUtil;
-import com.cloud.utils.Pair;
-import com.cloud.utils.StringUtils;
-import com.cloud.utils.db.DB;
-import com.cloud.utils.exception.CloudRuntimeException;
-import com.cloud.utils.exception.ExceptionUtil;
-import com.cloud.utils.mgmt.JmxUtil;
-import com.cloud.utils.mgmt.PropertyMapDynamicBean;
-import com.cloud.utils.net.NetUtils;
-import com.cloud.utils.ssh.SshHelper;
-import com.cloud.vm.DiskProfile;
-import com.cloud.vm.VirtualMachine;
-import com.cloud.vm.VirtualMachine.State;
-import com.cloud.vm.VirtualMachineName;
-import com.cloud.vm.VmDetailConstants;
 import com.google.gson.Gson;
 import com.vmware.vim25.AboutInfo;
 import com.vmware.vim25.ClusterDasConfigInfo;
 import com.vmware.vim25.ComputeResourceSummary;
 import com.vmware.vim25.DatastoreSummary;
 import com.vmware.vim25.DynamicProperty;
+import com.vmware.vim25.HostCapability;
 import com.vmware.vim25.HostFirewallInfo;
 import com.vmware.vim25.HostFirewallRuleset;
 import com.vmware.vim25.HostNetworkTrafficShapingPolicy;
@@ -390,6 +396,10 @@ public class VmwareResource implements StoragePoolResource, ServerResource, Vmwa
                 answer = execute((DeleteStoragePoolCommand) cmd);
             } else if (clz == CopyVolumeCommand.class) {
                 answer = execute((CopyVolumeCommand) cmd);
+            } else if (clz == CreateVolumeOVACommand.class) {
+                answer = execute((CreateVolumeOVACommand) cmd);
+            } else if (clz == PrepareOVAPackingCommand.class)  {
+                answer = execute((PrepareOVAPackingCommand) cmd);
             } else if (clz == AttachVolumeCommand.class) {
                 answer = execute((AttachVolumeCommand) cmd);
             } else if (clz == AttachIsoCommand.class) {
@@ -472,6 +482,8 @@ public class VmwareResource implements StoragePoolResource, ServerResource, Vmwa
                 answer = execute((CheckS2SVpnConnectionsCommand) cmd);
             } else if (clz == ResizeVolumeCommand.class) {
                 return execute((ResizeVolumeCommand) cmd);
+            } else if (clz == UnregisterVMCommand.class) {
+                return execute((UnregisterVMCommand) cmd);
             } else {
                 answer = Answer.createUnsupportedCommandAnswer(cmd);
             }
@@ -1328,7 +1340,7 @@ public class VmwareResource implements StoragePoolResource, ServerResource, Vmwa
 
             NicTO nicTo = cmd.getNic();
             VirtualDevice nic;
-            Pair<ManagedObjectReference, String> networkInfo = prepareNetworkFromNicInfo(vmMo.getRunningHost(), nicTo);
+            Pair<ManagedObjectReference, String> networkInfo = prepareNetworkFromNicInfo(vmMo.getRunningHost(), nicTo, false);
             if (VmwareHelper.isDvPortGroup(networkInfo.first())) {
                 String dvSwitchUuid;
                 ManagedObjectReference dcMor = hyperHost.getHyperHostDatacenter();
@@ -1429,10 +1441,14 @@ public class VmwareResource implements StoragePoolResource, ServerResource, Vmwa
         }
 
         String args = "";
+        String snatArgs = "";
+
         if (ip.isAdd()) {
             args += " -A ";
+            snatArgs += " -A ";
         } else {
             args += " -D ";
+            snatArgs += " -D ";
         }
 
         args += " -l ";
@@ -1455,6 +1471,21 @@ public class VmwareResource implements StoragePoolResource, ServerResource, Vmwa
 
         if (!result.first()) {
             throw new InternalErrorException("Unable to assign public IP address");
+        }
+
+        if (ip.isSourceNat()) {
+            snatArgs += " -l ";
+            snatArgs += ip.getPublicIp();
+            snatArgs += " -c ";
+            snatArgs += "eth" + ethDeviceNum;
+
+            Pair<Boolean, String> result_gateway = SshHelper.sshExecute(routerIp, DEFAULT_DOMR_SSHPORT, "root", mgr.getSystemVMKeyFile(), null,
+                    "/opt/cloud/bin/vpc_privateGateway.sh " + args);
+
+            if (!result_gateway.first()) {
+                throw new InternalErrorException("Unable to configure source NAT for public IP address.");
+            }
+
         }
     }
 
@@ -1570,7 +1601,7 @@ public class VmwareResource implements StoragePoolResource, ServerResource, Vmwa
                     vmMo.getRunningHost(), vlanId, null, null, this._ops_timeout, true);
         } else {
             networkInfo = HypervisorHostHelper.prepareNetwork(this._publicTrafficInfo.getVirtualSwitchName(), "cloud.public",
-                    vmMo.getRunningHost(), vlanId, null, null, this._ops_timeout, vSwitchType, _portsPerDvPortGroup);
+                    vmMo.getRunningHost(), vlanId, null, null, this._ops_timeout, vSwitchType, _portsPerDvPortGroup, null, false);
         }
 
         int nicIndex = allocPublicNicIndex(vmMo);
@@ -2147,6 +2178,23 @@ public class VmwareResource implements StoragePoolResource, ServerResource, Vmwa
             VmwareHelper.setBasicVmConfig(vmConfigSpec, vmSpec.getCpus(), vmSpec.getMaxSpeed(),
             vmSpec.getMinSpeed(),(int) (vmSpec.getMaxRam()/(1024*1024)), ramMb,
             translateGuestOsIdentifier(vmSpec.getArch(), vmSpec.getOs()).value(), vmSpec.getLimitCpuUse());
+           
+            if ("true".equals(vmSpec.getDetails().get(VmDetailConstants.NESTED_VIRTUALIZATION_FLAG))) {
+                s_logger.debug("Nested Virtualization enabled in configuration, checking hypervisor capability");
+                ManagedObjectReference hostMor = vmMo.getRunningHost().getMor();
+                ManagedObjectReference computeMor = context.getVimClient().getMoRefProp(hostMor, "parent");
+                ManagedObjectReference environmentBrowser = 
+                        context.getVimClient().getMoRefProp(computeMor, "environmentBrowser");
+                HostCapability hostCapability = context.getService().queryTargetCapabilities(environmentBrowser, hostMor);
+                if (hostCapability.isNestedHVSupported()) {
+                    s_logger.debug("Hypervisor supports nested virtualization, enabling for VM " + vmSpec.getName());
+                    vmConfigSpec.setNestedHVEnabled(true);                   
+                }
+                else {
+                	s_logger.warn("Hypervisor doesn't support nested virtualization, unable to set config for VM " +vmSpec.getName());
+                	vmConfigSpec.setNestedHVEnabled(false);
+                }
+            }
 
             VirtualDeviceConfigSpec[] deviceConfigSpecArray = new VirtualDeviceConfigSpec[totalChangeDevices];
             int i = 0;
@@ -2286,7 +2334,8 @@ public class VmwareResource implements StoragePoolResource, ServerResource, Vmwa
             for (NicTO nicTo : sortNicsByDeviceId(nics)) {
                 s_logger.info("Prepare NIC device based on NicTO: " + _gson.toJson(nicTo));
 
-                Pair<ManagedObjectReference, String> networkInfo = prepareNetworkFromNicInfo(vmMo.getRunningHost(), nicTo);
+                boolean configureVServiceInNexus = (nicTo.getType() == TrafficType.Guest) && (vmSpec.getDetails().containsKey("ConfigureVServiceInNexus"));
+                Pair<ManagedObjectReference, String> networkInfo = prepareNetworkFromNicInfo(vmMo.getRunningHost(), nicTo, configureVServiceInNexus);
                 if (VmwareHelper.isDvPortGroup(networkInfo.first())) {
                     String dvSwitchUuid;
                     ManagedObjectReference dcMor = hyperHost.getHyperHostDatacenter();
@@ -2486,7 +2535,7 @@ public class VmwareResource implements StoragePoolResource, ServerResource, Vmwa
         return defaultVlan;
     }
 
-    private Pair<ManagedObjectReference, String> prepareNetworkFromNicInfo(HostMO hostMo, NicTO nicTo) throws Exception {
+    private Pair<ManagedObjectReference, String> prepareNetworkFromNicInfo(HostMO hostMo, NicTO nicTo, boolean configureVServiceInNexus) throws Exception {
         Pair<String, String> switchName;
         TrafficType trafficType;
         VirtualSwitchType switchType;
@@ -2516,7 +2565,7 @@ public class VmwareResource implements StoragePoolResource, ServerResource, Vmwa
         }
         else {
             networkInfo = HypervisorHostHelper.prepareNetwork(switchName.first(), namePrefix, hostMo, getVlanInfo(nicTo, switchName.second()),
-                    nicTo.getNetworkRateMbps(), nicTo.getNetworkRateMulticastMbps(), _ops_timeout, switchType, _portsPerDvPortGroup);
+                    nicTo.getNetworkRateMbps(), nicTo.getNetworkRateMulticastMbps(), _ops_timeout, switchType, _portsPerDvPortGroup, nicTo.getGateway(), configureVServiceInNexus);
         }
 
         return networkInfo;
@@ -2834,10 +2883,6 @@ public class VmwareResource implements StoragePoolResource, ServerResource, Vmwa
                     vmMo.setCustomFieldValue(CustomFieldConstants.CLOUD_NIC_MASK, "0");
 
                     if (getVmState(vmMo) != State.Stopped) {
-
-                        // before we stop VM, remove all possible snapshots on the VM to let
-                        // disk chain be collapsed
-                        s_logger.info("Remove all snapshot before stopping VM " + cmd.getVmName());
                         if (vmMo.safePowerOff(_shutdown_waitMs)) {
                             state = State.Stopped;
                             return new StopAnswer(cmd, "Stop VM " + cmd.getVmName() + " Succeed", 0, true);
@@ -3006,7 +3051,7 @@ public class VmwareResource implements StoragePoolResource, ServerResource, Vmwa
             NicTO[] nics = vm.getNics();
             for (NicTO nic : nics) {
                 // prepare network on the host
-                prepareNetworkFromNicInfo(new HostMO(getServiceContext(), _morHyperHost), nic);
+                prepareNetworkFromNicInfo(new HostMO(getServiceContext(), _morHyperHost), nic, false);
             }
 
             String secStoreUrl = mgr.getSecondaryStorageStoreUrl(Long.parseLong(_dcId));
@@ -3670,6 +3715,43 @@ public class VmwareResource implements StoragePoolResource, ServerResource, Vmwa
         }
     }
 
+    protected Answer execute(UnregisterVMCommand cmd){
+        if (s_logger.isInfoEnabled()) {
+            s_logger.info("Executing resource UnregisterVMCommand: " + _gson.toJson(cmd));
+        }
+
+        VmwareContext context = getServiceContext();
+        VmwareHypervisorHost hyperHost = getHyperHost(context);
+        try {
+            VirtualMachineMO vmMo = hyperHost.findVmOnHyperHost(cmd.getVmName());
+            if (vmMo != null) {
+                try {
+                    context.getService().unregisterVM(vmMo.getMor());
+                    return new Answer(cmd, true, "unregister succeeded");
+                } catch(Exception e) {
+                    s_logger.warn("We are not able to unregister VM " + VmwareHelper.getExceptionMessage(e));
+                }
+
+                String msg = "Expunge failed in vSphere. vm: " + cmd.getVmName();
+                s_logger.warn(msg);
+                return new Answer(cmd, false, msg);
+            } else {
+                String msg = "Unable to find the VM in vSphere to unregister, assume it is already removed. VM: " + cmd.getVmName();
+                s_logger.warn(msg);
+                return new Answer(cmd, true, msg);
+            }
+        } catch (Exception e) {
+            if (e instanceof RemoteException) {
+                s_logger.warn("Encounter remote exception to vCenter, invalidate VMware session context");
+                invalidateServiceContext();
+            }
+
+            String msg = "UnregisterVMCommand failed due to " + VmwareHelper.getExceptionMessage(e);
+            s_logger.error(msg);
+            return new Answer(cmd, false, msg);
+        }
+    }
+
     @Override
     public Answer execute(DestroyCommand cmd) {
         if (s_logger.isInfoEnabled()) {
@@ -3850,8 +3932,48 @@ public class VmwareResource implements StoragePoolResource, ServerResource, Vmwa
         }
     }
 
+    public CreateVolumeOVAAnswer execute(CreateVolumeOVACommand cmd) {
+        if (s_logger.isInfoEnabled()) {
+            s_logger.info("Executing resource CreateVolumeOVACommand: " + _gson.toJson(cmd));
+        }
 
+        try {
+            VmwareContext context = getServiceContext();
+            VmwareManager mgr = context.getStockObject(VmwareManager.CONTEXT_STOCK_NAME);
+            return (CreateVolumeOVAAnswer) mgr.getStorageManager().execute(this, cmd);
+        } catch (Throwable e) {
+            if (e instanceof RemoteException) {
+                s_logger.warn("Encounter remote exception to vCenter, invalidate VMware session context");
+                invalidateServiceContext();
+            }
 
+            String msg = "CreateVolumeOVACommand failed due to " + VmwareHelper.getExceptionMessage(e);
+            s_logger.error(msg, e);
+            return new CreateVolumeOVAAnswer(cmd, false, msg);
+        }
+    }
+
+    protected Answer execute(PrepareOVAPackingCommand cmd) {
+        if (s_logger.isInfoEnabled()) {
+            s_logger.info("Executing resource PrepareOVAPackingCommand: " + _gson.toJson(cmd));
+        }
+
+        try {
+            VmwareContext context = getServiceContext();
+            VmwareManager mgr = context.getStockObject(VmwareManager.CONTEXT_STOCK_NAME);
+
+            return mgr.getStorageManager().execute(this, cmd);
+        } catch (Throwable e) {
+            if (e instanceof RemoteException) {
+                s_logger.warn("Encounter remote exception to vCenter, invalidate VMware session context");
+                invalidateServiceContext();
+            }
+
+            String details = "PrepareOVAPacking for template failed due to " + VmwareHelper.getExceptionMessage(e);
+            s_logger.error(details, e);
+            return new PrepareOVAPackingAnswer(cmd, false, details);
+        }
+    }
     private boolean createVMFullClone(VirtualMachineMO vmTemplate, DatacenterMO dcMo, DatastoreMO dsMo,
             String vmdkName, ManagedObjectReference morDatastore, ManagedObjectReference morPool) throws Exception {
 
@@ -4152,7 +4274,7 @@ public class VmwareResource implements StoragePoolResource, ServerResource, Vmwa
 
     @Override
     public Type getType() {
-        return com.cloud.host.Host.Type.Routing;
+        return org.apache.host.Host.Type.Routing;
     }
 
     @Override

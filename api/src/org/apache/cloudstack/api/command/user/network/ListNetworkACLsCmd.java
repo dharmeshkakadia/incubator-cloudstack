@@ -28,9 +28,9 @@ import org.apache.cloudstack.api.response.ListResponse;
 import org.apache.cloudstack.api.response.NetworkACLResponse;
 import org.apache.cloudstack.api.response.NetworkResponse;
 import org.apache.log4j.Logger;
+import org.apache.network.rules.FirewallRule;
+import org.apache.utils.Pair;
 
-import com.cloud.network.rules.FirewallRule;
-import com.cloud.utils.Pair;
 
 @APICommand(name = "listNetworkACLs", description="Lists all network ACLs", responseObject=NetworkACLResponse.class)
 public class ListNetworkACLsCmd extends BaseListTaggedResourcesCmd {

@@ -18,8 +18,9 @@ package com.cloud.bridge.persist.dao;
 
 import java.util.List;
 
+import org.apache.utils.db.GenericDao;
+
 import com.cloud.bridge.model.SBucketVO;
-import com.cloud.utils.db.GenericDao;
 
 public interface SBucketDao extends GenericDao<SBucketVO, Long> {
 

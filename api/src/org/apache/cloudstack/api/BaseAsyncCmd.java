@@ -16,11 +16,11 @@
 // under the License.
 package org.apache.cloudstack.api;
 
+import org.apache.async.AsyncJob;
 import org.apache.cloudstack.api.response.AsyncJobResponse;
+import org.apache.user.User;
+import org.apache.user.UserContext;
 
-import com.cloud.async.AsyncJob;
-import com.cloud.user.User;
-import com.cloud.user.UserContext;
 
 /**
  * queryAsyncJobResult API command.
@@ -31,6 +31,7 @@ public abstract class BaseAsyncCmd extends BaseCmd {
     public static final String networkSyncObject = "network";
     public static final String vpcSyncObject = "vpc";
     public static final String snapshotHostSyncObject = "snapshothost";
+    public static final String gslbSyncObject = "globalserverloadbalacner";
 
     private AsyncJob job;
 

@@ -28,19 +28,19 @@ import java.util.Map;
 import javax.ejb.Local;
 import javax.inject.Inject;
 
+import org.apache.agent.api.to.VirtualMachineTO;
+import org.apache.host.dao.HostDao;
+import org.apache.hypervisor.HypervisorGuru;
+import org.apache.hypervisor.HypervisorGuruBase;
+import org.apache.hypervisor.Hypervisor.HypervisorType;
 import org.apache.log4j.Logger;
+import org.apache.storage.GuestOSVO;
+import org.apache.storage.dao.GuestOSDao;
+import org.apache.vm.VMInstanceVO;
+import org.apache.vm.VirtualMachine;
+import org.apache.vm.VirtualMachineProfile;
+import org.apache.vm.dao.VMInstanceDao;
 
-import com.cloud.agent.api.to.VirtualMachineTO;
-import com.cloud.host.dao.HostDao;
-import com.cloud.hypervisor.Hypervisor.HypervisorType;
-import com.cloud.hypervisor.HypervisorGuru;
-import com.cloud.hypervisor.HypervisorGuruBase;
-import com.cloud.storage.GuestOSVO;
-import com.cloud.storage.dao.GuestOSDao;
-import com.cloud.vm.VMInstanceVO;
-import com.cloud.vm.VirtualMachine;
-import com.cloud.vm.VirtualMachineProfile;
-import com.cloud.vm.dao.VMInstanceDao;
 
 @Local(value=HypervisorGuru.class)
 public class BareMetalGuru extends HypervisorGuruBase implements HypervisorGuru {

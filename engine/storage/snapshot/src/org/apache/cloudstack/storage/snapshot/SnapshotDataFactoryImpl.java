@@ -31,12 +31,11 @@ import org.apache.cloudstack.engine.subsystem.api.storage.SnapshotInfo;
 import org.apache.cloudstack.engine.subsystem.api.storage.VolumeDataFactory;
 import org.apache.cloudstack.engine.subsystem.api.storage.VolumeInfo;
 import org.apache.cloudstack.storage.datastore.ObjectInDataStoreManager;
+import org.apache.storage.Snapshot;
+import org.apache.storage.SnapshotVO;
+import org.apache.storage.dao.SnapshotDao;
+import org.apache.utils.exception.CloudRuntimeException;
 import org.springframework.stereotype.Component;
-
-import com.cloud.storage.Snapshot;
-import com.cloud.storage.SnapshotVO;
-import com.cloud.storage.dao.SnapshotDao;
-import com.cloud.utils.exception.CloudRuntimeException;
 
 @Component
 public class SnapshotDataFactoryImpl implements SnapshotDataFactory {

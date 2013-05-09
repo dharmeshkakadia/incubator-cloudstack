@@ -21,9 +21,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.cloudstack.engine.subsystem.api.storage.ScopeType;
+import org.apache.storage.StoragePoolStatus;
+import org.apache.utils.db.GenericDao;
 
-import com.cloud.storage.StoragePoolStatus;
-import com.cloud.utils.db.GenericDao;
 /**
  * Data Access Object for storage_pool table
  */

@@ -30,14 +30,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
+import org.apache.utils.LogUtils;
+import org.apache.utils.component.ComponentContext;
+import org.apache.utils.db.DB;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import com.cloud.bridge.persist.dao.CloudStackConfigurationDao;
 import com.cloud.bridge.util.ConfigurationHelper;
-import com.cloud.utils.LogUtils;
-import com.cloud.utils.component.ComponentContext;
-import com.cloud.utils.db.DB;
 
 @Component("EC2MainServlet")
 @DB

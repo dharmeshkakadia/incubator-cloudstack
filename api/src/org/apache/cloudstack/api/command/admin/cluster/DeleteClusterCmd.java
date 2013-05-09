@@ -25,8 +25,8 @@ import org.apache.cloudstack.api.ServerApiException;
 import org.apache.cloudstack.api.response.ClusterResponse;
 import org.apache.cloudstack.api.response.SuccessResponse;
 import org.apache.log4j.Logger;
+import org.apache.user.Account;
 
-import com.cloud.user.Account;
 
 @APICommand(name = "deleteCluster", description="Deletes a cluster.", responseObject=SuccessResponse.class)
 public class DeleteClusterCmd extends BaseCmd {

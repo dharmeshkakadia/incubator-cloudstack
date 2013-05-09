@@ -102,7 +102,6 @@ class Services:
                         # Cent OS 5.3 (64 bit)
                         "sleep": 60,
                         "timeout": 10,
-                        "mode": 'advanced'
                     }
 
 
@@ -117,6 +116,7 @@ class TestUserProjectCreation(cloudstackTestCase):
         cls.services = Services().services
         # Get Zone
         cls.zone = get_zone(cls.api_client, cls.services)
+        cls.services['mode'] = cls.zone.networktype
 
         configs = Configurations.list(
                                       cls.api_client,
@@ -206,8 +206,8 @@ class TestUserProjectCreation(cloudstackTestCase):
         project = Project.create(
                                  self.apiclient,
                                  self.services["project"],
-                                 account=self.account.account.name,
-                                 domainid=self.account.account.domainid
+                                 account=self.account.name,
+                                 domainid=self.account.domainid
                                  )
         # Cleanup created project at end of test
         self.cleanup.append(project)
@@ -282,6 +282,7 @@ class TestProjectCreationNegative(cloudstackTestCase):
         cls.services = Services().services
         # Get Zone
         cls.zone = get_zone(cls.api_client, cls.services)
+        cls.services['mode'] = cls.zone.networktype
 
         # Checking for prereqisits - global configs
         configs = Configurations.list(
@@ -372,8 +373,8 @@ class TestProjectCreationNegative(cloudstackTestCase):
         project = Project.create(
                                  self.apiclient,
                                  self.services["project"],
-                                 account=self.account.account.name,
-                                 domainid=self.account.account.domainid
+                                 account=self.account.name,
+                                 domainid=self.account.domainid
                                  )
         # Cleanup created project at end of test
         self.cleanup.append(project)
@@ -427,6 +428,7 @@ class TestProjectInviteRequired(cloudstackTestCase):
         cls.services = Services().services
         # Get Zone
         cls.zone = get_zone(cls.api_client, cls.services)
+        cls.services['mode'] = cls.zone.networktype
 
         # Create domains, account etc.
         cls.domain = get_domain(cls.api_client, cls.services)
@@ -496,8 +498,8 @@ class TestProjectInviteRequired(cloudstackTestCase):
         project = Project.create(
                                  self.apiclient,
                                  self.services["project"],
-                                 account=self.account.account.name,
-                                 domainid=self.account.account.domainid
+                                 account=self.account.name,
+                                 domainid=self.account.domainid
                                  )
         # Cleanup created project at end of test
         self.cleanup.append(project)
@@ -578,6 +580,7 @@ class TestProjectInviteRequiredTrue(cloudstackTestCase):
         cls.services = Services().services
         # Get Zone
         cls.zone = get_zone(cls.api_client, cls.services)
+        cls.services['mode'] = cls.zone.networktype
 
         # Create domains, account etc.
         cls.domain = get_domain(cls.api_client, cls.services)
@@ -647,8 +650,8 @@ class TestProjectInviteRequiredTrue(cloudstackTestCase):
         project = Project.create(
                                  self.apiclient,
                                  self.services["project"],
-                                 account=self.account.account.name,
-                                 domainid=self.account.account.domainid
+                                 account=self.account.name,
+                                 domainid=self.account.domainid
                                  )
         # Cleanup created project at end of test
         self.cleanup.append(project)
@@ -730,6 +733,7 @@ class TestProjectInviteTimeout(cloudstackTestCase):
         cls.services = Services().services
         # Get Zone
         cls.zone = get_zone(cls.api_client, cls.services)
+        cls.services['mode'] = cls.zone.networktype
 
         # Create domains, account etc.
         cls.domain = get_domain(cls.api_client, cls.services)
@@ -815,8 +819,8 @@ class TestProjectInviteTimeout(cloudstackTestCase):
         project = Project.create(
                                  self.apiclient,
                                  self.services["project"],
-                                 account=self.account.account.name,
-                                 domainid=self.account.account.domainid
+                                 account=self.account.name,
+                                 domainid=self.account.domainid
                                  )
         # Cleanup created project at end of test
         self.cleanup.append(project)
@@ -941,8 +945,8 @@ class TestProjectInviteTimeout(cloudstackTestCase):
         project = Project.create(
                                  self.apiclient,
                                  self.services["project"],
-                                 account=self.account.account.name,
-                                 domainid=self.account.account.domainid
+                                 account=self.account.name,
+                                 domainid=self.account.domainid
                                  )
         # Cleanup created project at end of test
         self.cleanup.append(project)
@@ -1072,8 +1076,8 @@ class TestProjectInviteTimeout(cloudstackTestCase):
         project = Project.create(
                                  self.apiclient,
                                  self.services["project"],
-                                 account=self.account.account.name,
-                                 domainid=self.account.account.domainid
+                                 account=self.account.name,
+                                 domainid=self.account.domainid
                                  )
         # Cleanup created project at end of test
         self.cleanup.append(project)
@@ -1201,8 +1205,8 @@ class TestProjectInviteTimeout(cloudstackTestCase):
         project = Project.create(
                                  self.apiclient,
                                  self.services["project"],
-                                 account=self.account.account.name,
-                                 domainid=self.account.account.domainid
+                                 account=self.account.name,
+                                 domainid=self.account.domainid
                                  )
         # Cleanup created project at end of test
         self.cleanup.append(project)
@@ -1329,8 +1333,8 @@ class TestProjectInviteTimeout(cloudstackTestCase):
         project = Project.create(
                                  self.apiclient,
                                  self.services["project"],
-                                 account=self.account.account.name,
-                                 domainid=self.account.account.domainid
+                                 account=self.account.name,
+                                 domainid=self.account.domainid
                                  )
         # Cleanup created project at end of test
         self.cleanup.append(project)

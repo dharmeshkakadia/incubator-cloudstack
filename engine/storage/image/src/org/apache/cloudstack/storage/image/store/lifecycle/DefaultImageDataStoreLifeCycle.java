@@ -20,6 +20,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import org.apache.agent.api.StoragePoolInfo;
 import org.apache.cloudstack.engine.subsystem.api.storage.ClusterScope;
 import org.apache.cloudstack.engine.subsystem.api.storage.DataStore;
 import org.apache.cloudstack.engine.subsystem.api.storage.HostScope;
@@ -29,7 +30,6 @@ import org.apache.cloudstack.storage.image.datastore.ImageDataStoreManager;
 import org.apache.cloudstack.storage.image.db.ImageDataStoreDao;
 import org.apache.cloudstack.storage.image.db.ImageDataStoreVO;
 
-import com.cloud.agent.api.StoragePoolInfo;
 
 public class DefaultImageDataStoreLifeCycle implements ImageDataStoreLifeCycle {
     @Inject

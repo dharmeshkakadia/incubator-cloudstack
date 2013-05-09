@@ -21,10 +21,10 @@ import java.util.List;
 import org.apache.cloudstack.api.ApiConstants;
 import org.apache.cloudstack.api.BaseResponse;
 import org.apache.cloudstack.api.EntityReference;
+import org.apache.network.Network;
+import org.apache.projects.ProjectAccount;
+import org.apache.serializer.Param;
 
-import com.cloud.network.Network;
-import com.cloud.projects.ProjectAccount;
-import com.cloud.serializer.Param;
 import com.google.gson.annotations.SerializedName;
 
 @SuppressWarnings("unused")
@@ -66,6 +66,9 @@ public class NetworkResponse extends BaseResponse implements ControlledEntityRes
 
     @SerializedName(ApiConstants.ZONE_NAME) @Param(description="the name of the zone the network belongs to")
     private String zoneName;
+    
+    @SerializedName(ApiConstants.ZONE_TYPE) @Param(description="the networktype of the zone the network belongs to")
+    private String zoneType;
 
     @SerializedName("networkofferingid") @Param(description="network offering id the network is created from")
     private String networkOfferingId;
@@ -291,6 +294,10 @@ public class NetworkResponse extends BaseResponse implements ControlledEntityRes
         this.zoneName = zoneName;
     }
 
+    public void setZoneType(String zoneType) {
+        this.zoneType = zoneType;
+    }
+    
     public void setCidr(String cidr) {
         this.cidr = cidr;
     }

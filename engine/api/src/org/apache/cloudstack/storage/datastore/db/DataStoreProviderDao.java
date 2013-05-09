@@ -18,7 +18,7 @@
  */
 package org.apache.cloudstack.storage.datastore.db;
 
-import com.cloud.utils.db.GenericDao;
+import org.apache.utils.db.GenericDao;
 
 public interface DataStoreProviderDao extends GenericDao<DataStoreProviderVO, Long> {
     public DataStoreProviderVO findByName(String name);

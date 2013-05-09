@@ -24,14 +24,14 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import org.apache.log4j.Logger;
+import org.apache.utils.script.OutputInterpreter;
+import org.apache.utils.script.Script;
+import org.apache.utils.script.OutputInterpreter.AllLinesParser;
 import org.libvirt.LibvirtException;
 import org.libvirt.StoragePool;
 import org.libvirt.StoragePoolInfo;
 import org.libvirt.StoragePoolInfo.StoragePoolState;
 
-import com.cloud.utils.script.OutputInterpreter;
-import com.cloud.utils.script.OutputInterpreter.AllLinesParser;
-import com.cloud.utils.script.Script;
 
 public class KVMHABase {
     private static final Logger s_logger = Logger.getLogger(KVMHABase.class);

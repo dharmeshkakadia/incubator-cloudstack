@@ -23,11 +23,11 @@ import org.apache.cloudstack.api.BaseAsyncCmd;
 import org.apache.cloudstack.api.Parameter;
 import org.apache.cloudstack.api.ServerApiException;
 import org.apache.cloudstack.api.response.VpcOfferingResponse;
+import org.apache.event.EventTypes;
 import org.apache.log4j.Logger;
+import org.apache.network.vpc.VpcOffering;
+import org.apache.user.Account;
 
-import com.cloud.event.EventTypes;
-import com.cloud.network.vpc.VpcOffering;
-import com.cloud.user.Account;
 
 @APICommand(name = "updateVPCOffering", description="Updates VPC offering", responseObject=VpcOfferingResponse.class)
 public class UpdateVPCOfferingCmd extends BaseAsyncCmd{
@@ -88,7 +88,7 @@ public class UpdateVPCOfferingCmd extends BaseAsyncCmd{
 
     @Override
     public void execute(){
-        VpcOffering result = _vpcService.updateVpcOffering(getId(), getVpcOfferingName(), getDisplayText(), getState());
+        VpcOffering result = _vpcProvSvc.updateVpcOffering(getId(), getVpcOfferingName(), getDisplayText(), getState());
         if (result != null) {
             VpcOfferingResponse response = _responseGenerator.createVpcOfferingResponse(result);
             response.setResponseName(getCommandName());

@@ -22,8 +22,8 @@ import org.apache.cloudstack.api.APICommand;
 import org.apache.cloudstack.api.BaseCmd;
 import org.apache.cloudstack.api.response.CapabilitiesResponse;
 import org.apache.log4j.Logger;
+import org.apache.user.Account;
 
-import com.cloud.user.Account;
 
 @APICommand(name = "listCapabilities", description="Lists capabilities", responseObject=CapabilitiesResponse.class)
 public class ListCapabilitiesCmd extends BaseCmd {

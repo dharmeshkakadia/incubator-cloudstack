@@ -53,6 +53,9 @@
       case 'Ovm':
         hypervisorAttr = 'ovmnetworklabel';
         break;
+      case 'LXC':
+        hypervisorAttr = 'lxcnetworklabel';
+        break;
     }
 
     trafficLabelStr = trafficLabel ? '&' + hypervisorAttr + '=' + trafficLabel : '';
@@ -320,18 +323,30 @@
         preFilter: function(args) {
           var $form = args.$form;
 
-          if (args.data['network-model'] == 'Basic') {
+          if (args.data['network-model'] == 'Basic') { //Basic zone
             args.$form.find('[rel=networkOfferingId]').show();
-            args.$form.find('[rel=guestcidraddress]').hide();
+            args.$form.find('[rel=guestcidraddress]').hide();						
+	    
+            args.$form.find('[rel=ip6dns1]').hide();
+	    args.$form.find('[rel=ip6dns2]').hide();
           }
-          else { //args.data['network-model'] == 'Advanced'
+          else { //Advanced zone
             args.$form.find('[rel=networkOfferingId]').hide();
 						
-						if(args.data["zone-advanced-sg-enabled"] !=	"on")
+	    if(args.data["zone-advanced-sg-enabled"] !=	"on") { //Advanced SG-disabled zone
               args.$form.find('[rel=guestcidraddress]').show();
-						else //args.data["zone-advanced-sg-enabled"] ==	"on
-						  args.$form.find('[rel=guestcidraddress]').hide();
-          }													
+              					  
+	      args.$form.find('[rel=ip6dns1]').show();
+	      args.$form.find('[rel=ip6dns2]').show();
+            }
+	    else { //Advanced SG-enabled zone
+	      args.$form.find('[rel=guestcidraddress]').hide();
+
+              args.$form.find('[rel=ip6dns1]').hide();
+	      args.$form.find('[rel=ip6dns2]').hide();
+            }
+          
+	  }													
 										
           setTimeout(function() {
             if ($form.find('input[name=ispublic]').is(':checked')) {
@@ -390,6 +405,7 @@
 										nonSupportedHypervisors["VMware"] = 1;
 										nonSupportedHypervisors["BareMetal"] = 1;
 										nonSupportedHypervisors["Ovm"] = 1;
+										nonSupportedHypervisors["LXC"] = 1;
 									}
 									
 									if(items != null) {
@@ -644,7 +660,18 @@
           },
           privateinterface: {
             label: 'label.private.interface'
+          },		
+					gslbprovider: {
+            label: 'GSLB service',
+            isBoolean: true,
+            isChecked: true
           },
+					gslbproviderpublicip: {
+            label: 'GSLB service Public IP'
+          },
+					gslbproviderprivateip: {
+            label: 'GSLB service Private IP'
+          },		
           numretries: {
             label: 'label.numretries',
             defaultValue: '2'
@@ -1177,6 +1204,40 @@
             validation: { required: true }  
 					},
 
+           scope: {
+                    label: 'label.scope',
+                    select: function(args) {
+                    
+             var selectedHypervisorObj = {
+                hypervisortype: $.isArray(args.context.zones[0].hypervisor) ?
+                  // We want the cluster's hypervisor type
+                  args.context.zones[0].hypervisor[1] : args.context.zones[0].hypervisor
+              };
+
+              if(selectedHypervisorObj == null) {
+                return;
+              }
+
+                // ZWPS is supported only for KVM as the hypervisor
+             if(selectedHypervisorObj.hypervisortype != "KVM"){
+                       var scope=[];
+                       scope.push({ id: 'cluster', description: _l('label.cluster') });
+                       //scope.push({ id: 'host', description: _l('label.host') });
+                       args.response.success({data: scope});
+                    }
+
+              else {
+                       var scope=[];
+                       scope.push({ id: 'zone', description: _l('label.zone.wide') });
+                       scope.push({ id: 'cluster', description: _l('label.cluster') });
+                      // scope.push({ id: 'host', description: _l('label.host') });
+                       args.response.success({data: scope});
+                    }
+
+                }
+
+              },
+
           protocol: {
             label: 'label.protocol',
             validation: { required: true }, 
@@ -1215,6 +1276,12 @@
                 var items = [];
                 items.push({id: "nfs", description: "nfs"});
                 items.push({id: "ocfs2", description: "ocfs2"});
+                args.response.success({data: items});
+              }
+              else if(selectedClusterObj.hypervisortype == "LXC") {
+                var items = [];
+                items.push({id: "nfs", description: "nfs"});
+                items.push({id: "SharedMountPoint", description: "SharedMountPoint"});
                 args.response.success({data: items});
               }
               else {
@@ -2544,7 +2611,10 @@
           array1.push("&physicalnetworkid=" + args.data.returnedBasicPhysicalNetwork.id);
           array1.push("&username=" + todb(args.data.basicPhysicalNetwork.username));
           array1.push("&password=" + todb(args.data.basicPhysicalNetwork.password));
-          array1.push("&networkdevicetype=" + todb(args.data.basicPhysicalNetwork.networkdevicetype));
+          array1.push("&networkdevicetype=" + todb(args.data.basicPhysicalNetwork.networkdevicetype));					
+					array1.push("&gslbprovider=" + (args.data.basicPhysicalNetwork.gslbprovider == "on"));
+					array1.push("&gslbproviderpublicip=" + todb(args.data.basicPhysicalNetwork.gslbproviderpublicip));
+					array1.push("&gslbproviderprivateip=" + todb(args.data.basicPhysicalNetwork.gslbproviderprivateip));
 
           //construct URL starts here
           var url = [];
@@ -2989,16 +3059,16 @@
               success: function(json) {
                 args.data.returnedGuestNetwork.returnedVlanIpRange = json.createvlaniprangeresponse.vlan;
                 
-								//when hypervisor is BareMetal (begin)   						
-								if(args.data.cluster.hypervisor == "BareMetal") {
-								  alert('Zone creation is completed. Please refresh this page.');
+								if(args.data.zone.hypervisor == "BareMetal") { //if hypervisor is BareMetal, zone creation is completed at this point.										  
+									complete({
+										data: args.data
+									});									
 								}								
 								else {
 									stepFns.addCluster({
 										data: args.data
 									});
-								}
-								//when hypervisor is BareMetal (end)   
+								}								
               },
               error: function(XMLHttpResponse) {
                 var errorMsg = parseXMLHttpResponse(XMLHttpResponse);
@@ -3244,6 +3314,7 @@
           array1.push("&podId=" + args.data.returnedPod.id);
           array1.push("&clusterid=" + args.data.returnedCluster.id);
           array1.push("&name=" + todb(args.data.primaryStorage.name));
+          array1.push("&scope=" + todb(args.data.primaryStorage.scope));
 
 					var server = args.data.primaryStorage.server;
           var url = null;

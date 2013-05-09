@@ -28,19 +28,19 @@ import java.util.Map;
 
 import javax.naming.ConfigurationException;
 
+import org.apache.agent.api.Answer;
+import org.apache.agent.api.Command;
+import org.apache.agent.api.PingCommand;
+import org.apache.agent.api.PingRoutingCommand;
+import org.apache.agent.api.baremetal.PreparePxeServerAnswer;
+import org.apache.agent.api.baremetal.PreparePxeServerCommand;
+import org.apache.agent.api.baremetal.prepareCreateTemplateCommand;
+import org.apache.agent.api.routing.VmDataCommand;
 import org.apache.log4j.Logger;
+import org.apache.utils.script.Script;
+import org.apache.utils.ssh.SSHCmdHelper;
+import org.apache.vm.VirtualMachine.State;
 
-import com.cloud.agent.api.Answer;
-import com.cloud.agent.api.Command;
-import com.cloud.agent.api.PingCommand;
-import com.cloud.agent.api.PingRoutingCommand;
-import com.cloud.agent.api.baremetal.PreparePxeServerAnswer;
-import com.cloud.agent.api.baremetal.PreparePxeServerCommand;
-import com.cloud.agent.api.baremetal.prepareCreateTemplateCommand;
-import com.cloud.agent.api.routing.VmDataCommand;
-import com.cloud.utils.script.Script;
-import com.cloud.utils.ssh.SSHCmdHelper;
-import com.cloud.vm.VirtualMachine.State;
 import com.trilead.ssh2.SCPClient;
 
 public class BaremetalPingPxeResource extends BaremetalPxeResourceBase {

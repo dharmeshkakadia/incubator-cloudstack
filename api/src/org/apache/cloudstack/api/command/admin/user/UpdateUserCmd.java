@@ -27,11 +27,11 @@ import org.apache.cloudstack.api.ServerApiException;
 import org.apache.cloudstack.api.response.UserResponse;
 import org.apache.cloudstack.region.RegionService;
 import org.apache.log4j.Logger;
+import org.apache.user.Account;
+import org.apache.user.User;
+import org.apache.user.UserAccount;
+import org.apache.user.UserContext;
 
-import com.cloud.user.Account;
-import com.cloud.user.User;
-import com.cloud.user.UserAccount;
-import com.cloud.user.UserContext;
 
 @APICommand(name = "updateUser", description="Updates a user account", responseObject=UserResponse.class)
 public class UpdateUserCmd extends BaseCmd {
@@ -59,7 +59,7 @@ public class UpdateUserCmd extends BaseCmd {
     @Parameter(name=ApiConstants.LASTNAME, type=CommandType.STRING, description="last name")
     private String lastname;
 
-    @Parameter(name=ApiConstants.PASSWORD, type=CommandType.STRING, description="Hashed password (default is MD5). If you wish to use any other hasing algorithm, you would need to write a custom authentication adapter")
+    @Parameter(name=ApiConstants.PASSWORD, type=CommandType.STRING, description="Clear text password (default hashed to SHA256SALT). If you wish to use any other hasing algorithm, you would need to write a custom authentication adapter")
     private String password;
 
     @Parameter(name=ApiConstants.SECRET_KEY, type=CommandType.STRING, description="The secret key for the user. Must be specified with userApiKey")

@@ -37,7 +37,7 @@ import org.apache.cloudstack.storage.image.db.ImageDataStoreVO;
 import org.apache.cloudstack.storage.image.store.DefaultImageDataStoreImpl;
 import org.springframework.stereotype.Component;
 
-import com.cloud.storage.dao.VMTemplateDao;
+import org.apache.storage.dao.VMTemplateDao;
 
 @Component
 public class ImageDataStoreManagerImpl implements ImageDataStoreManager {

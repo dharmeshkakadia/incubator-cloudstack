@@ -1,0 +1,419 @@
+// Licensed to the Apache Software Foundation (ASF) under one
+// or more contributor license agreements.  See the NOTICE file
+// distributed with this work for additional information
+// regarding copyright ownership.  The ASF licenses this file
+// to you under the Apache License, Version 2.0 (the
+// "License"); you may not use this file except in compliance
+// with the License.  You may obtain a copy of the License at
+//
+//   http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing,
+// software distributed under the License is distributed on an
+// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+// KIND, either express or implied.  See the License for the
+// specific language governing permissions and limitations
+// under the License.
+package org.apache.template;
+
+import java.net.Inet6Address;
+import java.net.InetAddress;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.UnknownHostException;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+
+import javax.ejb.Local;
+import javax.inject.Inject;
+
+import org.apache.agent.AgentManager;
+import org.apache.agent.api.Answer;
+import org.apache.agent.api.storage.DeleteTemplateCommand;
+import org.apache.agent.api.storage.PrepareOVAPackingAnswer;
+import org.apache.agent.api.storage.PrepareOVAPackingCommand;
+import org.apache.cloudstack.api.command.user.iso.DeleteIsoCmd;
+import org.apache.cloudstack.api.command.user.iso.RegisterIsoCmd;
+import org.apache.cloudstack.api.command.user.template.DeleteTemplateCmd;
+import org.apache.cloudstack.api.command.user.template.ExtractTemplateCmd;
+import org.apache.cloudstack.api.command.user.template.RegisterTemplateCmd;
+import org.apache.cloudstack.engine.subsystem.api.storage.CommandResult;
+import org.apache.cloudstack.engine.subsystem.api.storage.DataStore;
+import org.apache.cloudstack.engine.subsystem.api.storage.DataStoreManager;
+import org.apache.cloudstack.engine.subsystem.api.storage.DataStoreRole;
+import org.apache.cloudstack.engine.subsystem.api.storage.ImageDataFactory;
+import org.apache.cloudstack.engine.subsystem.api.storage.ImageService;
+import org.apache.cloudstack.framework.async.AsyncCallFuture;
+import org.apache.configuration.Resource.ResourceType;
+import org.apache.dc.DataCenterVO;
+import org.apache.event.EventTypes;
+import org.apache.event.UsageEventUtils;
+import org.apache.exception.AgentUnavailableException;
+import org.apache.exception.InvalidParameterValueException;
+import org.apache.exception.OperationTimedoutException;
+import org.apache.exception.ResourceAllocationException;
+import org.apache.host.HostVO;
+import org.apache.hypervisor.Hypervisor.HypervisorType;
+import org.apache.log4j.Logger;
+import org.apache.storage.TemplateProfile;
+import org.apache.storage.VMTemplateHostVO;
+import org.apache.storage.VMTemplateVO;
+import org.apache.storage.VMTemplateZoneVO;
+import org.apache.storage.Storage.ImageFormat;
+import org.apache.storage.Storage.TemplateType;
+import org.apache.storage.VMTemplateStorageResourceAssoc.Status;
+import org.apache.storage.download.DownloadMonitor;
+import org.apache.storage.secondary.SecondaryStorageVmManager;
+import org.apache.user.Account;
+import org.apache.utils.UriUtils;
+import org.apache.utils.db.DB;
+import org.apache.utils.exception.CloudRuntimeException;
+import org.apache.vm.UserVmVO;
+
+
+
+@Local(value=TemplateAdapter.class)
+public class HypervisorTemplateAdapter extends TemplateAdapterBase implements TemplateAdapter {
+	private final static Logger s_logger = Logger.getLogger(HypervisorTemplateAdapter.class);
+	@Inject DownloadMonitor _downloadMonitor;
+	@Inject SecondaryStorageVmManager _ssvmMgr;
+	@Inject AgentManager _agentMgr;
+
+    @Inject DataStoreManager storeMgr;
+    @Inject ImageService imageService;
+    @Inject ImageDataFactory imageFactory;
+    @Inject TemplateManager templateMgr;
+
+    @Override
+    public String getName() {
+        return TemplateAdapterType.Hypervisor.getName();
+    }
+	
+	private String validateUrl(String url) {
+		try {
+			URI uri = new URI(url);
+			if ((uri.getScheme() == null) || (!uri.getScheme().equalsIgnoreCase("http")
+				&& !uri.getScheme().equalsIgnoreCase("https") && !uri.getScheme().equalsIgnoreCase("file"))) {
+				throw new IllegalArgumentException("Unsupported scheme for url: " + url);
+			}
+
+			int port = uri.getPort();
+			if (!(port == 80 || port == 443 || port == -1)) {
+				throw new IllegalArgumentException("Only ports 80 and 443 are allowed");
+			}
+			String host = uri.getHost();
+			try {
+				InetAddress hostAddr = InetAddress.getByName(host);
+				if (hostAddr.isAnyLocalAddress() || hostAddr.isLinkLocalAddress() || hostAddr.isLoopbackAddress() || hostAddr.isMulticastAddress()) {
+					throw new IllegalArgumentException("Illegal host specified in url");
+				}
+				if (hostAddr instanceof Inet6Address) {
+					throw new IllegalArgumentException("IPV6 addresses not supported (" + hostAddr.getHostAddress() + ")");
+				}
+			} catch (UnknownHostException uhe) {
+				throw new IllegalArgumentException("Unable to resolve " + host);
+			}
+
+			return uri.toString();
+		} catch (URISyntaxException e) {
+			throw new IllegalArgumentException("Invalid URL " + url);
+		}
+	}
+
+	@Override
+	public TemplateProfile prepare(RegisterIsoCmd cmd) throws ResourceAllocationException {
+		TemplateProfile profile = super.prepare(cmd);
+		String url = profile.getUrl();
+
+		if((!url.toLowerCase().endsWith("iso"))&&(!url.toLowerCase().endsWith("iso.zip"))&&(!url.toLowerCase().endsWith("iso.bz2"))
+        		&&(!url.toLowerCase().endsWith("iso.gz"))){
+        	throw new InvalidParameterValueException("Please specify a valid iso");
+        }
+
+		profile.setUrl(validateUrl(url));
+		// Check that the resource limit for secondary storage won't be exceeded
+		_resourceLimitMgr.checkResourceLimit(_accountMgr.getAccount(cmd.getEntityOwnerId()),
+		        ResourceType.secondary_storage, UriUtils.getRemoteSize(url));
+		return profile;
+	}
+
+	@Override
+	public TemplateProfile prepare(RegisterTemplateCmd cmd) throws ResourceAllocationException {
+		TemplateProfile profile = super.prepare(cmd);
+		String url = profile.getUrl();
+
+		if((!url.toLowerCase().endsWith("vhd"))&&(!url.toLowerCase().endsWith("vhd.zip"))
+	        &&(!url.toLowerCase().endsWith("vhd.bz2"))&&(!url.toLowerCase().endsWith("vhd.gz"))
+	        &&(!url.toLowerCase().endsWith("qcow2"))&&(!url.toLowerCase().endsWith("qcow2.zip"))
+	        &&(!url.toLowerCase().endsWith("qcow2.bz2"))&&(!url.toLowerCase().endsWith("qcow2.gz"))
+	        &&(!url.toLowerCase().endsWith("ova"))&&(!url.toLowerCase().endsWith("ova.zip"))
+	        &&(!url.toLowerCase().endsWith("ova.bz2"))&&(!url.toLowerCase().endsWith("ova.gz"))
+	        &&(!url.toLowerCase().endsWith("tar"))&&(!url.toLowerCase().endsWith("tar.zip"))
+	        &&(!url.toLowerCase().endsWith("tar.bz2"))&&(!url.toLowerCase().endsWith("tar.gz"))
+	        &&(!url.toLowerCase().endsWith("img"))&&(!url.toLowerCase().endsWith("raw"))){
+	        throw new InvalidParameterValueException("Please specify a valid "+ cmd.getFormat().toLowerCase());
+	    }
+
+		if ((cmd.getFormat().equalsIgnoreCase("vhd") && (!url.toLowerCase().endsWith("vhd") && !url.toLowerCase().endsWith("vhd.zip") && !url.toLowerCase().endsWith("vhd.bz2") && !url.toLowerCase().endsWith("vhd.gz") ))
+			|| (cmd.getFormat().equalsIgnoreCase("qcow2") && (!url.toLowerCase().endsWith("qcow2") && !url.toLowerCase().endsWith("qcow2.zip") && !url.toLowerCase().endsWith("qcow2.bz2") && !url.toLowerCase().endsWith("qcow2.gz") ))
+			|| (cmd.getFormat().equalsIgnoreCase("ova") && (!url.toLowerCase().endsWith("ova") && !url.toLowerCase().endsWith("ova.zip") && !url.toLowerCase().endsWith("ova.bz2") && !url.toLowerCase().endsWith("ova.gz")))
+			|| (cmd.getFormat().equalsIgnoreCase("tar") && (!url.toLowerCase().endsWith("tar") && !url.toLowerCase().endsWith("tar.zip") && !url.toLowerCase().endsWith("tar.bz2") && !url.toLowerCase().endsWith("tar.gz")))
+			|| (cmd.getFormat().equalsIgnoreCase("raw") && (!url.toLowerCase().endsWith("img") && !url.toLowerCase().endsWith("raw")))) {
+	        throw new InvalidParameterValueException("Please specify a valid URL. URL:" + url + " is an invalid for the format " + cmd.getFormat().toLowerCase());
+		}
+
+		profile.setUrl(validateUrl(url));
+		// Check that the resource limit for secondary storage won't be exceeded
+		_resourceLimitMgr.checkResourceLimit(_accountMgr.getAccount(cmd.getEntityOwnerId()),
+		        ResourceType.secondary_storage, UriUtils.getRemoteSize(url));
+		return profile;
+	}
+
+	@Override
+	public VMTemplateVO create(TemplateProfile profile) {
+		VMTemplateVO template = persistTemplate(profile);
+
+		if (template == null) {
+			throw new CloudRuntimeException("Unable to persist the template " + profile.getTemplate());
+		}
+
+		DataStore imageStore = this.storeMgr.getDataStore(profile.getImageStoreId(), DataStoreRole.Image);
+		
+		AsyncCallFuture<CommandResult> future = this.imageService.createTemplateAsync(this.imageFactory.getTemplate(template.getId()), imageStore);
+		try {
+            future.get();
+        } catch (InterruptedException e) {
+            s_logger.debug("create template Failed", e);
+            throw new CloudRuntimeException("create template Failed", e);
+        } catch (ExecutionException e) {
+            s_logger.debug("create template Failed", e);
+            throw new CloudRuntimeException("create template Failed", e);
+        }
+        _resourceLimitMgr.incrementResourceCount(profile.getAccountId(), ResourceType.template);
+        _resourceLimitMgr.incrementResourceCount(profile.getAccountId(), ResourceType.secondary_storage,
+                UriUtils.getRemoteSize(profile.getUrl()));
+        return template;
+    }
+
+	@Override
+	public TemplateProfile prepareExtractTemplate(ExtractTemplateCmd extractcmd) {
+             TemplateProfile profile = super.prepareExtractTemplate(extractcmd);
+             VMTemplateVO template = (VMTemplateVO)profile.getTemplate();
+             Long zoneId = profile.getZoneId();
+             Long templateId = template.getId();
+
+             if (template.getHypervisorType() == HypervisorType.VMware) {
+                PrepareOVAPackingCommand cmd = null;
+                String zoneName="";
+                List<HostVO> secondaryStorageHosts;
+                if (!template.isCrossZones() && zoneId != null) {
+                        DataCenterVO zone = _dcDao.findById(zoneId);
+                        zoneName = zone.getName();
+                        secondaryStorageHosts = _ssvmMgr.listSecondaryStorageHostsInOneZone(zoneId);
+
+                    s_logger.debug("Attempting to mark template host refs for template: " + template.getName() + " as destroyed in zone: " + zoneName);
+
+                // Make sure the template is downloaded to all the necessary secondary storage hosts
+
+                for (HostVO secondaryStorageHost : secondaryStorageHosts) {
+                        long hostId = secondaryStorageHost.getId();
+                        List<VMTemplateHostVO> templateHostVOs = _tmpltHostDao.listByHostTemplate(hostId, templateId);
+                        for (VMTemplateHostVO templateHostVO : templateHostVOs) {
+                        if (templateHostVO.getDownloadState() == Status.DOWNLOAD_IN_PROGRESS) {
+                                 String errorMsg = "Please specify a template that is not currently being downloaded.";
+                                 s_logger.debug("Template: " + template.getName() + " is currently being downloaded to secondary storage host: " + secondaryStorageHost.getName() + ".");
+                                 throw new CloudRuntimeException(errorMsg);
+                        }
+                        String installPath = templateHostVO.getInstallPath();
+                        if (installPath != null) {
+                              HostVO ssvmhost = _ssvmMgr.pickSsvmHost(secondaryStorageHost);
+                              if( ssvmhost == null ) {
+                                 s_logger.warn("prepareOVAPacking (hyervisorTemplateAdapter): There is no secondary storage VM for secondary storage host " + secondaryStorageHost.getName());
+                                 throw new CloudRuntimeException("PrepareExtractTemplate: can't locate ssvm for SecStorage Host.");
+                              }
+                           //Answer answer = _agentMgr.sendToSecStorage(secondaryStorageHost, new PrepareOVAPackingCommand(secondaryStorageHost.getStorageUrl(), installPath));
+                              cmd = new PrepareOVAPackingCommand(secondaryStorageHost.getStorageUrl(), installPath);
+
+                              if (cmd == null) {
+                                    s_logger.debug("Fang: PrepareOVAPacking cmd can't created. cmd is null .");
+                                    throw new CloudRuntimeException("PrepareExtractTemplate: can't create a new cmd to packing ova.");
+                              } else {
+                                    cmd.setContextParam("hypervisor", HypervisorType.VMware.toString());
+                              }
+                              Answer answer = null;
+                              s_logger.debug("Fang: PrepareOVAPAcking cmd, before send out. cmd: " + cmd.toString());
+                              try {
+                                   answer = _agentMgr.send(ssvmhost.getId(), cmd);
+                                } catch (AgentUnavailableException e) {
+                                    s_logger.warn("Unable to packOVA for template: id: " + templateId + ", name " + ssvmhost.getName(), e);
+                                } catch (OperationTimedoutException e) {
+                                    s_logger.warn("Unable to packOVA for template timeout. template id: " + templateId);
+                                    e.printStackTrace();
+                                }
+
+                                  if (answer == null || !answer.getResult()) {
+                                      s_logger.debug("Failed to create OVA for template " + templateHostVO + " due to " + ((answer == null) ? "answer is null" : answer.getDetails()));
+                                      throw new CloudRuntimeException("PrepareExtractTemplate: Failed to create OVA for template extraction. ");
+                                  }
+                       }
+              }
+           }
+         }  else {
+			s_logger.debug("Failed to create OVA for template " + template + " due to zone non-existing.");
+                        throw new CloudRuntimeException("PrepareExtractTemplate: Failed to create OVA for template extraction. ");
+		}
+         }
+		return profile;
+        }
+
+	@Override @DB
+	public boolean delete(TemplateProfile profile) {
+		boolean success = true;
+
+    	VMTemplateVO template = (VMTemplateVO)profile.getTemplate();
+    	Long zoneId = profile.getZoneId();
+    	Long templateId = template.getId();
+
+    	String zoneName;
+    	List<HostVO> secondaryStorageHosts;
+    	if (!template.isCrossZones() && zoneId != null) {
+    		DataCenterVO zone = _dcDao.findById(zoneId);
+    		zoneName = zone.getName();
+    		secondaryStorageHosts = _ssvmMgr.listSecondaryStorageHostsInOneZone(zoneId);
+    	} else {
+    		zoneName = "(all zones)";
+    		secondaryStorageHosts = _ssvmMgr.listSecondaryStorageHostsInAllZones();
+    	}
+
+    	s_logger.debug("Attempting to mark template host refs for template: " + template.getName() + " as destroyed in zone: " + zoneName);
+
+		// Make sure the template is downloaded to all the necessary secondary storage hosts
+		for (HostVO secondaryStorageHost : secondaryStorageHosts) {
+			long hostId = secondaryStorageHost.getId();
+			List<VMTemplateHostVO> templateHostVOs = _tmpltHostDao.listByHostTemplate(hostId, templateId);
+			for (VMTemplateHostVO templateHostVO : templateHostVOs) {
+				if (templateHostVO.getDownloadState() == Status.DOWNLOAD_IN_PROGRESS) {
+					String errorMsg = "Please specify a template that is not currently being downloaded.";
+					s_logger.debug("Template: " + template.getName() + " is currently being downloaded to secondary storage host: " + secondaryStorageHost.getName() + "; cant' delete it.");
+					throw new CloudRuntimeException(errorMsg);
+				}
+			}
+		}
+
+		Account account = _accountDao.findByIdIncludingRemoved(template.getAccountId());
+		String eventType = "";
+
+		if (template.getFormat().equals(ImageFormat.ISO)){
+			eventType = EventTypes.EVENT_ISO_DELETE;
+		} else {
+			eventType = EventTypes.EVENT_TEMPLATE_DELETE;
+		}
+
+		// Iterate through all necessary secondary storage hosts and mark the template on each host as destroyed
+		for (HostVO secondaryStorageHost : secondaryStorageHosts) {
+			long hostId = secondaryStorageHost.getId();
+			long sZoneId = secondaryStorageHost.getDataCenterId();
+			List<VMTemplateHostVO> templateHostVOs = _tmpltHostDao.listByHostTemplate(hostId, templateId);
+			for (VMTemplateHostVO templateHostVO : templateHostVOs) {
+				VMTemplateHostVO lock = _tmpltHostDao.acquireInLockTable(templateHostVO.getId());
+				try {
+					if (lock == null) {
+						s_logger.debug("Failed to acquire lock when deleting templateHostVO with ID: " + templateHostVO.getId());
+						success = false;
+						break;
+					}
+					UsageEventUtils.publishUsageEvent(eventType, account.getId(), sZoneId, templateId, null, null, null);
+                    templateHostVO.setDestroyed(true);
+					_tmpltHostDao.update(templateHostVO.getId(), templateHostVO);
+                    String installPath = templateHostVO.getInstallPath();
+                    List<UserVmVO> userVmUsingIso = _userVmDao.listByIsoId(templateId);
+                    //check if there is any VM using this ISO.
+                    if (userVmUsingIso == null || userVmUsingIso.isEmpty()) {
+                    if (installPath != null) {
+                        Answer answer = _agentMgr.sendToSecStorage(secondaryStorageHost, new DeleteTemplateCommand(secondaryStorageHost.getStorageUrl(), installPath));
+
+                        if (answer == null || !answer.getResult()) {
+                            s_logger.debug("Failed to delete " + templateHostVO + " due to " + ((answer == null) ? "answer is null" : answer.getDetails()));
+                        } else {
+                            _tmpltHostDao.remove(templateHostVO.getId());
+                            s_logger.debug("Deleted template at: " + installPath);
+                        }
+                    } else {
+                        _tmpltHostDao.remove(templateHostVO.getId());
+                    }
+                    }
+					VMTemplateZoneVO templateZone = _tmpltZoneDao.findByZoneTemplate(sZoneId, templateId);
+
+					if (templateZone != null) {
+						_tmpltZoneDao.remove(templateZone.getId());
+					}
+				} finally {
+					if (lock != null) {
+						_tmpltHostDao.releaseFromLockTable(lock.getId());
+					}
+				}
+			}
+
+			if (!success) {
+				break;
+			}
+		}
+
+		s_logger.debug("Successfully marked template host refs for template: " + template.getName() + " as destroyed in zone: " + zoneName);
+
+		// If there are no more non-destroyed template host entries for this template, delete it
+		if (success && (_tmpltHostDao.listByTemplateId(templateId).size() == 0)) {
+			long accountId = template.getAccountId();
+
+			VMTemplateVO lock = _tmpltDao.acquireInLockTable(templateId);
+
+			try {
+				if (lock == null) {
+					s_logger.debug("Failed to acquire lock when deleting template with ID: " + templateId);
+					success = false;
+				} else if (_tmpltDao.remove(templateId)) {
+				    // Decrement the number of templates and total secondary storage space used by the account
+				    _resourceLimitMgr.decrementResourceCount(accountId, ResourceType.template);
+				    _resourceLimitMgr.recalculateResourceCount(accountId, account.getDomainId(),
+				            ResourceType.secondary_storage.getOrdinal());
+				}
+
+			} finally {
+				if (lock != null) {
+					_tmpltDao.releaseFromLockTable(lock.getId());
+				}
+			}
+
+			s_logger.debug("Removed template: " + template.getName() + " because all of its template host refs were marked as destroyed.");
+		}
+
+		return success;
+	}
+
+	public TemplateProfile prepareDelete(DeleteTemplateCmd cmd) {
+		TemplateProfile profile = super.prepareDelete(cmd);
+		VMTemplateVO template = (VMTemplateVO)profile.getTemplate();
+		Long zoneId = profile.getZoneId();
+
+		if (template.getTemplateType() == TemplateType.SYSTEM) {
+			throw new InvalidParameterValueException("The DomR template cannot be deleted.");
+		}
+
+		if (zoneId != null && (_ssvmMgr.findSecondaryStorageHost(zoneId) == null)) {
+			throw new InvalidParameterValueException("Failed to find a secondary storage host in the specified zone.");
+		}
+
+		return profile;
+	}
+
+	public TemplateProfile prepareDelete(DeleteIsoCmd cmd) {
+		TemplateProfile profile = super.prepareDelete(cmd);
+		Long zoneId = profile.getZoneId();
+
+		if (zoneId != null && (_ssvmMgr.findSecondaryStorageHost(zoneId) == null)) {
+    		throw new InvalidParameterValueException("Failed to find a secondary storage host in the specified zone.");
+    	}
+
+		return profile;
+	}
+}

@@ -27,9 +27,9 @@ import org.apache.cloudstack.api.response.FirewallRuleResponse;
 import org.apache.cloudstack.api.response.IPAddressResponse;
 import org.apache.cloudstack.api.response.ListResponse;
 import org.apache.log4j.Logger;
+import org.apache.network.rules.PortForwardingRule;
+import org.apache.utils.Pair;
 
-import com.cloud.network.rules.PortForwardingRule;
-import com.cloud.utils.Pair;
 
 @APICommand(name = "listPortForwardingRules", description="Lists all port forwarding rules for an IP address.", responseObject=FirewallRuleResponse.class)
 public class ListPortForwardingRulesCmd extends BaseListTaggedResourcesCmd {

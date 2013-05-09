@@ -27,12 +27,13 @@ import java.util.Map;
 import javax.inject.Inject;
 import javax.naming.ConfigurationException;
 
-import com.cloud.agent.AgentManager;
-import com.cloud.dc.dao.DataCenterDao;
-import com.cloud.dc.dao.HostPodDao;
-import com.cloud.host.dao.HostDao;
-import com.cloud.utils.component.ManagerBase;
-import com.cloud.vm.dao.NicDao;
+import org.apache.agent.AgentManager;
+import org.apache.dc.dao.DataCenterDao;
+import org.apache.dc.dao.HostPodDao;
+import org.apache.host.dao.HostDao;
+import org.apache.utils.component.ManagerBase;
+import org.apache.vm.dao.NicDao;
+
 
 public abstract class BareMetalPxeServiceBase extends ManagerBase implements BaremetalPxeService {
 	@Inject DataCenterDao _dcDao;

@@ -17,9 +17,9 @@
 package org.apache.cloudstack.api.response;
 
 import org.apache.cloudstack.api.ApiConstants;
-import com.cloud.serializer.Param;
 import com.google.gson.annotations.SerializedName;
 import org.apache.cloudstack.api.BaseResponse;
+import org.apache.serializer.Param;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -46,6 +46,9 @@ public class ApiDiscoveryResponse extends BaseResponse {
 
     @SerializedName(ApiConstants.RESPONSE)  @Param(description="api response fields", responseObject = ApiResponseResponse.class)
     private Set<ApiResponseResponse> apiResponse;
+
+    @SerializedName(ApiConstants.TYPE) @Param(description="response field type")
+    private String type;
 
     public ApiDiscoveryResponse(){
         params = new HashSet<ApiParameterResponse>();
@@ -80,6 +83,7 @@ public class ApiDiscoveryResponse extends BaseResponse {
     public void setAsync(Boolean isAsync) {
         this.isAsync = isAsync;
     }
+
 
     public boolean getAsync() {
         return isAsync;

@@ -24,28 +24,30 @@ import java.util.Map;
 import javax.inject.Inject;
 import javax.naming.ConfigurationException;
 
+import org.apache.agent.AgentManager;
+import org.apache.agent.Listener;
+import org.apache.agent.StartupCommandProcessor;
+import org.apache.agent.api.Answer;
+import org.apache.agent.api.Command;
+import org.apache.agent.api.SetupCommand;
+import org.apache.agent.api.StartupCommand;
+import org.apache.agent.manager.AgentAttache;
+import org.apache.agent.manager.Commands;
+import org.apache.exception.AgentUnavailableException;
+import org.apache.exception.ConnectionException;
+import org.apache.exception.OperationTimedoutException;
+import org.apache.host.HostEnvironment;
+import org.apache.host.HostVO;
+import org.apache.host.Status.Event;
+import org.apache.host.dao.HostDao;
+import org.apache.hypervisor.Hypervisor.HypervisorType;
 import org.apache.log4j.Logger;
+import org.apache.resource.ServerResource;
+import org.apache.utils.component.ManagerBase;
 
-import com.cloud.agent.AgentManager;
-import com.cloud.agent.Listener;
-import com.cloud.agent.StartupCommandProcessor;
-import com.cloud.agent.api.Answer;
-import com.cloud.agent.api.Command;
-import com.cloud.agent.api.SetupCommand;
-import com.cloud.agent.api.StartupCommand;
-import com.cloud.agent.manager.AgentAttache;
-import com.cloud.agent.manager.Commands;
-import com.cloud.exception.AgentUnavailableException;
-import com.cloud.exception.ConnectionException;
-import com.cloud.exception.OperationTimedoutException;
-import com.cloud.host.HostEnvironment;
-import com.cloud.host.HostVO;
-import com.cloud.host.Status.Event;
-import com.cloud.host.dao.HostDao;
-import com.cloud.hypervisor.Hypervisor.HypervisorType;
 import com.cloud.hypervisor.xen.resource.XcpOssResource;
-import com.cloud.resource.ServerResource;
-import com.cloud.utils.component.ManagerBase;
+
+
 
 public class DirectAgentManagerSimpleImpl extends ManagerBase implements AgentManager {
     private static final Logger logger = Logger.getLogger(DirectAgentManagerSimpleImpl.class);

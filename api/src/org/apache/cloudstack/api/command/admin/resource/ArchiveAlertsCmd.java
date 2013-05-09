@@ -28,10 +28,10 @@ import org.apache.cloudstack.api.ServerApiException;
 import org.apache.cloudstack.api.response.AlertResponse;
 import org.apache.cloudstack.api.response.ConditionResponse;
 import org.apache.cloudstack.api.response.SuccessResponse;
+import org.apache.exception.InvalidParameterValueException;
 import org.apache.log4j.Logger;
+import org.apache.user.Account;
 
-import com.cloud.exception.InvalidParameterValueException;
-import com.cloud.user.Account;
 
 @APICommand(name = "archiveAlerts", description = "Archive one or more alerts.", responseObject = SuccessResponse.class)
 public class ArchiveAlertsCmd extends BaseCmd {

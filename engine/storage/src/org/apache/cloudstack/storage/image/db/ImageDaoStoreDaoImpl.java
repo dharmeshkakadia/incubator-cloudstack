@@ -18,12 +18,12 @@
  */
 package org.apache.cloudstack.storage.image.db;
 
+import org.apache.utils.db.GenericDaoBase;
+import org.apache.utils.db.SearchCriteria2;
+import org.apache.utils.db.SearchCriteriaService;
+import org.apache.utils.db.SearchCriteria.Op;
 import org.springframework.stereotype.Component;
 
-import com.cloud.utils.db.GenericDaoBase;
-import com.cloud.utils.db.SearchCriteria2;
-import com.cloud.utils.db.SearchCriteriaService;
-import com.cloud.utils.db.SearchCriteria.Op;
 
 @Component
 public class ImageDaoStoreDaoImpl extends GenericDaoBase<ImageDataStoreVO, Long> implements ImageDataStoreDao {

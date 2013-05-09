@@ -30,8 +30,8 @@ import org.apache.cloudstack.engine.subsystem.api.storage.VolumeInfo;
 import org.apache.cloudstack.storage.datastore.ObjectInDataStoreManager;
 import org.springframework.stereotype.Component;
 
-import com.cloud.storage.VolumeVO;
-import com.cloud.storage.dao.VolumeDao;
+import org.apache.storage.VolumeVO;
+import org.apache.storage.dao.VolumeDao;
 
 @Component
 public class VolumeDataFactoryImpl implements VolumeDataFactory {

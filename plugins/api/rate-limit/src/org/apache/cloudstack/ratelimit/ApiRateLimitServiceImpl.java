@@ -27,21 +27,21 @@ import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
 
 import org.apache.log4j.Logger;
+import org.apache.user.Account;
+import org.apache.user.AccountService;
+import org.apache.user.User;
+import org.apache.utils.component.AdapterBase;
 
 import org.apache.cloudstack.acl.APIChecker;
 import org.apache.cloudstack.api.ApiConstants.LDAPParams;
 import org.apache.cloudstack.api.command.admin.ratelimit.ResetApiLimitCmd;
 import org.apache.cloudstack.api.command.user.ratelimit.GetApiLimitCmd;
 import org.apache.cloudstack.api.response.ApiLimitResponse;
+import org.apache.configuration.Config;
+import org.apache.configuration.dao.ConfigurationDao;
+import org.apache.exception.PermissionDeniedException;
+import org.apache.exception.RequestLimitException;
 
-import com.cloud.configuration.Config;
-import com.cloud.configuration.dao.ConfigurationDao;
-import com.cloud.exception.PermissionDeniedException;
-import com.cloud.exception.RequestLimitException;
-import com.cloud.user.Account;
-import com.cloud.user.AccountService;
-import com.cloud.user.User;
-import com.cloud.utils.component.AdapterBase;
 import org.springframework.stereotype.Component;
 
 @Component

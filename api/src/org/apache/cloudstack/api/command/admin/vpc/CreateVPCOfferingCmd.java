@@ -25,12 +25,12 @@ import org.apache.cloudstack.api.BaseAsyncCreateCmd;
 import org.apache.cloudstack.api.Parameter;
 import org.apache.cloudstack.api.ServerApiException;
 import org.apache.cloudstack.api.response.VpcOfferingResponse;
+import org.apache.event.EventTypes;
+import org.apache.exception.ResourceAllocationException;
 import org.apache.log4j.Logger;
+import org.apache.network.vpc.VpcOffering;
+import org.apache.user.Account;
 
-import com.cloud.event.EventTypes;
-import com.cloud.exception.ResourceAllocationException;
-import com.cloud.network.vpc.VpcOffering;
-import com.cloud.user.Account;
 
 @APICommand(name = "createVPCOffering", description="Creates VPC offering", responseObject=VpcOfferingResponse.class)
 public class CreateVPCOfferingCmd extends BaseAsyncCreateCmd{
@@ -98,7 +98,7 @@ public class CreateVPCOfferingCmd extends BaseAsyncCreateCmd{
 
     @Override
     public void create() throws ResourceAllocationException {
-        VpcOffering vpcOff = _vpcService.createVpcOffering(getVpcOfferingName(), getDisplayText(), getSupportedServices(), getServiceProviders());
+        VpcOffering vpcOff = _vpcProvSvc.createVpcOffering(getVpcOfferingName(), getDisplayText(), getSupportedServices(), getServiceProviders());
         if (vpcOff != null) {
             this.setEntityId(vpcOff.getId());
             this.setEntityUuid(vpcOff.getUuid());
@@ -109,7 +109,7 @@ public class CreateVPCOfferingCmd extends BaseAsyncCreateCmd{
 
     @Override
     public void execute() {
-        VpcOffering vpc = _vpcService.getVpcOffering(this.getEntityId());
+        VpcOffering vpc = _vpcProvSvc.getVpcOffering(this.getEntityId());
         if (vpc != null) {
             VpcOfferingResponse response = _responseGenerator.createVpcOfferingResponse(vpc);
             response.setResponseName(getCommandName());

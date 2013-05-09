@@ -21,9 +21,11 @@ import java.util.Map;
 import javax.ejb.Local;
 import javax.naming.ConfigurationException;
 
-import com.cloud.host.HostVO;
-import com.cloud.utils.component.AdapterBase;
-import com.cloud.vm.VMInstanceVO;
+import org.apache.ha.FenceBuilder;
+import org.apache.host.HostVO;
+import org.apache.utils.component.AdapterBase;
+import org.apache.vm.VMInstanceVO;
+
 
 @Local(value=FenceBuilder.class)
 public class VmwareFencer extends AdapterBase implements FenceBuilder {

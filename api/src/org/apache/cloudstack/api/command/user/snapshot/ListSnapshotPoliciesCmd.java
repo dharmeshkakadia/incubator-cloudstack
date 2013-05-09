@@ -27,9 +27,9 @@ import org.apache.cloudstack.api.response.ListResponse;
 import org.apache.cloudstack.api.response.SnapshotPolicyResponse;
 import org.apache.cloudstack.api.response.VolumeResponse;
 import org.apache.log4j.Logger;
+import org.apache.storage.snapshot.SnapshotPolicy;
+import org.apache.utils.Pair;
 
-import com.cloud.storage.snapshot.SnapshotPolicy;
-import com.cloud.utils.Pair;
 
 @APICommand(name = "listSnapshotPolicies", description="Lists snapshot policies.", responseObject=SnapshotPolicyResponse.class)
 public class ListSnapshotPoliciesCmd extends BaseListCmd {

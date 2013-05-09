@@ -28,17 +28,17 @@ import org.apache.cloudstack.engine.subsystem.api.storage.ObjectInDataStoreState
 import org.apache.cloudstack.engine.subsystem.api.storage.VolumeInfo;
 import org.apache.cloudstack.engine.subsystem.api.storage.disktype.DiskFormat;
 import org.apache.cloudstack.storage.datastore.ObjectInDataStoreManager;
+import org.apache.hypervisor.Hypervisor.HypervisorType;
 import org.apache.log4j.Logger;
+import org.apache.storage.Volume;
+import org.apache.storage.VolumeVO;
+import org.apache.storage.dao.VolumeDao;
+import org.apache.utils.component.ComponentContext;
+import org.apache.utils.exception.CloudRuntimeException;
+import org.apache.utils.fsm.NoTransitionException;
+import org.apache.utils.fsm.StateMachine2;
+import org.apache.utils.storage.encoding.EncodingType;
 
-import com.cloud.hypervisor.Hypervisor.HypervisorType;
-import com.cloud.storage.Volume;
-import com.cloud.storage.VolumeVO;
-import com.cloud.storage.dao.VolumeDao;
-import com.cloud.utils.component.ComponentContext;
-import com.cloud.utils.exception.CloudRuntimeException;
-import com.cloud.utils.fsm.NoTransitionException;
-import com.cloud.utils.fsm.StateMachine2;
-import com.cloud.utils.storage.encoding.EncodingType;
 
 public class VolumeObject implements VolumeInfo {
     private static final Logger s_logger = Logger.getLogger(VolumeObject.class);
@@ -176,6 +176,8 @@ public class VolumeObject implements VolumeInfo {
                     volEvent = Volume.Event.CreateRequested;
                 } else if (event == ObjectInDataStoreStateMachine.Event.CopyingRequested) {
                     volEvent = Volume.Event.CopyRequested;
+                } else if (event == ObjectInDataStoreStateMachine.Event.MigrationRequested) {
+                    volEvent = Volume.Event.MigrationRequested;
                 }
             }
             

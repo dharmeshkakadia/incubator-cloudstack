@@ -24,10 +24,10 @@ import java.util.List;
 import javax.ejb.Local;
 
 import org.apache.log4j.Logger;
+import org.apache.resource.ServerResource;
+import org.apache.utils.exception.CloudRuntimeException;
+import org.apache.utils.script.Script;
 
-import com.cloud.resource.ServerResource;
-import com.cloud.utils.exception.CloudRuntimeException;
-import com.cloud.utils.script.Script;
 
 
 @Local(value=ServerResource.class)

@@ -32,11 +32,11 @@ import org.apache.cloudstack.engine.cloud.entity.api.NetworkEntity;
 import org.apache.cloudstack.engine.cloud.entity.api.TemplateEntity;
 import org.apache.cloudstack.engine.cloud.entity.api.VirtualMachineEntity;
 import org.apache.cloudstack.engine.cloud.entity.api.VolumeEntity;
+import org.apache.deploy.DeploymentPlan;
+import org.apache.exception.InsufficientCapacityException;
+import org.apache.hypervisor.Hypervisor;
+import org.apache.vm.NicProfile;
 
-import com.cloud.deploy.DeploymentPlan;
-import com.cloud.exception.InsufficientCapacityException;
-import com.cloud.hypervisor.Hypervisor;
-import com.cloud.vm.NicProfile;
 
 @Path("orchestration")
 @Produces({"application/json", "application/xml"})

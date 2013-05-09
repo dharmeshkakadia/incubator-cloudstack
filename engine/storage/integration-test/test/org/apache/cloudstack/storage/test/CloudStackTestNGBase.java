@@ -18,14 +18,14 @@ package org.apache.cloudstack.storage.test;
 
 import java.lang.reflect.Method;
 
+import org.apache.utils.db.DB;
+import org.apache.utils.db.Transaction;
 import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 
-import com.cloud.utils.db.DB;
-import com.cloud.utils.db.Transaction;
 
 public class CloudStackTestNGBase extends AbstractTestNGSpringContextTests {
     private String hostGateway;

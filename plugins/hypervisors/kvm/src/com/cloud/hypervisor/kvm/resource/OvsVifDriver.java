@@ -23,17 +23,17 @@ import java.util.Map;
 
 import javax.naming.ConfigurationException;
 
+import org.apache.agent.api.to.NicTO;
+import org.apache.exception.InternalErrorException;
 import org.apache.log4j.Logger;
+import org.apache.network.Networks;
+import org.apache.utils.NumbersUtil;
+import org.apache.utils.net.NetUtils;
+import org.apache.utils.script.OutputInterpreter;
+import org.apache.utils.script.Script;
 import org.libvirt.LibvirtException;
 
-import com.cloud.agent.api.to.NicTO;
-import com.cloud.exception.InternalErrorException;
 import com.cloud.hypervisor.kvm.resource.LibvirtVMDef.InterfaceDef;
-import com.cloud.network.Networks;
-import com.cloud.utils.NumbersUtil;
-import com.cloud.utils.net.NetUtils;
-import com.cloud.utils.script.OutputInterpreter;
-import com.cloud.utils.script.Script;
 
 public class OvsVifDriver extends VifDriverBase {
     private static final Logger s_logger = Logger.getLogger(OvsVifDriver.class);

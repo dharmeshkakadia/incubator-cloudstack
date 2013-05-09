@@ -20,8 +20,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import com.cloud.hypervisor.vmware.util.VmwareClient;
-import com.cloud.hypervisor.vmware.util.VmwareContext;
+import org.apache.hypervisor.vmware.util.VmwareClient;
+import org.apache.hypervisor.vmware.util.VmwareContext;
+
 
 public class VmwareSecondaryStorageContextFactory {
 	private static volatile int s_seq = 1;

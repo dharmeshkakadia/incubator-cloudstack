@@ -16,7 +16,7 @@
 // under the License.
 package org.apache.cloudstack.storage.command;
 
-import com.cloud.agent.api.Command;
+import org.apache.agent.api.Command;
 
 public class CopyCmd extends Command implements StorageSubSystemCommand {
     private String srcUri;

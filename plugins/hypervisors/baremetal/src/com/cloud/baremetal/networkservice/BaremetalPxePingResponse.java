@@ -20,9 +20,9 @@ package com.cloud.baremetal.networkservice;
 
 import org.apache.cloudstack.api.ApiConstants;
 import org.apache.cloudstack.api.EntityReference;
+import org.apache.serializer.Param;
 
 import com.cloud.baremetal.database.BaremetalPxeVO;
-import com.cloud.serializer.Param;
 import com.google.gson.annotations.SerializedName;
 @EntityReference(value=BaremetalPxeVO.class)
 public class BaremetalPxePingResponse extends BaremetalPxeResponse {

@@ -28,8 +28,8 @@ import javax.persistence.SecondaryTable;
 import javax.persistence.SecondaryTables;
 import javax.persistence.Table;
 
-import com.cloud.utils.net.Ip;
 import org.apache.cloudstack.api.InternalIdentity;
+import org.apache.utils.net.Ip;
 
 @Entity
 @Table(name = ("elastic_lb_vm_map"))

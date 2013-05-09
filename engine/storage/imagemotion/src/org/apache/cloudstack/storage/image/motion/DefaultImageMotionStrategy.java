@@ -18,12 +18,17 @@
  */
 package org.apache.cloudstack.storage.image.motion;
 
+import java.util.Map;
+
 import javax.inject.Inject;
 
+import org.apache.agent.api.Answer;
+import org.apache.agent.api.to.VirtualMachineTO;
 import org.apache.cloudstack.engine.subsystem.api.storage.CopyCommandResult;
 import org.apache.cloudstack.engine.subsystem.api.storage.DataObject;
 import org.apache.cloudstack.engine.subsystem.api.storage.DataStore;
 import org.apache.cloudstack.engine.subsystem.api.storage.EndPoint;
+import org.apache.cloudstack.engine.subsystem.api.storage.VolumeInfo;
 import org.apache.cloudstack.framework.async.AsyncCallbackDispatcher;
 import org.apache.cloudstack.framework.async.AsyncCompletionCallback;
 import org.apache.cloudstack.framework.async.AsyncRpcConext;
@@ -31,8 +36,8 @@ import org.apache.cloudstack.storage.command.CopyCmd;
 import org.apache.cloudstack.storage.command.CopyCmdAnswer;
 import org.apache.cloudstack.storage.endpoint.EndPointSelector;
 import org.apache.cloudstack.storage.volume.TemplateOnPrimaryDataStoreInfo;
+import org.apache.host.Host;
 
-import com.cloud.agent.api.Answer;
 
 //At least one of datastore is coming from image store or image cache store
 
@@ -70,12 +75,12 @@ public class DefaultImageMotionStrategy implements ImageMotionStrategy {
         CommandResult result = new CommandResult();
        
         if (!answer.getResult()) {
-            result.setSucess(answer.getResult());
+            result.setSuccess(answer.getResult());
             result.setResult(answer.getDetails());
         } else {
             TemplateOnPrimaryDataStoreInfo templateStore = context.getTemplate();
             templateStore.setPath(answer.getPath());
-            result.setSucess(true);
+            result.setSuccess(true);
         }
 
         parentCall.complete(result);
@@ -92,6 +97,11 @@ public class DefaultImageMotionStrategy implements ImageMotionStrategy {
                 || srcStore.getRole() == DataStoreRole.ImageCache) {
             return true;
         }*/
+        return false;
+    }
+
+    @Override
+    public boolean canHandle(Map<VolumeInfo, DataStore> volumeMap, Host srcHost, Host destHost) {
         return false;
     }
 
@@ -137,4 +147,12 @@ public class DefaultImageMotionStrategy implements ImageMotionStrategy {
         
     }
 
+    @Override
+    public Void copyAsync(Map<VolumeInfo, DataStore> volumeMap, VirtualMachineTO vmTo, Host srcHost, Host destHost,
+            AsyncCompletionCallback<CopyCommandResult> callback) {
+        CopyCommandResult result = new CopyCommandResult("", null);
+        result.setResult("not implemented");
+        callback.complete(result);
+        return null;
+    }
 }

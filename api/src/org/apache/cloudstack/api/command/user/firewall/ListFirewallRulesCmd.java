@@ -28,9 +28,9 @@ import org.apache.cloudstack.api.response.FirewallRuleResponse;
 import org.apache.cloudstack.api.response.IPAddressResponse;
 import org.apache.cloudstack.api.response.ListResponse;
 import org.apache.log4j.Logger;
+import org.apache.network.rules.FirewallRule;
+import org.apache.utils.Pair;
 
-import com.cloud.network.rules.FirewallRule;
-import com.cloud.utils.Pair;
 
 @APICommand(name = "listFirewallRules", description="Lists all firewall rules for an IP address.", responseObject=FirewallResponse.class)
 public class ListFirewallRulesCmd extends BaseListTaggedResourcesCmd {

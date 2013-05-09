@@ -16,8 +16,8 @@
 // under the License.
 package org.apache.cloudstack.storage.command;
 
-import com.cloud.agent.api.Answer;
-import com.cloud.agent.api.Command;
+import org.apache.agent.api.Answer;
+import org.apache.agent.api.Command;
 
 public class CopyCmdAnswer extends Answer {
     private final String path;

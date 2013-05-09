@@ -19,13 +19,16 @@ package com.cloud.hypervisor;
 import javax.ejb.Local;
 import javax.inject.Inject;
 
-import com.cloud.agent.api.to.VirtualMachineTO;
-import com.cloud.hypervisor.Hypervisor.HypervisorType;
-import com.cloud.storage.GuestOSVO;
-import com.cloud.storage.dao.GuestOSDao;
-import com.cloud.template.VirtualMachineTemplate.BootloaderType;
-import com.cloud.vm.VirtualMachine;
-import com.cloud.vm.VirtualMachineProfile;
+import org.apache.agent.api.to.VirtualMachineTO;
+import org.apache.hypervisor.HypervisorGuru;
+import org.apache.hypervisor.HypervisorGuruBase;
+import org.apache.hypervisor.Hypervisor.HypervisorType;
+import org.apache.storage.GuestOSVO;
+import org.apache.storage.dao.GuestOSDao;
+import org.apache.template.VirtualMachineTemplate.BootloaderType;
+import org.apache.vm.VirtualMachine;
+import org.apache.vm.VirtualMachineProfile;
+
 
 @Local(value=HypervisorGuru.class)
 public class XenServerGuru extends HypervisorGuruBase implements HypervisorGuru {

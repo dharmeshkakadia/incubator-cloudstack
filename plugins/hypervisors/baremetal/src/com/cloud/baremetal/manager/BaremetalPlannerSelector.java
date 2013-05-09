@@ -21,13 +21,14 @@ import java.util.Map;
 import javax.ejb.Local;
 import javax.naming.ConfigurationException;
 
-import com.cloud.deploy.AbstractDeployPlannerSelector;
-import com.cloud.deploy.DeployPlannerSelector;
-import com.cloud.hypervisor.Hypervisor.HypervisorType;
-import com.cloud.vm.UserVmVO;
+import org.apache.deploy.AbstractDeployPlannerSelector;
+import org.apache.deploy.DeployPlannerSelector;
+import org.apache.hypervisor.Hypervisor.HypervisorType;
+import org.apache.vm.UserVmVO;
+
 @Local(value = {DeployPlannerSelector.class})
 public class BaremetalPlannerSelector extends AbstractDeployPlannerSelector{
-    
+
     @Override
     public String selectPlanner(UserVmVO vm) {
         if (vm.getHypervisorType() == HypervisorType.BareMetal) {

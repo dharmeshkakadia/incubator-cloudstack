@@ -14,13 +14,13 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
-// 
+//
 package com.cloud.ucs.manager;
 
 import org.apache.cloudstack.api.ApiConstants;
 import org.apache.cloudstack.api.BaseResponse;
+import org.apache.serializer.Param;
 
-import com.cloud.serializer.Param;
 import com.google.gson.annotations.SerializedName;
 
 public class UcsProfileResponse extends BaseResponse {

@@ -28,30 +28,30 @@ import javax.ejb.Local;
 import javax.inject.Inject;
 import javax.naming.ConfigurationException;
 
+import org.apache.agent.api.StartupCommand;
+import org.apache.agent.api.StartupRoutingCommand;
+import org.apache.configuration.Config;
+import org.apache.dc.ClusterVO;
+import org.apache.dc.dao.ClusterDao;
+import org.apache.exception.DiscoveryException;
+import org.apache.host.HostInfo;
+import org.apache.host.HostVO;
+import org.apache.hypervisor.Hypervisor.HypervisorType;
 import org.apache.log4j.Logger;
+import org.apache.resource.Discoverer;
+import org.apache.resource.DiscovererBase;
+import org.apache.resource.ResourceManager;
+import org.apache.resource.ResourceStateAdapter;
+import org.apache.resource.ServerResource;
+import org.apache.resource.UnableDeleteHostException;
+import org.apache.utils.db.SearchCriteria;
+import org.apache.utils.db.SearchCriteria2;
+import org.apache.utils.exception.CloudRuntimeException;
+import org.apache.utils.ssh.SSHCmdHelper;
 import org.apache.xmlrpc.XmlRpcException;
 
-import com.cloud.configuration.Config;
-import com.cloud.agent.api.StartupCommand;
-import com.cloud.agent.api.StartupRoutingCommand;
-import com.cloud.dc.ClusterVO;
-import com.cloud.dc.dao.ClusterDao;
-import com.cloud.exception.DiscoveryException;
-import com.cloud.host.HostInfo;
-import com.cloud.host.HostVO;
-import com.cloud.hypervisor.Hypervisor.HypervisorType;
 import com.cloud.ovm.object.Connection;
 import com.cloud.ovm.object.OvmHost;
-import com.cloud.resource.Discoverer;
-import com.cloud.resource.DiscovererBase;
-import com.cloud.resource.ResourceManager;
-import com.cloud.resource.ResourceStateAdapter;
-import com.cloud.resource.ServerResource;
-import com.cloud.resource.UnableDeleteHostException;
-import com.cloud.utils.db.SearchCriteria;
-import com.cloud.utils.db.SearchCriteria2;
-import com.cloud.utils.exception.CloudRuntimeException;
-import com.cloud.utils.ssh.SSHCmdHelper;
 
 @Local(value = Discoverer.class)
 public class OvmDiscoverer extends DiscovererBase implements Discoverer,
@@ -279,7 +279,7 @@ public class OvmDiscoverer extends DiscovererBase implements Discoverer,
 	@Override
 	public DeleteHostAnswer deleteHost(HostVO host, boolean isForced,
 			boolean isForceDeleteStorage) throws UnableDeleteHostException {
-		if (host.getType() != com.cloud.host.Host.Type.Routing
+		if (host.getType() != org.apache.host.Host.Type.Routing
 				|| host.getHypervisorType() != HypervisorType.Ovm) {
 			return null;
 		}

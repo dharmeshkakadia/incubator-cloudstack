@@ -18,11 +18,13 @@ package com.cloud.ha;
 
 import javax.ejb.Local;
 
-import com.cloud.host.HostVO;
-import com.cloud.host.Status;
-import com.cloud.hypervisor.Hypervisor.HypervisorType;
-import com.cloud.utils.component.AdapterBase;
-import com.cloud.vm.VMInstanceVO;
+import org.apache.ha.Investigator;
+import org.apache.host.HostVO;
+import org.apache.host.Status;
+import org.apache.hypervisor.Hypervisor.HypervisorType;
+import org.apache.utils.component.AdapterBase;
+import org.apache.vm.VMInstanceVO;
+
 
 @Local(value=Investigator.class)
 public class VmwareInvestigator extends AdapterBase implements Investigator {

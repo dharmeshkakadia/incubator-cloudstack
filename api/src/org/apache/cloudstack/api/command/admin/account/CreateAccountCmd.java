@@ -16,9 +16,6 @@
 // under the License.
 package org.apache.cloudstack.api.command.admin.account;
 
-import java.util.Collection;
-import java.util.Map;
-
 import org.apache.cloudstack.api.APICommand;
 import org.apache.cloudstack.api.ApiConstants;
 import org.apache.cloudstack.api.ApiErrorCode;
@@ -27,14 +24,15 @@ import org.apache.cloudstack.api.Parameter;
 import org.apache.cloudstack.api.ServerApiException;
 import org.apache.cloudstack.api.response.AccountResponse;
 import org.apache.cloudstack.api.response.DomainResponse;
-import org.apache.cloudstack.api.response.UserResponse;
 import org.apache.log4j.Logger;
+import org.apache.user.Account;
+import org.apache.user.UserAccount;
+import org.apache.user.UserContext;
 
-import com.cloud.user.Account;
-import com.cloud.user.UserAccount;
-import com.cloud.user.UserContext;
+import java.util.Collection;
+import java.util.Map;
 
-@APICommand(name = "createAccount", description="Creates an account", responseObject=UserResponse.class)
+@APICommand(name = "createAccount", description="Creates an account", responseObject=AccountResponse.class)
 public class CreateAccountCmd extends BaseCmd {
     public static final Logger s_logger = Logger.getLogger(CreateAccountCmd.class.getName());
 
@@ -63,7 +61,7 @@ public class CreateAccountCmd extends BaseCmd {
     @Parameter(name=ApiConstants.LASTNAME, type=CommandType.STRING, required=true, description="lastname")
     private String lastName;
 
-    @Parameter(name=ApiConstants.PASSWORD, type=CommandType.STRING, required=true, description="Hashed password (Default is MD5). If you wish to use any other hashing algorithm, you would need to write a custom authentication adapter See Docs section.")
+    @Parameter(name=ApiConstants.PASSWORD, type=CommandType.STRING, required=true, description="Clear text password (Default hashed to SHA256SALT). If you wish to use any other hashing algorithm, you would need to write a custom authentication adapter See Docs section.")
     private String password;
 
     @Parameter(name=ApiConstants.TIMEZONE, type=CommandType.STRING, description="Specifies a timezone for this command. For more information on the timezone parameter, see Time Zone Format.")

@@ -14,7 +14,7 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
-// 
+//
 package com.cloud.ucs.manager;
 
 import java.io.File;
@@ -39,33 +39,33 @@ import org.apache.cloudstack.api.ServerApiException;
 import org.apache.cloudstack.api.response.ClusterResponse;
 import org.apache.cloudstack.api.response.ListResponse;
 import org.apache.cxf.helpers.FileUtils;
+import org.apache.dc.ClusterDetailsDao;
+import org.apache.dc.DataCenterVO;
+import org.apache.dc.dao.ClusterDao;
+import org.apache.dc.dao.DataCenterDao;
+import org.apache.host.HostVO;
+import org.apache.host.dao.HostDao;
+import org.apache.hypervisor.Hypervisor.HypervisorType;
 import org.apache.log4j.Logger;
+import org.apache.org.Cluster;
+import org.apache.resource.ResourceService;
+import org.apache.utils.db.DB;
+import org.apache.utils.db.SearchCriteria2;
+import org.apache.utils.db.SearchCriteriaService;
+import org.apache.utils.db.Transaction;
+import org.apache.utils.db.SearchCriteria.Op;
+import org.apache.utils.exception.CloudRuntimeException;
+import org.apache.utils.script.Script;
+import org.apache.utils.xmlobject.XmlObject;
+import org.apache.utils.xmlobject.XmlObjectParser;
 import org.springframework.stereotype.Component;
 
-import com.cloud.dc.ClusterDetailsDao;
-import com.cloud.dc.DataCenterVO;
-import com.cloud.dc.dao.ClusterDao;
-import com.cloud.dc.dao.DataCenterDao;
-import com.cloud.host.HostVO;
-import com.cloud.host.dao.HostDao;
-import com.cloud.hypervisor.Hypervisor.HypervisorType;
-import com.cloud.org.Cluster;
-import com.cloud.resource.ResourceService;
 import com.cloud.ucs.database.UcsBladeDao;
 import com.cloud.ucs.database.UcsBladeVO;
 import com.cloud.ucs.database.UcsManagerDao;
 import com.cloud.ucs.database.UcsManagerVO;
 import com.cloud.ucs.structure.ComputeBlade;
 import com.cloud.ucs.structure.UcsProfile;
-import com.cloud.utils.db.DB;
-import com.cloud.utils.db.SearchCriteria.Op;
-import com.cloud.utils.db.SearchCriteria2;
-import com.cloud.utils.db.SearchCriteriaService;
-import com.cloud.utils.db.Transaction;
-import com.cloud.utils.exception.CloudRuntimeException;
-import com.cloud.utils.script.Script;
-import com.cloud.utils.xmlobject.XmlObject;
-import com.cloud.utils.xmlobject.XmlObjectParser;
 
 @Local(value = { UcsManager.class })
 public class UcsManagerImpl implements UcsManager {
@@ -121,7 +121,7 @@ public class UcsManagerImpl implements UcsManager {
             bladeDao.persist(vo);
         }
     }
-    
+
     @Override
     @DB
     public UcsManagerResponse addUcsManager(AddUcsManagerCmd cmd) {
@@ -142,9 +142,9 @@ public class UcsManagerImpl implements UcsManager {
         rsp.setName(vo.getName());
         rsp.setUrl(vo.getUrl());
         rsp.setZoneId(String.valueOf(vo.getZoneId()));
-        
+
         discoverBlades(vo);
-        
+
         return rsp;
     }
 
@@ -230,11 +230,11 @@ public class UcsManagerImpl implements UcsManager {
         if (bvo == null) {
             throw new IllegalArgumentException(String.format("cannot find UCS blade[id:%s, ucs manager id:%s]", cmd.getBladeId(), cmd.getUcsManagerId()));
         }
-        
+
         if (bvo.getHostId() != null) {
             throw new CloudRuntimeException(String.format("blade[id:%s,  dn:%s] has been associated with host[id:%s]", bvo.getId(), bvo.getDn(), bvo.getHostId()));
         }
-        
+
         UcsManagerVO mgrvo = ucsDao.findById(cmd.getUcsManagerId());
         String cookie = getCookie(cmd.getUcsManagerId());
         String pdn = cloneProfile(mgrvo.getId(), cmd.getProfileDn(), "profile-for-blade-" + bvo.getId());
@@ -247,29 +247,29 @@ public class UcsManagerImpl implements UcsManager {
             if (isProfileAssociated(mgrvo.getId(), bvo.getDn())) {
                 break;
             }
-            
+
             try {
                 TimeUnit.SECONDS.sleep(2);
             } catch (InterruptedException e) {
                 throw new CloudRuntimeException(e);
             }
-            
+
             count += 2;
         }
-        
+
         if (count >= timeout) {
             throw new CloudRuntimeException(String.format("associating profile[%s] to balde[%s] timeout after 600 seconds", pdn, bvo.getDn()));
         }
-        
+
         bvo.setProfileDn(pdn);
         bladeDao.update(bvo.getId(), bvo);
-        
+
         UcsBladeResponse rsp = bladeVOToResponse(bvo);
-        
+
         s_logger.debug(String.format("successfully associated profile[%s] to blade[%s]", pdn, bvo.getDn()));
         return rsp;
     }
-    
+
     private String hostIdToUuid(Long hostId) {
         if (hostId == null) {
             return null;
@@ -284,7 +284,7 @@ public class UcsManagerImpl implements UcsManager {
     }
     
     private String ucsManagerIdToUuid(Long ucsMgrId) {
-        UcsManagerVO vo = ucsDao.findById(ucsMgrId); 
+        UcsManagerVO vo = ucsDao.findById(ucsMgrId);
         return vo.getUuid();
     }
 
@@ -308,7 +308,7 @@ public class UcsManagerImpl implements UcsManager {
         response.setResponses(rsps);
         return response;
     }
-    
+
     private UcsBladeResponse bladeVOToResponse(UcsBladeVO vo) {
         UcsBladeResponse rsp = new UcsBladeResponse();
         rsp.setObjectName("ucsblade");
@@ -332,7 +332,7 @@ public class UcsManagerImpl implements UcsManager {
         
         ListResponse<UcsBladeResponse> response = new ListResponse<UcsBladeResponse>();
         response.setResponses(rsps);
-        
+
         return response;
     }
 

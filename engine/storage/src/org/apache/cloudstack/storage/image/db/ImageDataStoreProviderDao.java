@@ -18,7 +18,7 @@
  */
 package org.apache.cloudstack.storage.image.db;
 
-import com.cloud.utils.db.GenericDao;
+import org.apache.utils.db.GenericDao;
 
 public interface ImageDataStoreProviderDao extends GenericDao<ImageDataStoreProviderVO, Long> {
     public ImageDataStoreProviderVO findByName(String name);

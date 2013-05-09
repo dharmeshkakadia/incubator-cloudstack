@@ -27,75 +27,53 @@ import java.util.UUID;
 
 import javax.inject.Inject;
 
+import org.apache.agent.AgentManager;
+import org.apache.agent.api.Answer;
+import org.apache.agent.api.CreateStoragePoolCommand;
+import org.apache.agent.api.DeleteStoragePoolCommand;
+import org.apache.agent.api.StoragePoolInfo;
+import org.apache.alert.AlertManager;
 import org.apache.cloudstack.engine.subsystem.api.storage.ClusterScope;
 import org.apache.cloudstack.engine.subsystem.api.storage.DataStore;
 import org.apache.cloudstack.engine.subsystem.api.storage.DataStoreManager;
-import org.apache.cloudstack.engine.subsystem.api.storage.DataStoreRole;
 import org.apache.cloudstack.engine.subsystem.api.storage.HostScope;
 import org.apache.cloudstack.engine.subsystem.api.storage.PrimaryDataStoreInfo;
 import org.apache.cloudstack.engine.subsystem.api.storage.PrimaryDataStoreLifeCycle;
 import org.apache.cloudstack.engine.subsystem.api.storage.PrimaryDataStoreParameters;
-import org.apache.cloudstack.engine.subsystem.api.storage.ScopeType;
 import org.apache.cloudstack.engine.subsystem.api.storage.ZoneScope;
 import org.apache.cloudstack.storage.datastore.db.PrimaryDataStoreDao;
 import org.apache.cloudstack.storage.datastore.db.StoragePoolVO;
 import org.apache.cloudstack.storage.volume.datastore.PrimaryDataStoreHelper;
+import org.apache.exception.DiscoveryException;
+import org.apache.exception.InvalidParameterValueException;
+import org.apache.host.Host;
+import org.apache.host.HostVO;
+import org.apache.hypervisor.Hypervisor.HypervisorType;
 import org.apache.log4j.Logger;
+import org.apache.resource.ResourceManager;
+import org.apache.server.ManagementServer;
+import org.apache.storage.OCFS2Manager;
+import org.apache.storage.StorageManager;
+import org.apache.storage.StoragePool;
+import org.apache.storage.StoragePoolAutomation;
+import org.apache.storage.StoragePoolDiscoverer;
+import org.apache.storage.StoragePoolHostVO;
+import org.apache.storage.Storage.StoragePoolType;
+import org.apache.storage.dao.StoragePoolHostDao;
+import org.apache.storage.dao.StoragePoolWorkDao;
+import org.apache.storage.dao.VolumeDao;
+import org.apache.user.dao.UserDao;
+import org.apache.utils.NumbersUtil;
+import org.apache.utils.UriUtils;
+import org.apache.utils.db.DB;
+import org.apache.utils.exception.CloudRuntimeException;
+import org.apache.vm.VirtualMachineManager;
+import org.apache.vm.dao.ConsoleProxyDao;
+import org.apache.vm.dao.DomainRouterDao;
+import org.apache.vm.dao.SecondaryStorageVmDao;
+import org.apache.vm.dao.UserVmDao;
+import org.apache.vm.dao.VMInstanceDao;
 
-import com.cloud.agent.AgentManager;
-import com.cloud.agent.api.Answer;
-import com.cloud.agent.api.CreateStoragePoolCommand;
-import com.cloud.agent.api.DeleteStoragePoolCommand;
-import com.cloud.agent.api.ModifyStoragePoolCommand;
-import com.cloud.agent.api.StoragePoolInfo;
-import com.cloud.alert.AlertManager;
-import com.cloud.capacity.Capacity;
-import com.cloud.capacity.CapacityVO;
-import com.cloud.capacity.dao.CapacityDao;
-import com.cloud.exception.DiscoveryException;
-import com.cloud.exception.InvalidParameterValueException;
-import com.cloud.host.Host;
-import com.cloud.host.HostVO;
-import com.cloud.host.Status;
-import com.cloud.hypervisor.Hypervisor.HypervisorType;
-import com.cloud.resource.ResourceManager;
-import com.cloud.server.ManagementServer;
-import com.cloud.storage.OCFS2Manager;
-import com.cloud.storage.Storage.StoragePoolType;
-import com.cloud.storage.StorageManager;
-import com.cloud.storage.StoragePool;
-import com.cloud.storage.StoragePoolAutomation;
-import com.cloud.storage.StoragePoolDiscoverer;
-import com.cloud.storage.StoragePoolHostVO;
-import com.cloud.storage.StoragePoolStatus;
-import com.cloud.storage.StoragePoolWorkVO;
-import com.cloud.storage.VolumeVO;
-import com.cloud.storage.dao.StoragePoolHostDao;
-import com.cloud.storage.dao.StoragePoolWorkDao;
-import com.cloud.storage.dao.VolumeDao;
-import com.cloud.user.Account;
-import com.cloud.user.User;
-import com.cloud.user.UserContext;
-import com.cloud.user.dao.UserDao;
-import com.cloud.utils.NumbersUtil;
-import com.cloud.utils.UriUtils;
-import com.cloud.utils.db.DB;
-import com.cloud.utils.db.Transaction;
-import com.cloud.utils.exception.CloudRuntimeException;
-import com.cloud.utils.exception.ExecutionException;
-import com.cloud.vm.ConsoleProxyVO;
-import com.cloud.vm.DomainRouterVO;
-import com.cloud.vm.SecondaryStorageVmVO;
-import com.cloud.vm.UserVmVO;
-import com.cloud.vm.VMInstanceVO;
-import com.cloud.vm.VirtualMachine;
-import com.cloud.vm.VirtualMachine.State;
-import com.cloud.vm.VirtualMachineManager;
-import com.cloud.vm.dao.ConsoleProxyDao;
-import com.cloud.vm.dao.DomainRouterDao;
-import com.cloud.vm.dao.SecondaryStorageVmDao;
-import com.cloud.vm.dao.UserVmDao;
-import com.cloud.vm.dao.VMInstanceDao;
 
 public class CloudStackPrimaryDataStoreLifeCycleImpl implements
         PrimaryDataStoreLifeCycle {
@@ -157,7 +135,7 @@ public class CloudStackPrimaryDataStoreLifeCycleImpl implements
             throw new InvalidParameterValueException(
                     "Cluster id requires pod id");
         }
-        
+
         PrimaryDataStoreParameters parameters = new PrimaryDataStoreParameters();
 
         URI uri = null;
@@ -195,7 +173,7 @@ public class CloudStackPrimaryDataStoreLifeCycleImpl implements
         String tags = (String) dsInfos.get("tags");
         Map<String, String> details = (Map<String, String>) dsInfos
                 .get("details");
-        
+
         parameters.setTags(tags);
         parameters.setDetails(details);
 
@@ -204,11 +182,11 @@ public class CloudStackPrimaryDataStoreLifeCycleImpl implements
         String hostPath = uri.getPath();
         Object localStorage = dsInfos.get("localStorage");
         if (localStorage != null) {
-            hostPath = hostPath.replace("/", "");
+            hostPath = hostPath.replaceFirst("/", "");
         }
         String userInfo = uri.getUserInfo();
         int port = uri.getPort();
-        StoragePoolVO pool = null;
+        StoragePool pool = null;
         if (s_logger.isDebugEnabled()) {
             s_logger.debug("createPool Params @ scheme - " + scheme
                     + " storageHost - " + storageHost + " hostPath - "
@@ -272,7 +250,7 @@ public class CloudStackPrimaryDataStoreLifeCycleImpl implements
                 parameters.setPath(hostPath);
             } else {
                 for (StoragePoolDiscoverer discoverer : _discoverers) {
-                    Map<StoragePoolVO, Map<String, String>> pools;
+                    Map<? extends StoragePool, Map<String, String>> pools;
                     try {
                         pools = discoverer.find(zoneId, podId, uri, details);
                     } catch (DiscoveryException e) {
@@ -281,7 +259,7 @@ public class CloudStackPrimaryDataStoreLifeCycleImpl implements
                                 e);
                     }
                     if (pools != null) {
-                        Map.Entry<StoragePoolVO, Map<String, String>> entry = pools
+                        Map.Entry<? extends StoragePool, Map<String, String>> entry = pools
                                 .entrySet().iterator().next();
                         pool = entry.getKey();
                         details = entry.getValue();
@@ -310,7 +288,7 @@ public class CloudStackPrimaryDataStoreLifeCycleImpl implements
             parameters.setPath(hostPath);
         } else {
             StoragePoolType type = Enum.valueOf(StoragePoolType.class, scheme);
-                
+
             if (type != null) {
                 parameters.setType(type);
                 parameters.setHost(storageHost);
@@ -332,7 +310,7 @@ public class CloudStackPrimaryDataStoreLifeCycleImpl implements
                         + " already in use by another pod (id=" + oldPodId + ")");
             }
         }
-      
+
         Object existingUuid = dsInfos.get("uuid");
         String uuid = null;
 
@@ -348,6 +326,7 @@ public class CloudStackPrimaryDataStoreLifeCycleImpl implements
                     new String(storageHost + hostPath).getBytes()).toString();
         }
 
+
         List<StoragePoolVO> spHandles = primaryDataStoreDao
                 .findIfDuplicatePoolsExistByUUID(uuid);
         if ((spHandles != null) && (spHandles.size() > 0)) {
@@ -358,6 +337,7 @@ public class CloudStackPrimaryDataStoreLifeCycleImpl implements
                     "Another active pool with the same uuid already exists");
         }
 
+
         String poolName = (String) dsInfos.get("name");
 
         parameters.setUuid(uuid);
@@ -366,7 +346,7 @@ public class CloudStackPrimaryDataStoreLifeCycleImpl implements
         parameters.setName(poolName);
         parameters.setClusterId(clusterId);
         parameters.setProviderName(providerName);
-        
+
         return dataStoreHelper.createPrimaryDataStore(parameters);
     }
 
@@ -455,7 +435,7 @@ public class CloudStackPrimaryDataStoreLifeCycleImpl implements
             primaryDataStoreDao.expunge(primarystore.getId());
             return false;
         }
-        
+
         this.dataStoreHelper.attachCluster(store);
         return true;
     }
@@ -525,13 +505,12 @@ public class CloudStackPrimaryDataStoreLifeCycleImpl implements
                 }
             }
         }
-        
+
         if (!deleteFlag) {
             throw new CloudRuntimeException("Failed to delete storage pool on host");
         }
-        
-        this.dataStoreHelper.deletePrimaryDataStore(store);
-        return false;
+
+        return this.dataStoreHelper.deletePrimaryDataStore(store);
     }
 
     @Override

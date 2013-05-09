@@ -19,15 +19,16 @@
 
 package com.cloud.hypervisor.kvm.resource;
 
-import com.cloud.agent.api.to.NicTO;
-import com.cloud.agent.resource.virtualnetwork.VirtualRoutingResource;
-import com.cloud.exception.InternalErrorException;
-import com.cloud.network.Networks;
-import com.cloud.utils.NumbersUtil;
-import com.cloud.utils.net.NetUtils;
-import com.cloud.utils.script.OutputInterpreter;
-import com.cloud.utils.script.Script;
+
+import org.apache.agent.api.to.NicTO;
+import org.apache.agent.resource.virtualnetwork.VirtualRoutingResource;
+import org.apache.exception.InternalErrorException;
 import org.apache.log4j.Logger;
+import org.apache.network.Networks;
+import org.apache.utils.NumbersUtil;
+import org.apache.utils.net.NetUtils;
+import org.apache.utils.script.OutputInterpreter;
+import org.apache.utils.script.Script;
 import org.libvirt.LibvirtException;
 
 import javax.naming.ConfigurationException;

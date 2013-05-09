@@ -26,10 +26,10 @@ import java.util.Map;
 import org.apache.cloudstack.engine.cloud.entity.api.TemplateEntity;
 import org.apache.cloudstack.engine.subsystem.api.storage.TemplateInfo;
 import org.apache.cloudstack.storage.image.datastore.ImageDataStoreInfo;
+import org.apache.hypervisor.Hypervisor.HypervisorType;
+import org.apache.storage.Storage.ImageFormat;
+import org.apache.storage.Storage.TemplateType;
 
-import com.cloud.hypervisor.Hypervisor.HypervisorType;
-import com.cloud.storage.Storage.ImageFormat;
-import com.cloud.storage.Storage.TemplateType;
 
 public class TemplateEntityImpl implements TemplateEntity {
     protected TemplateInfo templateInfo;

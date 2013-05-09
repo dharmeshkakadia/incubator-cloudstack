@@ -16,8 +16,9 @@
 // under the License.
 package com.cloud.bridge.persist.dao;
 
+import org.apache.utils.db.GenericDao;
+
 import com.cloud.bridge.model.OfferingBundleVO;
-import com.cloud.utils.db.GenericDao;
 
 public interface OfferingDao extends GenericDao<OfferingBundleVO, Long> {
 

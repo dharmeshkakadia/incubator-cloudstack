@@ -16,6 +16,7 @@
 // under the License.
 package org.apache.cloudstack.query;
 
+import org.apache.cloudstack.affinity.AffinityGroupResponse;
 import org.apache.cloudstack.api.command.admin.host.ListHostsCmd;
 import org.apache.cloudstack.api.command.admin.router.ListRoutersCmd;
 import org.apache.cloudstack.api.command.admin.storage.ListStoragePoolsCmd;
@@ -53,8 +54,8 @@ import org.apache.cloudstack.api.response.UserResponse;
 import org.apache.cloudstack.api.response.UserVmResponse;
 import org.apache.cloudstack.api.response.VolumeResponse;
 import org.apache.cloudstack.api.response.ZoneResponse;
+import org.apache.exception.PermissionDeniedException;
 
-import com.cloud.exception.PermissionDeniedException;
 
 /**
  * Service used for list api query.
@@ -97,4 +98,7 @@ public interface QueryService {
     public ListResponse<ServiceOfferingResponse>  searchForServiceOfferings(ListServiceOfferingsCmd cmd);
 
     public ListResponse<ZoneResponse>  listDataCenters(ListZonesByCmd cmd);
+
+    public ListResponse<AffinityGroupResponse> listAffinityGroups(Long affinityGroupId, String affinityGroupName,
+            String affinityGroupType, Long vmId, Long startIndex, Long pageSize);
 }

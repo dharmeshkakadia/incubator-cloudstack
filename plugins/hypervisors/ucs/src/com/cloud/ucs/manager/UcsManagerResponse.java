@@ -14,28 +14,28 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
-// 
+//
 package com.cloud.ucs.manager;
 
 import org.apache.cloudstack.api.ApiConstants;
 import org.apache.cloudstack.api.EntityReference;
 
 import org.apache.cloudstack.api.BaseResponse;
+import org.apache.serializer.Param;
 
-import com.cloud.serializer.Param;
 import com.cloud.ucs.database.UcsManagerVO;
 import com.google.gson.annotations.SerializedName;
 @EntityReference(value=UcsManagerVO.class)
 public class UcsManagerResponse extends BaseResponse {
     @SerializedName(ApiConstants.ID) @Param(description="the ID of the ucs manager")
     private String id;
-    
+
     @SerializedName(ApiConstants.NAME) @Param(description="the name of ucs manager")
     private String name;
-    
+
     @SerializedName(ApiConstants.URL) @Param(description="the url of ucs manager")
     private String url;
-    
+
     @SerializedName(ApiConstants.ZONE_ID) @Param(description="the zone ID of ucs manager")
     private String zoneId;
 

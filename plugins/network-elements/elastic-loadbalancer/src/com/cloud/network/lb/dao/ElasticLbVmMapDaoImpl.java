@@ -22,22 +22,21 @@ import javax.annotation.PostConstruct;
 import javax.ejb.Local;
 import javax.inject.Inject;
 
+import org.apache.network.dao.LoadBalancerDao;
+import org.apache.network.dao.LoadBalancerDaoImpl;
+import org.apache.network.dao.LoadBalancerVO;
+import org.apache.network.router.VirtualRouter.Role;
+import org.apache.utils.db.GenericDaoBase;
+import org.apache.utils.db.SearchBuilder;
+import org.apache.utils.db.SearchCriteria;
+import org.apache.utils.db.JoinBuilder.JoinType;
+import org.apache.vm.DomainRouterVO;
+import org.apache.vm.dao.DomainRouterDao;
+import org.apache.vm.dao.DomainRouterDaoImpl;
 import org.springframework.stereotype.Component;
 
 import com.cloud.network.ElasticLbVmMapVO;
-import com.cloud.network.dao.LoadBalancerDao;
-import com.cloud.network.dao.LoadBalancerDaoImpl;
-import com.cloud.network.dao.LoadBalancerVO;
-import com.cloud.network.router.VirtualRouter.Role;
-import com.cloud.network.router.VirtualRouter.Role;
 
-import com.cloud.utils.db.GenericDaoBase;
-import com.cloud.utils.db.JoinBuilder.JoinType;
-import com.cloud.utils.db.SearchBuilder;
-import com.cloud.utils.db.SearchCriteria;
-import com.cloud.vm.DomainRouterVO;
-import com.cloud.vm.dao.DomainRouterDao;
-import com.cloud.vm.dao.DomainRouterDaoImpl;
 
 @Component
 @Local(value={ElasticLbVmMapDao.class})

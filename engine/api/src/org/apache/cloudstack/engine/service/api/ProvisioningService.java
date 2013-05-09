@@ -26,10 +26,10 @@ import org.apache.cloudstack.engine.datacenter.entity.api.HostEntity;
 import org.apache.cloudstack.engine.datacenter.entity.api.PodEntity;
 import org.apache.cloudstack.engine.datacenter.entity.api.StorageEntity;
 import org.apache.cloudstack.engine.datacenter.entity.api.ZoneEntity;
+import org.apache.host.Host;
+import org.apache.host.Status;
+import org.apache.storage.StoragePool;
 
-import com.cloud.host.Host;
-import com.cloud.host.Status;
-import com.cloud.storage.StoragePool;
 
 
 /**

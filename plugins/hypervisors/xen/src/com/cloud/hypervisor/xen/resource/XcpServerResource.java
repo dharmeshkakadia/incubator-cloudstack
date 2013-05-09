@@ -22,16 +22,16 @@ import java.util.List;
 
 import javax.ejb.Local;
 
+import org.apache.agent.api.Answer;
+import org.apache.agent.api.Command;
+import org.apache.agent.api.NetworkUsageAnswer;
+import org.apache.agent.api.NetworkUsageCommand;
 import org.apache.log4j.Logger;
+import org.apache.resource.ServerResource;
+import org.apache.utils.exception.CloudRuntimeException;
+import org.apache.utils.script.Script;
 import org.apache.xmlrpc.XmlRpcException;
 
-import com.cloud.agent.api.Answer;
-import com.cloud.agent.api.Command;
-import com.cloud.agent.api.NetworkUsageAnswer;
-import com.cloud.agent.api.NetworkUsageCommand;
-import com.cloud.resource.ServerResource;
-import com.cloud.utils.exception.CloudRuntimeException;
-import com.cloud.utils.script.Script;
 import com.xensource.xenapi.Connection;
 import com.xensource.xenapi.VM;
 import com.xensource.xenapi.Types.XenAPIException;

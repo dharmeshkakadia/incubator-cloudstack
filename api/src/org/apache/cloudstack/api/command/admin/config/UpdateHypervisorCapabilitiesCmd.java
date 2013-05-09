@@ -24,10 +24,10 @@ import org.apache.cloudstack.api.Parameter;
 import org.apache.cloudstack.api.ServerApiException;
 import org.apache.cloudstack.api.response.HypervisorCapabilitiesResponse;
 import org.apache.cloudstack.api.response.ServiceOfferingResponse;
+import org.apache.hypervisor.HypervisorCapabilities;
 import org.apache.log4j.Logger;
+import org.apache.user.Account;
 
-import com.cloud.hypervisor.HypervisorCapabilities;
-import com.cloud.user.Account;
 
 @APICommand(name = "updateHypervisorCapabilities", description="Updates a hypervisor capabilities.", responseObject=ServiceOfferingResponse.class, since="3.0.0")
 public class UpdateHypervisorCapabilitiesCmd extends BaseCmd {

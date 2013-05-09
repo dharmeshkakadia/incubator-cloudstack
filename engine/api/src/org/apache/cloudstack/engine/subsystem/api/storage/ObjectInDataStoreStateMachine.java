@@ -18,7 +18,7 @@
  */
 package org.apache.cloudstack.engine.subsystem.api.storage;
 
-import com.cloud.utils.fsm.StateObject;
+import org.apache.utils.fsm.StateObject;
 
 public interface ObjectInDataStoreStateMachine extends StateObject<ObjectInDataStoreStateMachine.State> {
     enum State {
@@ -26,8 +26,9 @@ public interface ObjectInDataStoreStateMachine extends StateObject<ObjectInDataS
         Creating2("This is only used with createOnlyRequested event"),
         Creating("The object is being creating on data store"),
         Created("The object is created"),
-        Ready("Template downloading is complished"),
+        Ready("Template downloading is accomplished"),
         Copying("The object is being coping"),
+        Migrating("The object is being migrated"),
         Destroying("Template is destroying"),
         Destroyed("Template is destroyed"),
         Failed("Failed to download template");
@@ -49,6 +50,7 @@ public interface ObjectInDataStoreStateMachine extends StateObject<ObjectInDataS
         OperationSuccessed,
         OperationFailed,
         CopyingRequested,
+        MigrationRequested,
         ResizeRequested,
         ExpungeRequested
         

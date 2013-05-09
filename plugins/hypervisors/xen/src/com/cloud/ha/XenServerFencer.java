@@ -23,21 +23,22 @@ import javax.ejb.Local;
 import javax.inject.Inject;
 import javax.naming.ConfigurationException;
 
+import org.apache.agent.AgentManager;
+import org.apache.agent.api.Answer;
+import org.apache.agent.api.FenceAnswer;
+import org.apache.agent.api.FenceCommand;
+import org.apache.exception.AgentUnavailableException;
+import org.apache.exception.OperationTimedoutException;
+import org.apache.ha.FenceBuilder;
+import org.apache.host.HostVO;
+import org.apache.host.Status;
+import org.apache.host.dao.HostDao;
+import org.apache.hypervisor.Hypervisor.HypervisorType;
 import org.apache.log4j.Logger;
+import org.apache.resource.ResourceManager;
+import org.apache.utils.component.AdapterBase;
+import org.apache.vm.VMInstanceVO;
 
-import com.cloud.agent.AgentManager;
-import com.cloud.agent.api.Answer;
-import com.cloud.agent.api.FenceAnswer;
-import com.cloud.agent.api.FenceCommand;
-import com.cloud.exception.AgentUnavailableException;
-import com.cloud.exception.OperationTimedoutException;
-import com.cloud.host.HostVO;
-import com.cloud.host.Status;
-import com.cloud.host.dao.HostDao;
-import com.cloud.hypervisor.Hypervisor.HypervisorType;
-import com.cloud.resource.ResourceManager;
-import com.cloud.utils.component.AdapterBase;
-import com.cloud.vm.VMInstanceVO;
 
 @Local(value=FenceBuilder.class)
 public class XenServerFencer extends AdapterBase implements FenceBuilder {

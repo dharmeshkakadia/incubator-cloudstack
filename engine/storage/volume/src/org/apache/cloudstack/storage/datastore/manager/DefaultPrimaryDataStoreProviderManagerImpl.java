@@ -36,7 +36,7 @@ import org.apache.cloudstack.storage.datastore.db.PrimaryDataStoreDao;
 import org.apache.cloudstack.storage.datastore.db.StoragePoolVO;
 import org.springframework.stereotype.Component;
 
-import com.cloud.storage.StorageManager;
+import org.apache.storage.StorageManager;
 
 @Component
 public class DefaultPrimaryDataStoreProviderManagerImpl implements PrimaryDataStoreProviderManager {

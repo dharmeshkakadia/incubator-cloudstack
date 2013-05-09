@@ -16,8 +16,9 @@
 // under the License.
 package com.cloud.bridge.persist.dao;
 
+import org.apache.utils.db.GenericDao;
+
 import com.cloud.bridge.model.CloudStackUserVO;
-import com.cloud.utils.db.GenericDao;
 
 public interface CloudStackUserDao extends GenericDao<CloudStackUserVO, String> {
 

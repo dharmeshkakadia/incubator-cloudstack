@@ -22,9 +22,9 @@ package org.apache.cloudstack.mom.rabbitmq;
 import com.rabbitmq.client.*;
 import org.apache.cloudstack.framework.events.*;
 import org.apache.log4j.Logger;
+import org.apache.utils.Ternary;
+import org.apache.utils.component.ManagerBase;
 
-import com.cloud.utils.Ternary;
-import com.cloud.utils.component.ManagerBase;
 
 import javax.ejb.Local;
 import javax.naming.ConfigurationException;

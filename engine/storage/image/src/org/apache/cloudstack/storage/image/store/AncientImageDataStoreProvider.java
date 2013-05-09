@@ -37,9 +37,10 @@ import org.apache.cloudstack.storage.image.datastore.ImageDataStoreManager;
 import org.apache.cloudstack.storage.image.driver.AncientImageDataStoreDriverImpl;
 import org.apache.cloudstack.storage.image.store.lifecycle.DefaultImageDataStoreLifeCycle;
 import org.apache.cloudstack.storage.image.store.lifecycle.ImageDataStoreLifeCycle;
+import org.apache.utils.component.ComponentContext;
 import org.springframework.stereotype.Component;
 
-import com.cloud.utils.component.ComponentContext;
+
 
 @Component
 public class AncientImageDataStoreProvider implements ImageDataStoreProvider {

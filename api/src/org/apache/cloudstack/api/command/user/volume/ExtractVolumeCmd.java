@@ -18,6 +18,7 @@ package org.apache.cloudstack.api.command.user.volume;
 
 import java.net.URISyntaxException;
 
+import org.apache.async.AsyncJob;
 import org.apache.cloudstack.api.APICommand;
 import org.apache.cloudstack.api.ApiConstants;
 import org.apache.cloudstack.api.ApiErrorCode;
@@ -27,15 +28,14 @@ import org.apache.cloudstack.api.ServerApiException;
 import org.apache.cloudstack.api.response.ExtractResponse;
 import org.apache.cloudstack.api.response.VolumeResponse;
 import org.apache.cloudstack.api.response.ZoneResponse;
+import org.apache.dc.DataCenter;
+import org.apache.event.EventTypes;
 import org.apache.log4j.Logger;
+import org.apache.storage.Upload;
+import org.apache.storage.Volume;
+import org.apache.user.Account;
+import org.apache.user.UserContext;
 
-import com.cloud.async.AsyncJob;
-import com.cloud.dc.DataCenter;
-import com.cloud.event.EventTypes;
-import com.cloud.storage.Upload;
-import com.cloud.storage.Volume;
-import com.cloud.user.Account;
-import com.cloud.user.UserContext;
 
 @APICommand(name = "extractVolume", description="Extracts volume", responseObject=ExtractResponse.class)
 public class ExtractVolumeCmd extends BaseAsyncCmd {

@@ -24,6 +24,15 @@ import org.apache.cloudstack.api.command.user.vm.AddIpToVmNicCmd;
 import org.apache.cloudstack.api.command.user.vm.RemoveIpFromVmNicCmd;
 import org.apache.cloudstack.api.response.NicSecondaryIpResponse;
 import org.apache.cloudstack.api.response.SuccessResponse;
+import org.apache.exception.ConcurrentOperationException;
+import org.apache.exception.InsufficientAddressCapacityException;
+import org.apache.exception.InsufficientCapacityException;
+import org.apache.exception.InvalidParameterValueException;
+import org.apache.exception.ResourceAllocationException;
+import org.apache.exception.ResourceUnavailableException;
+import org.apache.network.NetworkService;
+import org.apache.user.Account;
+import org.apache.vm.NicSecondaryIp;
 
 
 
@@ -33,14 +42,6 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.Mockito;
 
-import com.cloud.exception.ConcurrentOperationException;
-import com.cloud.exception.InsufficientAddressCapacityException;
-import com.cloud.exception.InsufficientCapacityException;
-import com.cloud.exception.InvalidParameterValueException;
-import com.cloud.exception.ResourceAllocationException;
-import com.cloud.exception.ResourceUnavailableException;
-import com.cloud.network.NetworkService;
-import com.cloud.user.Account;
 
 public class AddIpToVmNicTest extends TestCase {
 
@@ -64,15 +65,16 @@ public class AddIpToVmNicTest extends TestCase {
 
         NetworkService networkService = Mockito.mock(NetworkService.class);
         AddIpToVmNicCmd ipTonicCmd = Mockito.mock(AddIpToVmNicCmd.class);
+        NicSecondaryIp secIp = Mockito.mock(NicSecondaryIp.class);
 
         Mockito.when(
-                networkService.allocateSecondaryGuestIP(Mockito.any(Account.class), Mockito.anyLong(), Mockito.anyLong(), Mockito.anyLong(), Mockito.anyString())).thenReturn("10.1.1.2");
+                networkService.allocateSecondaryGuestIP(Mockito.any(Account.class), Mockito.anyLong(), Mockito.anyLong(), Mockito.anyLong(), Mockito.anyString())).thenReturn(secIp);
 
         ipTonicCmd._networkService = networkService;
         responseGenerator = Mockito.mock(ResponseGenerator.class);
 
         NicSecondaryIpResponse ipres = Mockito.mock(NicSecondaryIpResponse.class);
-        Mockito.when(responseGenerator.createSecondaryIPToNicResponse(Mockito.anyString(), Mockito.anyLong(), Mockito.anyLong())).thenReturn(ipres);
+        Mockito.when(responseGenerator.createSecondaryIPToNicResponse(secIp)).thenReturn(ipres);
 
         ipTonicCmd._responseGenerator = responseGenerator;
         ipTonicCmd.execute();

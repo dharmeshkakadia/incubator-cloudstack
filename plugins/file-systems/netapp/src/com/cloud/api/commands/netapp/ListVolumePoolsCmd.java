@@ -22,21 +22,22 @@ import java.util.List;
 import javax.inject.Inject;
 
 import org.apache.log4j.Logger;
+import org.apache.server.ManagementService;
+import org.apache.server.api.response.netapp.ListVolumePoolsCmdResponse;
 
 import org.apache.cloudstack.api.ApiErrorCode;
 import org.apache.cloudstack.api.BaseCmd;
 import org.apache.cloudstack.api.APICommand;
 import org.apache.cloudstack.api.ServerApiException;
 import org.apache.cloudstack.api.response.ListResponse;
-import com.cloud.exception.ConcurrentOperationException;
-import com.cloud.exception.InsufficientCapacityException;
-import com.cloud.exception.InvalidParameterValueException;
-import com.cloud.exception.ResourceAllocationException;
-import com.cloud.exception.ResourceUnavailableException;
+import org.apache.exception.ConcurrentOperationException;
+import org.apache.exception.InsufficientCapacityException;
+import org.apache.exception.InvalidParameterValueException;
+import org.apache.exception.ResourceAllocationException;
+import org.apache.exception.ResourceUnavailableException;
+
 import com.cloud.netapp.NetappManager;
 import com.cloud.netapp.PoolVO;
-import com.cloud.server.ManagementService;
-import com.cloud.server.api.response.netapp.ListVolumePoolsCmdResponse;
 
 
 @APICommand(name = "listPools", description="List Pool", responseObject = ListVolumePoolsCmdResponse.class)

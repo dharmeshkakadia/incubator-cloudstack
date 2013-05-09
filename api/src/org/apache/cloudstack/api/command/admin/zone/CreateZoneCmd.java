@@ -24,11 +24,11 @@ import org.apache.cloudstack.api.Parameter;
 import org.apache.cloudstack.api.ServerApiException;
 import org.apache.cloudstack.api.response.DomainResponse;
 import org.apache.cloudstack.api.response.ZoneResponse;
+import org.apache.dc.DataCenter;
 import org.apache.log4j.Logger;
+import org.apache.user.Account;
+import org.apache.user.UserContext;
 
-import com.cloud.dc.DataCenter;
-import com.cloud.user.Account;
-import com.cloud.user.UserContext;
 
 @APICommand(name = "createZone", description="Creates a Zone.", responseObject=ZoneResponse.class)
 public class CreateZoneCmd extends BaseCmd {

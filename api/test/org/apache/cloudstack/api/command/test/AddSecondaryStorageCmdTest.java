@@ -23,14 +23,14 @@ import org.apache.cloudstack.api.ResponseGenerator;
 import org.apache.cloudstack.api.ServerApiException;
 import org.apache.cloudstack.api.command.admin.host.AddSecondaryStorageCmd;
 import org.apache.cloudstack.api.response.HostResponse;
+import org.apache.host.Host;
+import org.apache.resource.ResourceService;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.Mockito;
 
-import com.cloud.host.Host;
-import com.cloud.resource.ResourceService;
 
 import edu.emory.mathcs.backport.java.util.Arrays;
 

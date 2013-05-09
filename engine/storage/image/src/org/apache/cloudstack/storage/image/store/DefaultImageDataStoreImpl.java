@@ -36,9 +36,9 @@ import org.apache.cloudstack.storage.image.ImageDataStoreDriver;
 import org.apache.cloudstack.storage.image.datastore.ImageDataStore;
 import org.apache.cloudstack.storage.image.db.ImageDataStoreVO;
 
-import com.cloud.storage.dao.VMTemplateDao;
-import com.cloud.utils.component.ComponentContext;
-import com.cloud.utils.storage.encoding.EncodingType;
+import org.apache.storage.dao.VMTemplateDao;
+import org.apache.utils.component.ComponentContext;
+import org.apache.utils.storage.encoding.EncodingType;
 
 
 public class DefaultImageDataStoreImpl implements ImageDataStore {

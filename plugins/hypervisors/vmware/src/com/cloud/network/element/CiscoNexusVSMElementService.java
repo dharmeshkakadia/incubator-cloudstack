@@ -19,6 +19,9 @@ package com.cloud.network.element;
 
 import java.util.List;
 
+import org.apache.exception.ResourceInUseException;
+import org.apache.utils.component.PluggableService;
+
 import com.cloud.api.commands.DeleteCiscoNexusVSMCmd;
 import com.cloud.api.commands.EnableCiscoNexusVSMCmd;
 import com.cloud.api.commands.DisableCiscoNexusVSMCmd;
@@ -26,7 +29,6 @@ import com.cloud.api.commands.ListCiscoNexusVSMsCmd;
 import com.cloud.api.response.CiscoNexusVSMResponse;
 import com.cloud.network.CiscoNexusVSMDeviceVO;
 import com.cloud.network.CiscoNexusVSMDevice;
-import com.cloud.utils.component.PluggableService;
 
 public interface CiscoNexusVSMElementService extends PluggableService {
     /**
@@ -68,4 +70,10 @@ public interface CiscoNexusVSMElementService extends PluggableService {
      * @return CiscoNexusVSMResponse
      */
     public CiscoNexusVSMResponse createCiscoNexusVSMDetailedResponse(CiscoNexusVSMDevice vsmDeviceVO);
+
+    /**
+     * Validate Cisco Nexus VSM before associating with cluster
+     *
+     */
+    public boolean validateVsmCluster(String vsmIp, String vsmUser, String vsmPassword, long clusterId, String clusterName) throws ResourceInUseException;
 }

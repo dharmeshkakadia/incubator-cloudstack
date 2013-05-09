@@ -27,49 +27,57 @@ import java.util.Map;
 import javax.ejb.Local;
 import javax.inject.Inject;
 
+import org.apache.agent.api.BackupSnapshotCommand;
+import org.apache.agent.api.Command;
+import org.apache.agent.api.CreatePrivateTemplateFromSnapshotCommand;
+import org.apache.agent.api.CreatePrivateTemplateFromVolumeCommand;
+import org.apache.agent.api.CreateVolumeFromSnapshotCommand;
+import org.apache.agent.api.UnregisterVMCommand;
+import org.apache.agent.api.storage.CopyVolumeCommand;
+import org.apache.agent.api.storage.CreateVolumeOVACommand;
+import org.apache.agent.api.storage.PrepareOVAPackingCommand;
+import org.apache.agent.api.storage.PrimaryStorageDownloadCommand;
+import org.apache.agent.api.to.NicTO;
+import org.apache.agent.api.to.VirtualMachineTO;
+import org.apache.cloudstack.api.ApiConstants.VMDetails;
+import org.apache.cluster.ClusterManager;
+import org.apache.configuration.Config;
+import org.apache.configuration.dao.ConfigurationDao;
+import org.apache.exception.InsufficientAddressCapacityException;
+import org.apache.host.HostVO;
+import org.apache.host.dao.HostDao;
+import org.apache.host.dao.HostDetailsDao;
+import org.apache.hypervisor.HypervisorGuru;
+import org.apache.hypervisor.HypervisorGuruBase;
+import org.apache.hypervisor.Hypervisor.HypervisorType;
+import org.apache.hypervisor.vmware.mo.VirtualEthernetCardType;
 import org.apache.log4j.Logger;
+import org.apache.network.NetworkModel;
+import org.apache.network.Network.Provider;
+import org.apache.network.Network.Service;
+import org.apache.network.Networks.TrafficType;
+import org.apache.network.dao.NetworkDao;
+import org.apache.network.dao.NetworkVO;
+import org.apache.secstorage.CommandExecLogDao;
+import org.apache.secstorage.CommandExecLogVO;
+import org.apache.storage.GuestOSVO;
+import org.apache.storage.dao.GuestOSDao;
+import org.apache.storage.secondary.SecondaryStorageVmManager;
+import org.apache.template.VirtualMachineTemplate.BootloaderType;
+import org.apache.utils.Pair;
+import org.apache.utils.db.DB;
+import org.apache.utils.exception.CloudRuntimeException;
+import org.apache.utils.net.NetUtils;
+import org.apache.vm.ConsoleProxyVO;
+import org.apache.vm.DomainRouterVO;
+import org.apache.vm.NicProfile;
+import org.apache.vm.SecondaryStorageVmVO;
+import org.apache.vm.VirtualMachine;
+import org.apache.vm.VirtualMachineProfile;
+import org.apache.vm.VmDetailConstants;
 import org.springframework.stereotype.Component;
 
-import com.cloud.agent.api.BackupSnapshotCommand;
-import com.cloud.agent.api.Command;
-import com.cloud.agent.api.CreatePrivateTemplateFromSnapshotCommand;
-import com.cloud.agent.api.CreatePrivateTemplateFromVolumeCommand;
-import com.cloud.agent.api.CreateVolumeFromSnapshotCommand;
-import com.cloud.agent.api.storage.CopyVolumeCommand;
-import com.cloud.agent.api.storage.PrimaryStorageDownloadCommand;
-import com.cloud.agent.api.to.NicTO;
-import com.cloud.agent.api.to.VirtualMachineTO;
-import com.cloud.cluster.ClusterManager;
-import com.cloud.exception.InsufficientAddressCapacityException;
-import com.cloud.host.HostVO;
-import com.cloud.host.dao.HostDao;
-import com.cloud.host.dao.HostDetailsDao;
-import com.cloud.hypervisor.Hypervisor.HypervisorType;
-import com.cloud.hypervisor.HypervisorGuru;
-import com.cloud.hypervisor.HypervisorGuruBase;
 import com.cloud.hypervisor.vmware.manager.VmwareManager;
-import com.cloud.hypervisor.vmware.mo.VirtualEthernetCardType;
-import com.cloud.network.NetworkModel;
-import com.cloud.network.Networks.TrafficType;
-import com.cloud.network.dao.NetworkDao;
-import com.cloud.network.dao.NetworkVO;
-import com.cloud.secstorage.CommandExecLogDao;
-import com.cloud.secstorage.CommandExecLogVO;
-import com.cloud.storage.GuestOSVO;
-import com.cloud.storage.dao.GuestOSDao;
-import com.cloud.storage.secondary.SecondaryStorageVmManager;
-import com.cloud.template.VirtualMachineTemplate.BootloaderType;
-import com.cloud.utils.Pair;
-import com.cloud.utils.db.DB;
-import com.cloud.utils.exception.CloudRuntimeException;
-import com.cloud.utils.net.NetUtils;
-import com.cloud.vm.ConsoleProxyVO;
-import com.cloud.vm.DomainRouterVO;
-import com.cloud.vm.NicProfile;
-import com.cloud.vm.SecondaryStorageVmVO;
-import com.cloud.vm.VirtualMachine;
-import com.cloud.vm.VirtualMachineProfile;
-import com.cloud.vm.VmDetailConstants;
 
 @Local(value=HypervisorGuru.class)
 public class VMwareGuru extends HypervisorGuruBase implements HypervisorGuru {
@@ -84,6 +92,7 @@ public class VMwareGuru extends HypervisorGuruBase implements HypervisorGuru {
     @Inject VmwareManager _vmwareMgr;
     @Inject SecondaryStorageVmManager _secStorageMgr;
     @Inject NetworkModel _networkMgr;
+    @Inject ConfigurationDao _configDao;
 
     protected VMwareGuru() {
         super();
@@ -135,18 +144,27 @@ public class VMwareGuru extends HypervisorGuruBase implements HypervisorGuru {
         if (!(vm.getVirtualMachine() instanceof DomainRouterVO || vm.getVirtualMachine() instanceof ConsoleProxyVO 
             || vm.getVirtualMachine() instanceof SecondaryStorageVmVO)){
             // user vm
-            if (diskDeviceType != null){
-                details.remove(VmDetailConstants.ROOK_DISK_CONTROLLER);
+            if (diskDeviceType == null){
+		    details.put(VmDetailConstants.ROOK_DISK_CONTROLLER, _vmwareMgr.getRootDiskController());
             }
-            details.put(VmDetailConstants.ROOK_DISK_CONTROLLER, _vmwareMgr.getRootDiskController());
         }
-        
+
+        List<NicProfile> nicProfiles = vm.getNics();
+
+        for(NicProfile nicProfile : nicProfiles) {
+            if(nicProfile.getTrafficType() == TrafficType.Guest) {
+                if(_networkMgr.isProviderSupportServiceInNetwork(nicProfile.getNetworkId(), Service.Firewall, Provider.CiscoVnmc)) {
+                    details.put("ConfigureVServiceInNexus", Boolean.TRUE.toString());
+                }
+                break;
+            }
+        }
+
         to.setDetails(details);
 
         if(vm.getVirtualMachine() instanceof DomainRouterVO) {
-            List<NicProfile> nicProfiles = vm.getNics();
-            NicProfile publicNicProfile = null;
 
+            NicProfile publicNicProfile = null;
             for(NicProfile nicProfile : nicProfiles) {
                 if(nicProfile.getTrafficType() == TrafficType.Public) {
                     publicNicProfile = nicProfile;
@@ -213,8 +231,21 @@ public class VMwareGuru extends HypervisorGuruBase implements HypervisorGuru {
             sbMacSequence.deleteCharAt(sbMacSequence.length() - 1);
             String bootArgs = to.getBootArgs();
             to.setBootArgs(bootArgs + " nic_macs=" + sbMacSequence.toString());
+            
         }
-
+        
+        // Don't do this if the virtual machine is one of the special types
+        // Should only be done on user machines
+        if(!(vm.getVirtualMachine() instanceof DomainRouterVO || vm.getVirtualMachine() instanceof ConsoleProxyVO 
+                || vm.getVirtualMachine() instanceof SecondaryStorageVmVO)) {
+            String nestedVirt = _configDao.getValue(Config.VmwareEnableNestedVirtualization.key());
+            if (nestedVirt != null) {
+                s_logger.debug("Nested virtualization requested, adding flag to vm configuration");
+                details.put(VmDetailConstants.NESTED_VIRTUALIZATION_FLAG, nestedVirt);
+                to.setDetails(details);
+                
+            }
+        }
         // Determine the VM's OS description
         GuestOSVO guestOS = _guestOsDao.findById(vm.getVirtualMachine().getGuestOSId());
         to.setOs(guestOS.getDisplayName());
@@ -253,10 +284,18 @@ public class VMwareGuru extends HypervisorGuruBase implements HypervisorGuru {
                 cmd instanceof CreatePrivateTemplateFromVolumeCommand ||
                 cmd instanceof CreatePrivateTemplateFromSnapshotCommand ||
                 cmd instanceof CopyVolumeCommand ||
+                cmd instanceof CreateVolumeOVACommand ||
+                cmd instanceof PrepareOVAPackingCommand ||
                 cmd instanceof CreateVolumeFromSnapshotCommand) {
             needDelegation = true;
         }
+        /* Fang: remove this before checking in */
+        // needDelegation = false;
 
+        if (cmd instanceof PrepareOVAPackingCommand ||
+                cmd instanceof CreateVolumeOVACommand	) {
+                cmd.setContextParam("hypervisor", HypervisorType.VMware.toString());
+        }
         if(needDelegation) {
             HostVO host = _hostDao.findById(hostId);
             assert(host != null);
@@ -282,6 +321,8 @@ public class VMwareGuru extends HypervisorGuruBase implements HypervisorGuru {
                         cmd instanceof CreatePrivateTemplateFromVolumeCommand || 
                         cmd instanceof CreatePrivateTemplateFromSnapshotCommand ||
                         cmd instanceof CopyVolumeCommand ||
+                        cmd instanceof CreateVolumeOVACommand ||
+                        cmd instanceof PrepareOVAPackingCommand ||
                         cmd instanceof CreateVolumeFromSnapshotCommand) {
 
                     String workerName = _vmwareMgr.composeWorkerName();
@@ -324,5 +365,13 @@ public class VMwareGuru extends HypervisorGuruBase implements HypervisorGuru {
             return guid;
 
         return tokens[0] + "@" + vCenterIp;
+    }
+    
+    @Override
+    public List<Command> finalizeExpunge(VirtualMachine vm) {
+        UnregisterVMCommand unregisterVMCommand = new UnregisterVMCommand(vm.getInstanceName());
+        List<Command> commands = new ArrayList<Command>();
+        commands.add(unregisterVMCommand);
+        return commands;
     }
 }

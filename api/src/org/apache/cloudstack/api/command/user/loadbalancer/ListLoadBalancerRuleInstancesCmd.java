@@ -27,8 +27,8 @@ import org.apache.cloudstack.api.response.FirewallRuleResponse;
 import org.apache.cloudstack.api.response.ListResponse;
 import org.apache.cloudstack.api.response.UserVmResponse;
 import org.apache.log4j.Logger;
+import org.apache.uservm.UserVm;
 
-import com.cloud.uservm.UserVm;
 
 @APICommand(name = "listLoadBalancerRuleInstances", description="List all virtual machine instances that are assigned to a load balancer rule.", responseObject=UserVmResponse.class)
 public class ListLoadBalancerRuleInstancesCmd extends BaseListCmd {

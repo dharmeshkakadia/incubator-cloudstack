@@ -18,9 +18,9 @@ package org.apache.cloudstack.api.response;
 import org.apache.cloudstack.api.ApiConstants;
 import org.apache.cloudstack.api.BaseResponse;
 import org.apache.cloudstack.api.EntityReference;
+import org.apache.network.vpc.VpcGateway;
+import org.apache.serializer.Param;
 
-import com.cloud.network.vpc.VpcGateway;
-import com.cloud.serializer.Param;
 import com.google.gson.annotations.SerializedName;
 
 @EntityReference(value=VpcGateway.class)
@@ -74,6 +74,10 @@ public class PrivateGatewayResponse extends BaseResponse implements ControlledEn
 
     @SerializedName(ApiConstants.STATE) @Param(description="State of the gateway, can be Creating, Ready, Deleting")
     private String state;
+
+
+    @SerializedName(ApiConstants.SOURCE_NAT_SUPPORTED) @Param(description = "Souce Nat enable status")
+    private Boolean sourceNat;
 
 
     @Override
@@ -145,5 +149,11 @@ public class PrivateGatewayResponse extends BaseResponse implements ControlledEn
     public void setState(String state) {
         this.state = state;
     }
+
+    public void setSourceNat(Boolean sourceNat) {
+        this.sourceNat = sourceNat;
+    }
+
+
 }
 

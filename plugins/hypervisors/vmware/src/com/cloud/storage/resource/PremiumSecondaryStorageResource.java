@@ -21,11 +21,13 @@ import java.util.Map;
 
 import javax.naming.ConfigurationException;
 
+import org.apache.agent.api.Answer;
+import org.apache.agent.api.Command;
+import org.apache.cloudstack.storage.resource.NfsSecondaryStorageResource;
+import org.apache.cloudstack.storage.resource.SecondaryStorageResourceHandler;
+import org.apache.hypervisor.Hypervisor;
 import org.apache.log4j.Logger;
 
-import com.cloud.agent.api.Answer;
-import com.cloud.agent.api.Command;
-import com.cloud.hypervisor.Hypervisor;
 
 public class PremiumSecondaryStorageResource extends NfsSecondaryStorageResource {
 

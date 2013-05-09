@@ -14,7 +14,7 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
-// 
+//
 package com.cloud.ucs.manager;
 
 import javax.inject.Inject;
@@ -27,38 +27,38 @@ import org.apache.cloudstack.api.BaseCmd.CommandType;
 import org.apache.cloudstack.api.Parameter;
 import org.apache.cloudstack.api.ServerApiException;
 import org.apache.cloudstack.api.response.ZoneResponse;
+import org.apache.exception.ConcurrentOperationException;
+import org.apache.exception.InsufficientCapacityException;
+import org.apache.exception.NetworkRuleConflictException;
+import org.apache.exception.ResourceAllocationException;
+import org.apache.exception.ResourceUnavailableException;
 import org.apache.log4j.Logger;
+import org.apache.server.ManagementService;
+import org.apache.user.Account;
 
-import com.cloud.exception.ConcurrentOperationException;
-import com.cloud.exception.InsufficientCapacityException;
-import com.cloud.exception.NetworkRuleConflictException;
-import com.cloud.exception.ResourceAllocationException;
-import com.cloud.exception.ResourceUnavailableException;
-import com.cloud.server.ManagementService;
-import com.cloud.user.Account;
 
 @APICommand(name="addUcsManager", description="Adds a Ucs manager", responseObject=UcsManagerResponse.class)
 public class AddUcsManagerCmd extends BaseCmd {
     public static final Logger s_logger = Logger.getLogger(AddUcsManagerCmd.class);
-    
+
     @Inject
     private UcsManager mgr;
-    
+
     @Parameter(name=ApiConstants.ZONE_ID, type=CommandType.UUID, description="the Zone id for the ucs manager", entityType=ZoneResponse.class, required=true)
     private Long zoneId;
-    
+
     @Parameter(name=ApiConstants.NAME, type=CommandType.STRING, description="the name of UCS manager")
     private String name;
-    
+
     @Parameter(name=ApiConstants.URL, type=CommandType.STRING, description="the name of UCS url", required=true)
     private String url;
-    
+
     @Parameter(name=ApiConstants.USERNAME, type=CommandType.STRING, description="the username of UCS", required=true)
     private String username;
-    
+
     @Parameter(name=ApiConstants.PASSWORD, type=CommandType.STRING, description="the password of UCS", required=true)
     private String password;
-    
+
     @Override
     public void execute() throws ResourceUnavailableException, InsufficientCapacityException, ServerApiException, ConcurrentOperationException,
             ResourceAllocationException, NetworkRuleConflictException {
@@ -69,7 +69,7 @@ public class AddUcsManagerCmd extends BaseCmd {
             this.setResponseObject(rsp);
         } catch (Exception e) {
             s_logger.warn("Exception: ", e);
-            throw new ServerApiException(ApiErrorCode.INTERNAL_ERROR, e.getMessage()); 
+            throw new ServerApiException(ApiErrorCode.INTERNAL_ERROR, e.getMessage());
         }
     }
 
@@ -122,5 +122,5 @@ public class AddUcsManagerCmd extends BaseCmd {
     public void setPassword(String password) {
         this.password = password;
     }
-    
+
 }

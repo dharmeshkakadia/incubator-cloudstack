@@ -31,38 +31,56 @@ import javax.inject.Inject;
 import javax.naming.ConfigurationException;
 import javax.persistence.EntityExistsException;
 
+import org.apache.agent.AgentManager;
+import org.apache.agent.Listener;
+import org.apache.agent.api.AgentControlAnswer;
+import org.apache.agent.api.AgentControlCommand;
+import org.apache.agent.api.Answer;
+import org.apache.agent.api.Command;
+import org.apache.agent.api.PoolEjectCommand;
+import org.apache.agent.api.SetupAnswer;
+import org.apache.agent.api.SetupCommand;
+import org.apache.agent.api.StartupCommand;
+import org.apache.agent.api.StartupRoutingCommand;
+import org.apache.alert.AlertManager;
+import org.apache.configuration.Config;
+import org.apache.dc.ClusterVO;
+import org.apache.dc.DataCenterVO;
+import org.apache.dc.HostPodVO;
+import org.apache.dc.dao.DataCenterDao;
+import org.apache.dc.dao.HostPodDao;
+import org.apache.exception.AgentUnavailableException;
+import org.apache.exception.ConnectionException;
+import org.apache.exception.DiscoveredWithErrorException;
+import org.apache.exception.DiscoveryException;
+import org.apache.exception.OperationTimedoutException;
+import org.apache.host.HostEnvironment;
+import org.apache.host.HostInfo;
+import org.apache.host.HostVO;
+import org.apache.host.Status;
+import org.apache.hypervisor.Hypervisor;
+import org.apache.hypervisor.Hypervisor.HypervisorType;
 import org.apache.log4j.Logger;
+import org.apache.resource.Discoverer;
+import org.apache.resource.DiscovererBase;
+import org.apache.resource.ResourceManager;
+import org.apache.resource.ResourceStateAdapter;
+import org.apache.resource.ServerResource;
+import org.apache.resource.UnableDeleteHostException;
+import org.apache.storage.VMTemplateVO;
+import org.apache.storage.Storage.ImageFormat;
+import org.apache.storage.Storage.TemplateType;
+import org.apache.storage.dao.VMTemplateDao;
+import org.apache.storage.dao.VMTemplateHostDao;
+import org.apache.user.Account;
+import org.apache.utils.NumbersUtil;
+import org.apache.utils.db.SearchCriteria2;
+import org.apache.utils.db.SearchCriteriaService;
+import org.apache.utils.db.SearchCriteria.Op;
+import org.apache.utils.exception.CloudRuntimeException;
+import org.apache.utils.exception.HypervisorVersionChangedException;
 import org.apache.xmlrpc.XmlRpcException;
 
-import com.cloud.agent.AgentManager;
-import com.cloud.agent.Listener;
-import com.cloud.agent.api.AgentControlAnswer;
-import com.cloud.agent.api.AgentControlCommand;
-import com.cloud.agent.api.Answer;
-import com.cloud.agent.api.Command;
-import com.cloud.agent.api.PoolEjectCommand;
-import com.cloud.agent.api.SetupAnswer;
-import com.cloud.agent.api.SetupCommand;
-import com.cloud.agent.api.StartupCommand;
-import com.cloud.agent.api.StartupRoutingCommand;
-import com.cloud.alert.AlertManager;
-import com.cloud.configuration.Config;
-import com.cloud.dc.ClusterVO;
-import com.cloud.dc.DataCenterVO;
-import com.cloud.dc.HostPodVO;
-import com.cloud.dc.dao.DataCenterDao;
-import com.cloud.dc.dao.HostPodDao;
-import com.cloud.exception.AgentUnavailableException;
-import com.cloud.exception.ConnectionException;
-import com.cloud.exception.DiscoveredWithErrorException;
-import com.cloud.exception.DiscoveryException;
-import com.cloud.exception.OperationTimedoutException;
-import com.cloud.host.HostEnvironment;
-import com.cloud.host.HostInfo;
-import com.cloud.host.HostVO;
-import com.cloud.host.Status;
-import com.cloud.hypervisor.Hypervisor;
-import com.cloud.hypervisor.Hypervisor.HypervisorType;
 import com.cloud.hypervisor.xen.resource.CitrixResourceBase;
 import com.cloud.hypervisor.xen.resource.XcpOssResource;
 import com.cloud.hypervisor.xen.resource.XcpServerResource;
@@ -73,24 +91,6 @@ import com.cloud.hypervisor.xen.resource.XenServer600Resource;
 import com.cloud.hypervisor.xen.resource.XenServer602Resource;
 import com.cloud.hypervisor.xen.resource.XenServer610Resource;
 import com.cloud.hypervisor.xen.resource.XenServerConnectionPool;
-import com.cloud.resource.Discoverer;
-import com.cloud.resource.DiscovererBase;
-import com.cloud.resource.ResourceManager;
-import com.cloud.resource.ResourceStateAdapter;
-import com.cloud.resource.ServerResource;
-import com.cloud.resource.UnableDeleteHostException;
-import com.cloud.storage.VMTemplateVO;
-import com.cloud.storage.Storage.ImageFormat;
-import com.cloud.storage.Storage.TemplateType;
-import com.cloud.storage.dao.VMTemplateDao;
-import com.cloud.storage.dao.VMTemplateHostDao;
-import com.cloud.user.Account;
-import com.cloud.utils.NumbersUtil;
-import com.cloud.utils.db.SearchCriteria.Op;
-import com.cloud.utils.db.SearchCriteria2;
-import com.cloud.utils.db.SearchCriteriaService;
-import com.cloud.utils.exception.CloudRuntimeException;
-import com.cloud.utils.exception.HypervisorVersionChangedException;
 import com.xensource.xenapi.Connection;
 import com.xensource.xenapi.Host;
 import com.xensource.xenapi.Pool;
@@ -696,13 +696,13 @@ public class XcpServerDiscoverer extends DiscovererBase implements Discoverer, L
 
 	@Override
     public DeleteHostAnswer deleteHost(HostVO host, boolean isForced, boolean isForceDeleteStorage) throws UnableDeleteHostException {
-		if (host.getType() != com.cloud.host.Host.Type.Routing || host.getHypervisorType() != HypervisorType.XenServer) {
+		if (host.getType() != org.apache.host.Host.Type.Routing || host.getHypervisorType() != HypervisorType.XenServer) {
 			return null;
 		}
 		
 		_resourceMgr.deleteRoutingHost(host, isForced, isForceDeleteStorage);
 		if (host.getClusterId() != null) {
-			List<HostVO> hosts = _resourceMgr.listAllUpAndEnabledHosts(com.cloud.host.Host.Type.Routing, host.getClusterId(), host.getPodId(), host.getDataCenterId());
+			List<HostVO> hosts = _resourceMgr.listAllUpAndEnabledHosts(org.apache.host.Host.Type.Routing, host.getClusterId(), host.getPodId(), host.getDataCenterId());
 			boolean success = true;
 			for (HostVO thost : hosts) {
 				if (thost.getId() == host.getId()) {

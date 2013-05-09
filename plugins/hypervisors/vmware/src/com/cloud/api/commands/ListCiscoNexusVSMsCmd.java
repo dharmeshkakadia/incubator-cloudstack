@@ -20,6 +20,7 @@ package com.cloud.api.commands;
 import org.apache.cloudstack.api.response.ClusterResponse;
 import org.apache.cloudstack.api.response.ZoneResponse;
 import org.apache.log4j.Logger;
+import org.apache.user.Account;
 import org.apache.cloudstack.api.ApiConstants;
 import org.apache.cloudstack.api.ApiErrorCode;
 import org.apache.cloudstack.api.BaseListCmd;
@@ -28,13 +29,13 @@ import org.apache.cloudstack.api.Parameter;
 import org.apache.cloudstack.api.ServerApiException;
 import com.cloud.api.response.CiscoNexusVSMResponse;
 import org.apache.cloudstack.api.response.ListResponse;
-import com.cloud.exception.ConcurrentOperationException;
-import com.cloud.exception.InsufficientCapacityException;
-import com.cloud.exception.ResourceAllocationException;
-import com.cloud.exception.ResourceUnavailableException;
+import org.apache.exception.ConcurrentOperationException;
+import org.apache.exception.InsufficientCapacityException;
+import org.apache.exception.ResourceAllocationException;
+import org.apache.exception.ResourceUnavailableException;
+
 import com.cloud.network.CiscoNexusVSMDevice;
 import com.cloud.network.element.CiscoNexusVSMElementService;
-import com.cloud.user.Account;
 
 import java.util.ArrayList;
 import java.util.List;

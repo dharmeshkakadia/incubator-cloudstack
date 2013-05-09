@@ -20,10 +20,10 @@ package org.apache.cloudstack.engine.subsystem.api.storage;
 
 
 import org.apache.cloudstack.engine.subsystem.api.storage.disktype.DiskFormat;
+import org.apache.hypervisor.Hypervisor.HypervisorType;
+import org.apache.storage.StoragePool;
+import org.apache.storage.Storage.StoragePoolType;
 
-import com.cloud.hypervisor.Hypervisor.HypervisorType;
-import com.cloud.storage.Storage.StoragePoolType;
-import com.cloud.storage.StoragePool;
 
 public interface PrimaryDataStoreInfo extends StoragePool {
 	public boolean isHypervisorSupported(HypervisorType hypervisor);

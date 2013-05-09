@@ -26,11 +26,11 @@ import org.apache.cloudstack.api.Parameter;
 import org.apache.cloudstack.api.ServerApiException;
 import org.apache.cloudstack.api.response.HostResponse;
 import org.apache.cloudstack.api.response.ZoneResponse;
+import org.apache.exception.DiscoveryException;
+import org.apache.host.Host;
 import org.apache.log4j.Logger;
+import org.apache.user.Account;
 
-import com.cloud.exception.DiscoveryException;
-import com.cloud.host.Host;
-import com.cloud.user.Account;
 
 @APICommand(name = "addSecondaryStorage", description="Adds secondary storage.", responseObject=HostResponse.class)
 public class AddSecondaryStorageCmd extends BaseCmd {

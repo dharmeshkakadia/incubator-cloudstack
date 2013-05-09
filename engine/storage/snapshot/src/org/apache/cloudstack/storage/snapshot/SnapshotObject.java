@@ -30,16 +30,16 @@ import org.apache.cloudstack.engine.subsystem.api.storage.VolumeDataFactory;
 import org.apache.cloudstack.engine.subsystem.api.storage.VolumeInfo;
 import org.apache.cloudstack.engine.subsystem.api.storage.disktype.DiskFormat;
 import org.apache.cloudstack.storage.datastore.ObjectInDataStoreManager;
+import org.apache.hypervisor.Hypervisor.HypervisorType;
 import org.apache.log4j.Logger;
+import org.apache.storage.Snapshot;
+import org.apache.storage.SnapshotVO;
+import org.apache.storage.dao.SnapshotDao;
+import org.apache.storage.dao.VolumeDao;
+import org.apache.utils.component.ComponentContext;
+import org.apache.utils.exception.CloudRuntimeException;
+import org.apache.utils.fsm.NoTransitionException;
 
-import com.cloud.hypervisor.Hypervisor.HypervisorType;
-import com.cloud.storage.Snapshot;
-import com.cloud.storage.SnapshotVO;
-import com.cloud.storage.dao.SnapshotDao;
-import com.cloud.storage.dao.VolumeDao;
-import com.cloud.utils.component.ComponentContext;
-import com.cloud.utils.exception.CloudRuntimeException;
-import com.cloud.utils.fsm.NoTransitionException;
 
 public class SnapshotObject implements SnapshotInfo {
 	private static final Logger s_logger = Logger.getLogger(SnapshotObject.class);
@@ -106,7 +106,7 @@ public class SnapshotObject implements SnapshotInfo {
 
     @Override
     public Long getSize() {
-    	return this.getSize();
+    	return this.snapshot.getSize();
     }
 
     @Override

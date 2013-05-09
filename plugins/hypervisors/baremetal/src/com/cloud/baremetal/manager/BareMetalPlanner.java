@@ -23,32 +23,32 @@ import javax.ejb.Local;
 import javax.inject.Inject;
 import javax.naming.ConfigurationException;
 
-import com.cloud.dc.*;
-import com.cloud.dc.ClusterDetailsDao;
-import org.apache.log4j.Logger;
 
-import com.cloud.capacity.CapacityManager;
-import com.cloud.configuration.Config;
-import com.cloud.configuration.dao.ConfigurationDao;
-import com.cloud.dc.dao.ClusterDao;
-import com.cloud.dc.dao.DataCenterDao;
-import com.cloud.dc.dao.HostPodDao;
-import com.cloud.deploy.DeployDestination;
-import com.cloud.deploy.DeploymentPlan;
-import com.cloud.deploy.DeploymentPlanner;
-import com.cloud.deploy.DeploymentPlanner.ExcludeList;
-import com.cloud.exception.InsufficientServerCapacityException;
-import com.cloud.host.Host;
-import com.cloud.host.HostVO;
-import com.cloud.host.dao.HostDao;
-import com.cloud.hypervisor.Hypervisor.HypervisorType;
-import com.cloud.offering.ServiceOffering;
-import com.cloud.org.Cluster;
-import com.cloud.resource.ResourceManager;
-import com.cloud.utils.NumbersUtil;
-import com.cloud.utils.component.AdapterBase;
-import com.cloud.vm.VirtualMachine;
-import com.cloud.vm.VirtualMachineProfile;
+import org.apache.capacity.CapacityManager;
+import org.apache.configuration.Config;
+import org.apache.configuration.dao.ConfigurationDao;
+import org.apache.dc.*;
+import org.apache.dc.dao.ClusterDao;
+import org.apache.dc.dao.DataCenterDao;
+import org.apache.dc.dao.HostPodDao;
+import org.apache.deploy.DeployDestination;
+import org.apache.deploy.DeploymentPlan;
+import org.apache.deploy.DeploymentPlanner;
+import org.apache.deploy.DeploymentPlanner.ExcludeList;
+import org.apache.exception.InsufficientServerCapacityException;
+import org.apache.host.Host;
+import org.apache.host.HostVO;
+import org.apache.host.dao.HostDao;
+import org.apache.hypervisor.Hypervisor.HypervisorType;
+import org.apache.log4j.Logger;
+import org.apache.offering.ServiceOffering;
+import org.apache.org.Cluster;
+import org.apache.resource.ResourceManager;
+import org.apache.utils.NumbersUtil;
+import org.apache.utils.component.AdapterBase;
+import org.apache.vm.VirtualMachine;
+import org.apache.vm.VirtualMachineProfile;
+
 
 @Local(value=DeploymentPlanner.class)
 public class BareMetalPlanner extends AdapterBase implements DeploymentPlanner {

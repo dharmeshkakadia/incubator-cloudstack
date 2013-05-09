@@ -20,11 +20,12 @@ import java.net.UnknownHostException;
 import java.rmi.ServerException;
 import java.util.List;
 
-import com.cloud.exception.InvalidParameterValueException;
-import com.cloud.exception.ResourceAllocationException;
-import com.cloud.exception.ResourceInUseException;
-import com.cloud.utils.component.Manager;
-import com.cloud.utils.component.PluggableService;
+import org.apache.exception.InvalidParameterValueException;
+import org.apache.exception.ResourceAllocationException;
+import org.apache.exception.ResourceInUseException;
+import org.apache.utils.component.Manager;
+import org.apache.utils.component.PluggableService;
+
 
 public interface NetappManager  extends Manager, PluggableService {
 	enum AlgorithmType {

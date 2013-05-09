@@ -26,27 +26,27 @@ import javax.ejb.Local;
 import javax.inject.Inject;
 import javax.naming.ConfigurationException;
 
+import org.apache.agent.api.StopAnswer;
+import org.apache.agent.manager.Commands;
+import org.apache.deploy.DeployDestination;
+import org.apache.exception.ResourceUnavailableException;
+import org.apache.host.HostVO;
+import org.apache.host.dao.HostDao;
+import org.apache.hypervisor.Hypervisor.HypervisorType;
 import org.apache.log4j.Logger;
+import org.apache.utils.component.ManagerBase;
+import org.apache.utils.fsm.StateListener;
+import org.apache.vm.ReservationContext;
+import org.apache.vm.UserVmVO;
+import org.apache.vm.VirtualMachine;
+import org.apache.vm.VirtualMachineGuru;
+import org.apache.vm.VirtualMachineManager;
+import org.apache.vm.VirtualMachineName;
+import org.apache.vm.VirtualMachineProfile;
+import org.apache.vm.VirtualMachine.Event;
+import org.apache.vm.VirtualMachine.State;
+import org.apache.vm.dao.UserVmDao;
 
-import com.cloud.agent.api.StopAnswer;
-import com.cloud.agent.manager.Commands;
-import com.cloud.deploy.DeployDestination;
-import com.cloud.exception.ResourceUnavailableException;
-import com.cloud.host.HostVO;
-import com.cloud.host.dao.HostDao;
-import com.cloud.hypervisor.Hypervisor.HypervisorType;
-import com.cloud.utils.component.ManagerBase;
-import com.cloud.utils.fsm.StateListener;
-import com.cloud.vm.ReservationContext;
-import com.cloud.vm.UserVmVO;
-import com.cloud.vm.VirtualMachine;
-import com.cloud.vm.VirtualMachineGuru;
-import com.cloud.vm.VirtualMachineManager;
-import com.cloud.vm.VirtualMachineName;
-import com.cloud.vm.VirtualMachine.Event;
-import com.cloud.vm.VirtualMachine.State;
-import com.cloud.vm.dao.UserVmDao;
-import com.cloud.vm.VirtualMachineProfile;
 
 @Local(value = {BaremetalManager.class})
 public class BaremetalManagerImpl extends ManagerBase implements BaremetalManager,  StateListener<State, VirtualMachine.Event, VirtualMachine> {

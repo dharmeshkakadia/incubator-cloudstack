@@ -19,9 +19,9 @@ package org.apache.cloudstack.api.response;
 import org.apache.cloudstack.api.ApiConstants;
 import org.apache.cloudstack.api.BaseResponse;
 import org.apache.cloudstack.api.EntityReference;
+import org.apache.configuration.ResourceLimit;
+import org.apache.serializer.Param;
 
-import com.cloud.configuration.ResourceLimit;
-import com.cloud.serializer.Param;
 import com.google.gson.annotations.SerializedName;
 
 @EntityReference(value = ResourceLimit.class)
@@ -36,7 +36,7 @@ public class ResourceLimitResponse extends BaseResponse implements ControlledEnt
     @SerializedName(ApiConstants.DOMAIN) @Param(description="the domain name of the resource limit")
     private String domainName;
 
-    @SerializedName(ApiConstants.RESOURCE_TYPE) @Param(description="resource type. Values include 0, 1, 2, 3, 4, 6, 7, 8, 9. See the resourceType parameter for more information on these values.")
+    @SerializedName(ApiConstants.RESOURCE_TYPE) @Param(description="resource type. Values include 0, 1, 2, 3, 4, 6, 7, 8, 9, 10, 11. See the resourceType parameter for more information on these values.")
     private String resourceType;
 
     @SerializedName("max") @Param(description="the maximum number of the resource. A -1 means the resource currently has no limit.")

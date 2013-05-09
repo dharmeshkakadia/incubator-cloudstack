@@ -36,6 +36,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.stream.XMLStreamException;
 
 import org.apache.log4j.Logger;
+import org.apache.utils.db.Transaction;
 import org.json.simple.parser.ParseException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -93,7 +94,6 @@ import com.cloud.bridge.util.StringHelper;
 import com.cloud.bridge.util.XSerializer;
 import com.cloud.bridge.util.XSerializerXmlAdapter;
 import com.cloud.bridge.util.XmlHelper;
-import com.cloud.utils.db.Transaction;
 
 
 public class S3BucketAction implements ServletAction {

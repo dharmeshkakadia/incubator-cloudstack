@@ -25,9 +25,9 @@ import org.apache.cloudstack.api.ServerApiException;
 import org.apache.cloudstack.api.response.DomainResponse;
 import org.apache.cloudstack.api.response.ServiceOfferingResponse;
 import org.apache.log4j.Logger;
+import org.apache.offering.ServiceOffering;
+import org.apache.user.Account;
 
-import com.cloud.offering.ServiceOffering;
-import com.cloud.user.Account;
 
 @APICommand(name = "createServiceOffering", description="Creates a service offering.", responseObject=ServiceOfferingResponse.class)
 public class CreateServiceOfferingCmd extends BaseCmd {
@@ -147,6 +147,7 @@ public class CreateServiceOfferingCmd extends BaseCmd {
     public Integer getNetworkRate() {
         return networkRate;
     }
+
 
     /////////////////////////////////////////////////////
     /////////////// API Implementation///////////////////

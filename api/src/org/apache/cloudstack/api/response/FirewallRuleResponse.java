@@ -21,9 +21,9 @@ import java.util.List;
 import org.apache.cloudstack.api.ApiConstants;
 import org.apache.cloudstack.api.BaseResponse;
 import org.apache.cloudstack.api.EntityReference;
+import org.apache.network.rules.FirewallRule;
+import org.apache.serializer.Param;
 
-import com.cloud.network.rules.FirewallRule;
-import com.cloud.serializer.Param;
 import com.google.gson.annotations.SerializedName;
 
 @EntityReference(value=FirewallRule.class)
@@ -70,6 +70,18 @@ public class FirewallRuleResponse extends BaseResponse {
 
     @SerializedName(ApiConstants.TAGS)  @Param(description="the list of resource tags associated with the rule", responseObject = ResourceTagResponse.class)
     private List<ResourceTagResponse> tags;
+
+    @SerializedName(ApiConstants.VM_GUEST_IP) @Param(description="the vm ip address for the port forwarding rule")
+    private String destNatVmIp;
+
+
+    public String getDestNatVmIp() {
+        return destNatVmIp;
+    }
+
+    public void setDestNatVmIp(String destNatVmIp) {
+        this.destNatVmIp = destNatVmIp;
+    }
 
 
     @Override

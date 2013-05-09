@@ -29,8 +29,8 @@ import org.apache.cloudstack.api.response.VpcOfferingResponse;
 import org.apache.cloudstack.api.response.VpcResponse;
 import org.apache.cloudstack.api.response.ZoneResponse;
 import org.apache.log4j.Logger;
+import org.apache.network.vpc.Vpc;
 
-import com.cloud.network.vpc.Vpc;
 
 
 @APICommand(name = "listVPCs", description="Lists VPCs", responseObject=VpcResponse.class)

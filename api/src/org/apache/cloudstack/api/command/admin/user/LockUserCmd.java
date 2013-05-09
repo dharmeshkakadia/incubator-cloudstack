@@ -24,10 +24,10 @@ import org.apache.cloudstack.api.Parameter;
 import org.apache.cloudstack.api.ServerApiException;
 import org.apache.cloudstack.api.response.UserResponse;
 import org.apache.log4j.Logger;
+import org.apache.user.Account;
+import org.apache.user.User;
+import org.apache.user.UserAccount;
 
-import com.cloud.user.Account;
-import com.cloud.user.User;
-import com.cloud.user.UserAccount;
 
 @APICommand(name = "lockUser", description="Locks a user account", responseObject=UserResponse.class)
 public class LockUserCmd extends BaseCmd {

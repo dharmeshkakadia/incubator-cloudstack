@@ -24,11 +24,11 @@ import org.apache.cloudstack.api.Parameter;
 import org.apache.cloudstack.api.ServerApiException;
 import org.apache.cloudstack.api.response.HostResponse;
 import org.apache.cloudstack.api.response.SwiftResponse;
+import org.apache.exception.DiscoveryException;
 import org.apache.log4j.Logger;
+import org.apache.storage.Swift;
+import org.apache.user.Account;
 
-import com.cloud.exception.DiscoveryException;
-import com.cloud.storage.Swift;
-import com.cloud.user.Account;
 
 @APICommand(name = "addSwift", description = "Adds Swift.", responseObject = HostResponse.class, since="3.0.0")
 public class AddSwiftCmd extends BaseCmd {

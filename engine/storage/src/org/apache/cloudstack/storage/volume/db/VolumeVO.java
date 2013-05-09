@@ -34,12 +34,12 @@ import javax.persistence.TemporalType;
 
 import org.apache.cloudstack.api.Identity;
 import org.apache.cloudstack.engine.subsystem.api.storage.disktype.DiskFormat;
+import org.apache.storage.Volume;
+import org.apache.storage.Storage.StoragePoolType;
+import org.apache.utils.NumbersUtil;
+import org.apache.utils.db.GenericDao;
+import org.apache.utils.fsm.StateObject;
 
-import com.cloud.storage.Storage.StoragePoolType;
-import com.cloud.storage.Volume;
-import com.cloud.utils.NumbersUtil;
-import com.cloud.utils.db.GenericDao;
-import com.cloud.utils.fsm.StateObject;
 
 @Entity
 @Table(name = "volumes")

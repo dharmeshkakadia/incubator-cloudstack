@@ -27,14 +27,14 @@ import org.apache.cloudstack.api.Parameter;
 import org.apache.cloudstack.api.ServerApiException;
 import org.apache.cloudstack.api.response.UserVmResponse;
 import org.apache.cloudstack.api.response.VMSnapshotResponse;
+import org.apache.event.EventTypes;
+import org.apache.exception.ResourceAllocationException;
+import org.apache.user.UserContext;
+import org.apache.uservm.UserVm;
+import org.apache.vm.snapshot.VMSnapshot;
 
-import com.cloud.event.EventTypes;
-import com.cloud.exception.ResourceAllocationException;
-import com.cloud.user.UserContext;
-import com.cloud.uservm.UserVm;
-import com.cloud.vm.snapshot.VMSnapshot;
 
-@APICommand(name = "createVMSnapshot", description = "Creates snapshot for a vm.", responseObject = VMSnapshotResponse.class)
+@APICommand(name = "createVMSnapshot", description = "Creates snapshot for a vm.", responseObject = VMSnapshotResponse.class, since="4.2.0")
 public class CreateVMSnapshotCmd extends BaseAsyncCreateCmd {
 
     public static final Logger s_logger = Logger

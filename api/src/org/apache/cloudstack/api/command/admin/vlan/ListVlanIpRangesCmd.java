@@ -31,10 +31,10 @@ import org.apache.cloudstack.api.response.PodResponse;
 import org.apache.cloudstack.api.response.ProjectResponse;
 import org.apache.cloudstack.api.response.VlanIpRangeResponse;
 import org.apache.cloudstack.api.response.ZoneResponse;
+import org.apache.dc.Vlan;
 import org.apache.log4j.Logger;
+import org.apache.utils.Pair;
 
-import com.cloud.dc.Vlan;
-import com.cloud.utils.Pair;
 
 @APICommand(name = "listVlanIpRanges", description="Lists all VLAN IP ranges.", responseObject=VlanIpRangeResponse.class)
 public class ListVlanIpRangesCmd extends BaseListCmd {

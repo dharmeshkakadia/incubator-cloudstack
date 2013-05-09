@@ -29,12 +29,12 @@ import org.apache.cloudstack.api.response.ClusterResponse;
 import org.apache.cloudstack.api.response.PodResponse;
 import org.apache.cloudstack.api.response.StoragePoolResponse;
 import org.apache.cloudstack.api.response.ZoneResponse;
+import org.apache.exception.ResourceInUseException;
+import org.apache.exception.ResourceUnavailableException;
 import org.apache.log4j.Logger;
+import org.apache.storage.StoragePool;
+import org.apache.user.Account;
 
-import com.cloud.exception.ResourceInUseException;
-import com.cloud.exception.ResourceUnavailableException;
-import com.cloud.storage.StoragePool;
-import com.cloud.user.Account;
 
 
 @SuppressWarnings("rawtypes")

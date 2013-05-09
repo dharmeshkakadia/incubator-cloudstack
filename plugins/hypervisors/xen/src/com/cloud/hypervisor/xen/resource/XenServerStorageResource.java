@@ -29,6 +29,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.agent.api.Answer;
+import org.apache.agent.api.Command;
+import org.apache.agent.api.storage.DeleteVolumeCommand;
 import org.apache.cloudstack.storage.command.AttachPrimaryDataStoreAnswer;
 import org.apache.cloudstack.storage.command.AttachPrimaryDataStoreCmd;
 import org.apache.cloudstack.storage.command.CopyCmd;
@@ -39,7 +42,7 @@ import org.apache.cloudstack.storage.command.CreatePrimaryDataStoreCmd;
 import org.apache.cloudstack.storage.command.CreateVolumeFromBaseImageCommand;
 import org.apache.cloudstack.storage.command.StorageSubSystemCommand;
 import org.apache.cloudstack.storage.datastore.protocol.DataStoreProtocol;
-import org.apache.cloudstack.storage.to.ImageOnPrimayDataStoreTO;
+import org.apache.cloudstack.storage.to.ImageOnPrimaryDataStoreTO;
 import org.apache.cloudstack.storage.to.VolumeTO;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -47,16 +50,13 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.log4j.Logger;
+import org.apache.utils.exception.CloudRuntimeException;
+import org.apache.utils.storage.encoding.DecodedDataObject;
+import org.apache.utils.storage.encoding.DecodedDataStore;
+import org.apache.utils.storage.encoding.Decoder;
 import org.apache.xmlrpc.XmlRpcException;
 
-import com.cloud.agent.api.Answer;
-import com.cloud.agent.api.Command;
-import com.cloud.agent.api.storage.DeleteVolumeCommand;
 import com.cloud.hypervisor.xen.resource.CitrixResourceBase.SRType;
-import com.cloud.utils.exception.CloudRuntimeException;
-import com.cloud.utils.storage.encoding.DecodedDataObject;
-import com.cloud.utils.storage.encoding.DecodedDataStore;
-import com.cloud.utils.storage.encoding.Decoder;
 import com.xensource.xenapi.Connection;
 import com.xensource.xenapi.Host;
 import com.xensource.xenapi.PBD;
@@ -207,7 +207,7 @@ public class XenServerStorageResource {
     
     protected Answer execute(CreateVolumeFromBaseImageCommand cmd) {
         VolumeTO volume = cmd.getVolume();
-        ImageOnPrimayDataStoreTO baseImage = cmd.getImage();
+        ImageOnPrimaryDataStoreTO baseImage = cmd.getImage();
         Connection conn = hypervisorResource.getConnection();
         
         try {

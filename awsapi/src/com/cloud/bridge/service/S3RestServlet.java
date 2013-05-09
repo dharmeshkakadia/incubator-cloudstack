@@ -37,6 +37,8 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.axis2.AxisFault;
 import org.apache.log4j.Logger;
+import org.apache.utils.db.DB;
+import org.apache.utils.db.Transaction;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
@@ -65,8 +67,6 @@ import com.cloud.bridge.util.ConfigurationHelper;
 import com.cloud.bridge.util.HeaderParam;
 import com.cloud.bridge.util.RestAuth;
 import com.cloud.bridge.util.S3SoapAuth;
-import com.cloud.utils.db.DB;
-import com.cloud.utils.db.Transaction;
 public class S3RestServlet extends HttpServlet {
     private static final long serialVersionUID = -6168996266762804877L;
     public static final String ENABLE_S3_API="enable.s3.api";

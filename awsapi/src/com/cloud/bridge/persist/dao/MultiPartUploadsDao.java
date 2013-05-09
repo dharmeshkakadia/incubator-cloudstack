@@ -18,9 +18,10 @@ package com.cloud.bridge.persist.dao;
 
 import java.util.List;
 
+import org.apache.utils.db.GenericDao;
+
 import com.cloud.bridge.model.MultiPartUploadsVO;
 import com.cloud.bridge.util.OrderedPair;
-import com.cloud.utils.db.GenericDao;
 
 public interface MultiPartUploadsDao extends
         GenericDao<MultiPartUploadsVO, Long> {

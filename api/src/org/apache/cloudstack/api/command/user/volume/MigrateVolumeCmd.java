@@ -24,11 +24,11 @@ import org.apache.cloudstack.api.Parameter;
 import org.apache.cloudstack.api.ServerApiException;
 import org.apache.cloudstack.api.response.StoragePoolResponse;
 import org.apache.cloudstack.api.response.VolumeResponse;
+import org.apache.event.EventTypes;
+import org.apache.exception.ConcurrentOperationException;
+import org.apache.storage.Volume;
+import org.apache.user.Account;
 
-import com.cloud.event.EventTypes;
-import com.cloud.exception.ConcurrentOperationException;
-import com.cloud.storage.Volume;
-import com.cloud.user.Account;
 
 
 @APICommand(name = "migrateVolume", description="Migrate volume", responseObject=VolumeResponse.class, since="3.0.0")
@@ -47,6 +47,10 @@ public class MigrateVolumeCmd extends BaseAsyncCmd {
             required=true, description="destination storage pool ID to migrate the volume to")
     private Long storageId;
 
+    @Parameter(name=ApiConstants.LIVE_MIGRATE, type=CommandType.BOOLEAN, required=false,
+            description="if the volume should be live migrated when it is attached to a running vm")
+    private Boolean liveMigrate;
+
     /////////////////////////////////////////////////////
     /////////////////// Accessors ///////////////////////
     /////////////////////////////////////////////////////
@@ -57,6 +61,10 @@ public class MigrateVolumeCmd extends BaseAsyncCmd {
 
     public Long getStoragePoolId() {
         return storageId;
+    }
+
+    public boolean isLiveMigrate() {
+        return (liveMigrate != null) ? liveMigrate : false;
     }
     /////////////////////////////////////////////////////
     /////////////// API Implementation///////////////////

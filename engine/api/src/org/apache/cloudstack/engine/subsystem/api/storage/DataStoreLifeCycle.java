@@ -20,7 +20,8 @@ package org.apache.cloudstack.engine.subsystem.api.storage;
 
 import java.util.Map;
 
-import com.cloud.agent.api.StoragePoolInfo;
+import org.apache.agent.api.StoragePoolInfo;
+
 
 
 public interface DataStoreLifeCycle {

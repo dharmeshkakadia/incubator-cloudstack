@@ -28,10 +28,11 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import com.cloud.hypervisor.Hypervisor.HypervisorType;
-import com.cloud.storage.Snapshot.State;
-import com.cloud.storage.Snapshot.Type;
-import com.cloud.utils.db.GenericDao;
+import org.apache.hypervisor.Hypervisor.HypervisorType;
+import org.apache.storage.Snapshot.State;
+import org.apache.storage.Snapshot.Type;
+import org.apache.utils.db.GenericDao;
+
 import com.google.gson.annotations.Expose;
 
 @Entity

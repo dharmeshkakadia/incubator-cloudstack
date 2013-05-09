@@ -31,27 +31,28 @@ import javax.inject.Inject;
 import org.apache.cloudstack.api.command.user.iso.DeleteIsoCmd;
 import org.apache.cloudstack.api.command.user.iso.RegisterIsoCmd;
 import org.apache.cloudstack.api.command.user.template.RegisterTemplateCmd;
+import org.apache.configuration.Resource.ResourceType;
+import org.apache.dc.DataCenterVO;
+import org.apache.event.EventTypes;
+import org.apache.event.UsageEventVO;
+import org.apache.exception.ResourceAllocationException;
+import org.apache.host.Host;
+import org.apache.host.HostVO;
+import org.apache.host.dao.HostDao;
 import org.apache.log4j.Logger;
+import org.apache.resource.ResourceManager;
+import org.apache.storage.TemplateProfile;
+import org.apache.storage.VMTemplateHostVO;
+import org.apache.storage.VMTemplateVO;
+import org.apache.storage.VMTemplateZoneVO;
+import org.apache.storage.VMTemplateStorageResourceAssoc.Status;
+import org.apache.template.TemplateAdapter;
+import org.apache.template.TemplateAdapterBase;
+import org.apache.user.Account;
+import org.apache.utils.UriUtils;
+import org.apache.utils.db.DB;
+import org.apache.utils.exception.CloudRuntimeException;
 
-import com.cloud.configuration.Resource.ResourceType;
-import com.cloud.dc.DataCenterVO;
-import com.cloud.event.EventTypes;
-import com.cloud.event.UsageEventVO;
-import com.cloud.exception.ResourceAllocationException;
-import com.cloud.host.Host;
-import com.cloud.host.HostVO;
-import com.cloud.host.dao.HostDao;
-import com.cloud.resource.ResourceManager;
-import com.cloud.storage.TemplateProfile;
-import com.cloud.storage.VMTemplateHostVO;
-import com.cloud.storage.VMTemplateStorageResourceAssoc.Status;
-import com.cloud.storage.VMTemplateVO;
-import com.cloud.storage.VMTemplateZoneVO;
-import com.cloud.template.TemplateAdapter;
-import com.cloud.template.TemplateAdapterBase;
-import com.cloud.user.Account;
-import com.cloud.utils.db.DB;
-import com.cloud.utils.exception.CloudRuntimeException;
 
 @Local(value=TemplateAdapter.class)
 public class BareMetalTemplateAdapter extends TemplateAdapterBase implements TemplateAdapter {
@@ -82,7 +83,11 @@ public class BareMetalTemplateAdapter extends TemplateAdapterBase implements Tem
 				throw new CloudRuntimeException("Please add PXE server before adding baremetal template in zone " + profile.getZoneId());
 			}
 		}
-		
+
+        // Check that the resource limit for secondary storage won't be exceeded
+        _resourceLimitMgr.checkResourceLimit(_accountMgr.getAccount(cmd.getEntityOwnerId()),
+                ResourceType.secondary_storage, UriUtils.getRemoteSize(profile.getUrl()));
+
 		return profile;
 	}
 	
@@ -133,6 +138,8 @@ public class BareMetalTemplateAdapter extends TemplateAdapterBase implements Tem
 		}
 		
 		_resourceLimitMgr.incrementResourceCount(profile.getAccountId(), ResourceType.template);
+        _resourceLimitMgr.incrementResourceCount(profile.getAccountId(), ResourceType.secondary_storage,
+                UriUtils.getRemoteSize(profile.getUrl()));
 		return template;
 	}
 
@@ -205,8 +212,10 @@ public class BareMetalTemplateAdapter extends TemplateAdapterBase implements Tem
 					s_logger.debug("Failed to acquire lock when deleting template with ID: " + templateId);
 					success = false;
 				} else if (_tmpltDao.remove(templateId)) {
-					// Decrement the number of templates
-				    _resourceLimitMgr.decrementResourceCount(accountId, ResourceType.template);
+                    // Decrement the number of templates and total secondary storage space used by the account.
+                    _resourceLimitMgr.decrementResourceCount(accountId, ResourceType.template);
+                    _resourceLimitMgr.recalculateResourceCount(accountId, template.getDomainId(),
+                            ResourceType.secondary_storage.getOrdinal());
 				}
 
 			} finally {

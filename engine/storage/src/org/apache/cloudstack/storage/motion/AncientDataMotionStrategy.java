@@ -20,12 +20,35 @@ package org.apache.cloudstack.storage.motion;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
+import org.apache.agent.AgentManager;
+import org.apache.agent.api.Answer;
+import org.apache.agent.api.BackupSnapshotAnswer;
+import org.apache.agent.api.BackupSnapshotCommand;
+import org.apache.agent.api.Command;
+import org.apache.agent.api.CreatePrivateTemplateFromSnapshotCommand;
+import org.apache.agent.api.CreatePrivateTemplateFromVolumeCommand;
+import org.apache.agent.api.CreateVolumeFromSnapshotAnswer;
+import org.apache.agent.api.CreateVolumeFromSnapshotCommand;
+import org.apache.agent.api.UpgradeSnapshotCommand;
+import org.apache.agent.api.storage.CopyVolumeAnswer;
+import org.apache.agent.api.storage.CopyVolumeCommand;
+import org.apache.agent.api.storage.CreateAnswer;
+import org.apache.agent.api.storage.CreateCommand;
+import org.apache.agent.api.storage.CreatePrivateTemplateAnswer;
+import org.apache.agent.api.storage.MigrateVolumeAnswer;
+import org.apache.agent.api.storage.MigrateVolumeCommand;
+import org.apache.agent.api.to.S3TO;
+import org.apache.agent.api.to.StorageFilerTO;
+import org.apache.agent.api.to.SwiftTO;
+import org.apache.agent.api.to.VirtualMachineTO;
 import org.apache.cloudstack.engine.subsystem.api.storage.CopyCommandResult;
 import org.apache.cloudstack.engine.subsystem.api.storage.DataObject;
 import org.apache.cloudstack.engine.subsystem.api.storage.DataObjectType;
+import org.apache.cloudstack.engine.subsystem.api.storage.DataStore;
 import org.apache.cloudstack.engine.subsystem.api.storage.DataStoreManager;
 import org.apache.cloudstack.engine.subsystem.api.storage.DataStoreRole;
 import org.apache.cloudstack.engine.subsystem.api.storage.SnapshotInfo;
@@ -33,59 +56,47 @@ import org.apache.cloudstack.engine.subsystem.api.storage.VolumeInfo;
 import org.apache.cloudstack.framework.async.AsyncCompletionCallback;
 import org.apache.cloudstack.storage.datastore.db.PrimaryDataStoreDao;
 import org.apache.cloudstack.storage.datastore.db.StoragePoolVO;
+import org.apache.configuration.Config;
+import org.apache.configuration.dao.ConfigurationDao;
+import org.apache.exception.AgentUnavailableException;
+import org.apache.exception.OperationTimedoutException;
+import org.apache.exception.StorageUnavailableException;
+import org.apache.host.Host;
+import org.apache.host.HostVO;
+import org.apache.host.dao.HostDao;
 import org.apache.log4j.Logger;
+import org.apache.storage.DiskOfferingVO;
+import org.apache.storage.SnapshotVO;
+import org.apache.storage.StorageManager;
+import org.apache.storage.StoragePool;
+import org.apache.storage.VMTemplateHostVO;
+import org.apache.storage.VMTemplateStoragePoolVO;
+import org.apache.storage.VMTemplateVO;
+import org.apache.storage.VolumeHostVO;
+import org.apache.storage.VolumeManager;
+import org.apache.storage.VolumeVO;
+import org.apache.storage.Storage.ImageFormat;
+import org.apache.storage.VMTemplateStorageResourceAssoc.Status;
+import org.apache.storage.dao.DiskOfferingDao;
+import org.apache.storage.dao.SnapshotDao;
+import org.apache.storage.dao.VMTemplateDao;
+import org.apache.storage.dao.VMTemplateHostDao;
+import org.apache.storage.dao.VMTemplatePoolDao;
+import org.apache.storage.dao.VolumeDao;
+import org.apache.storage.dao.VolumeHostDao;
+import org.apache.storage.s3.S3Manager;
+import org.apache.storage.snapshot.SnapshotManager;
+import org.apache.storage.swift.SwiftManager;
+import org.apache.template.TemplateManager;
+import org.apache.utils.NumbersUtil;
+import org.apache.utils.db.DB;
+import org.apache.utils.db.Transaction;
+import org.apache.utils.exception.CloudRuntimeException;
+import org.apache.vm.DiskProfile;
+import org.apache.vm.VMInstanceVO;
+import org.apache.vm.dao.VMInstanceDao;
 import org.springframework.stereotype.Component;
 
-import com.cloud.agent.api.Answer;
-import com.cloud.agent.api.BackupSnapshotAnswer;
-import com.cloud.agent.api.BackupSnapshotCommand;
-import com.cloud.agent.api.Command;
-import com.cloud.agent.api.CreatePrivateTemplateFromSnapshotCommand;
-import com.cloud.agent.api.CreatePrivateTemplateFromVolumeCommand;
-import com.cloud.agent.api.CreateVolumeFromSnapshotAnswer;
-import com.cloud.agent.api.CreateVolumeFromSnapshotCommand;
-import com.cloud.agent.api.UpgradeSnapshotCommand;
-import com.cloud.agent.api.storage.CopyVolumeAnswer;
-import com.cloud.agent.api.storage.CopyVolumeCommand;
-import com.cloud.agent.api.storage.CreateAnswer;
-import com.cloud.agent.api.storage.CreateCommand;
-import com.cloud.agent.api.storage.CreatePrivateTemplateAnswer;
-import com.cloud.agent.api.to.S3TO;
-import com.cloud.agent.api.to.StorageFilerTO;
-import com.cloud.agent.api.to.SwiftTO;
-import com.cloud.configuration.Config;
-import com.cloud.configuration.dao.ConfigurationDao;
-import com.cloud.exception.StorageUnavailableException;
-import com.cloud.host.HostVO;
-import com.cloud.host.dao.HostDao;
-import com.cloud.storage.DiskOfferingVO;
-import com.cloud.storage.SnapshotVO;
-import com.cloud.storage.Storage.ImageFormat;
-import com.cloud.storage.StorageManager;
-import com.cloud.storage.StoragePool;
-import com.cloud.storage.VMTemplateHostVO;
-import com.cloud.storage.VMTemplateStoragePoolVO;
-import com.cloud.storage.VMTemplateStorageResourceAssoc.Status;
-import com.cloud.storage.VMTemplateVO;
-import com.cloud.storage.VolumeHostVO;
-import com.cloud.storage.VolumeManager;
-import com.cloud.storage.VolumeVO;
-import com.cloud.storage.dao.DiskOfferingDao;
-import com.cloud.storage.dao.SnapshotDao;
-import com.cloud.storage.dao.VMTemplateDao;
-import com.cloud.storage.dao.VMTemplateHostDao;
-import com.cloud.storage.dao.VMTemplatePoolDao;
-import com.cloud.storage.dao.VolumeDao;
-import com.cloud.storage.dao.VolumeHostDao;
-import com.cloud.storage.s3.S3Manager;
-import com.cloud.storage.snapshot.SnapshotManager;
-import com.cloud.storage.swift.SwiftManager;
-import com.cloud.template.TemplateManager;
-import com.cloud.utils.NumbersUtil;
-import com.cloud.utils.db.DB;
-import com.cloud.utils.db.Transaction;
-import com.cloud.utils.exception.CloudRuntimeException;
-import com.cloud.vm.DiskProfile;
 
 @Component
 public class AncientDataMotionStrategy implements DataMotionStrategy {
@@ -102,7 +113,11 @@ public class AncientDataMotionStrategy implements DataMotionStrategy {
     @Inject
     StorageManager storageMgr;
     @Inject
+    AgentManager agentMgr;
+    @Inject
     VolumeDao volDao;
+    @Inject
+    VMInstanceDao instanceDao;
     @Inject
     VMTemplateDao templateDao;
     @Inject
@@ -128,6 +143,11 @@ public class AncientDataMotionStrategy implements DataMotionStrategy {
     public boolean canHandle(DataObject srcData, DataObject destData) {
         // TODO Auto-generated method stub
         return true;
+    }
+
+    @Override
+    public boolean canHandle(Map<VolumeInfo, DataStore> volumeMap, Host srcHost, Host destHost) {
+        return false;
     }
 
     @DB
@@ -393,6 +413,53 @@ public class AncientDataMotionStrategy implements DataMotionStrategy {
         return cvAnswer;
     }
 
+    protected Answer migrateVolumeToPool(DataObject srcData, DataStore destStore) {
+        VolumeInfo volume = (VolumeInfo)srcData;
+        Long instanceId = volume.getInstanceId();
+        StoragePool destPool = (StoragePool)this.dataStoreMgr.getDataStore(destStore.getId(), DataStoreRole.Primary);
+        MigrateVolumeAnswer answer = null;
+        VMInstanceVO vmInstance = null;
+        if (instanceId != null) {
+            vmInstance = instanceDao.findById(instanceId);
+        }
+
+        Long hostId = null;
+        if (vmInstance != null) {
+            hostId = vmInstance.getHostId();
+        }
+
+        try {
+            if (hostId != null) {
+                MigrateVolumeCommand command = new MigrateVolumeCommand(volume.getId(), volume.getPath(), destPool);
+                answer = (MigrateVolumeAnswer) this.agentMgr.send(hostId, command);
+            }
+        } catch (OperationTimedoutException e) {
+            s_logger.error("Operation timed out on storage motion for volume " + volume, e);
+            throw new CloudRuntimeException("Failed to live migrate volume " + volume + " to storage pool " +
+                    destPool, e);
+        } catch (AgentUnavailableException e) {
+            s_logger.error("Agent unavailable exception while doing storage motion for volume " + volume, e);
+            throw new CloudRuntimeException("Failed to live migrate volume " + volume + " to storage pool " +
+                    destPool, e);
+        }
+
+        if (answer == null || !answer.getResult()) {
+            throw new CloudRuntimeException("Failed to migrate volume " + volume + " to storage pool " + destPool);
+        } else {
+            // Update the volume details after migration.
+            VolumeVO volumeVo = this.volDao.findById(volume.getId());
+            Long oldPoolId = volume.getPoolId();
+            volumeVo.setPath(answer.getVolumePath());
+            volumeVo.setFolder(destPool.getPath());
+            volumeVo.setPodId(destPool.getPodId());
+            volumeVo.setPoolId(destPool.getId());
+            volumeVo.setLastPoolId(oldPoolId);
+            this.volDao.update(volume.getId(), volumeVo);
+        }
+
+        return answer;
+    }
+
     @Override
     public Void copyAsync(DataObject srcData, DataObject destData,
             AsyncCompletionCallback<CopyCommandResult> callback) {
@@ -419,7 +486,12 @@ public class AncientDataMotionStrategy implements DataMotionStrategy {
             	answer = cloneVolume(srcData, destData);
             } else if (destData.getType() == DataObjectType.VOLUME
                     && srcData.getType() == DataObjectType.VOLUME && srcData.getDataStore().getRole() == DataStoreRole.Primary) {
-            	answer = copyVolumeBetweenPools(srcData, destData);
+                if (srcData.getId() == destData.getId()) {
+                    // The volume has to be migrated across storage pools.
+                    answer = migrateVolumeToPool(srcData, destData.getDataStore());
+                } else {
+                    answer = copyVolumeBetweenPools(srcData, destData);
+                }
             } else if (srcData.getType() == DataObjectType.SNAPSHOT &&
             		destData.getType() == DataObjectType.SNAPSHOT) {
             	answer = copySnapshot(srcData, destData);
@@ -430,6 +502,16 @@ public class AncientDataMotionStrategy implements DataMotionStrategy {
         }
         CopyCommandResult result = new CopyCommandResult(null, answer);
         result.setResult(errMsg);
+        callback.complete(result);
+
+        return null;
+    }
+
+    @Override
+    public Void copyAsync(Map<VolumeInfo, DataStore> volumeMap, VirtualMachineTO vmTo, Host srcHost, Host destHost,
+            AsyncCompletionCallback<CopyCommandResult> callback) {
+        CopyCommandResult result = new CopyCommandResult(null, null);
+        result.setResult("Unsupported operation requested for copying data.");
         callback.complete(result);
 
         return null;
@@ -586,9 +668,7 @@ public class AncientDataMotionStrategy implements DataMotionStrategy {
         String checkSum = this.templateMgr
                 .getChecksum(hostId, answer.getPath());
 
-        Transaction txn = Transaction.currentTxn();
 
-        txn.start();
 
         privateTemplate.setChecksum(checkSum);
         templateDao.update(privateTemplate.getId(), privateTemplate);
@@ -603,8 +683,9 @@ public class AncientDataMotionStrategy implements DataMotionStrategy {
         templateHostVO.setLastUpdated(new Date());
         templateHostVO.setSize(answer.getVirtualSize());
         templateHostVO.setPhysicalSize(answer.getphysicalSize());
+       
         templateHostDao.persist(templateHostVO);
-        txn.close();
+  
         return answer;
     }
 

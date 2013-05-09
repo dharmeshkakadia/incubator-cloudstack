@@ -38,6 +38,8 @@ import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
+import org.apache.utils.db.DB;
+import org.apache.utils.db.Transaction;
 import org.json.simple.parser.ParseException;
 import org.springframework.stereotype.Component;
 
@@ -84,8 +86,6 @@ import com.cloud.bridge.util.OrderedPair;
 import com.cloud.bridge.util.PolicyParser;
 import com.cloud.bridge.util.StringHelper;
 import com.cloud.bridge.util.Triple;
-import com.cloud.utils.db.DB;
-import com.cloud.utils.db.Transaction;
 
 /**
  * The CRUD control actions to be invoked from S3BucketAction or S3ObjectAction.
@@ -1126,7 +1126,7 @@ public class S3Engine {
         SBucketVO sbucket = bucketDao.getByName( bucketName );
         if (sbucket == null) {
             response.setResultCode(404);
-            response.setResultDescription("<Code>Bucket dosen't exists</Code><Message>Bucket " + bucketName + " does not exist</Message>");
+            response.setResultDescription("<Code>Bucket doesn't exists</Code><Message>Bucket " + bucketName + " does not exist</Message>");
             return response;
         }
 

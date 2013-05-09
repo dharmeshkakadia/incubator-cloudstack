@@ -21,15 +21,15 @@ import java.util.List;
 import javax.ejb.Local;
 
 import org.apache.log4j.Logger;
+import org.apache.utils.db.Filter;
+import org.apache.utils.db.GenericDaoBase;
+import org.apache.utils.db.SearchBuilder;
+import org.apache.utils.db.SearchCriteria;
 import org.springframework.stereotype.Component;
 
 import com.cloud.netapp.LunVO;
 import com.cloud.netapp.NetappVolumeVO;
 import com.cloud.netapp.PoolVO;
-import com.cloud.utils.db.Filter;
-import com.cloud.utils.db.GenericDaoBase;
-import com.cloud.utils.db.SearchBuilder;
-import com.cloud.utils.db.SearchCriteria;
 
 @Component
 @Local(value={LunDao.class})
