@@ -23,10 +23,10 @@ import org.apache.cloudstack.api.BaseCmd;
 import org.apache.cloudstack.api.Parameter;
 import org.apache.cloudstack.api.ServerApiException;
 import org.apache.cloudstack.api.response.PodResponse;
+import org.apache.dc.Pod;
 import org.apache.log4j.Logger;
+import org.apache.user.Account;
 
-import com.cloud.dc.Pod;
-import com.cloud.user.Account;
 
 @APICommand(name = "updatePod", description="Updates a Pod.", responseObject=PodResponse.class)
 public class UpdatePodCmd extends BaseCmd {

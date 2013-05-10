@@ -16,9 +16,11 @@
 // under the License.
 package com.cloud.network;
 
-import com.cloud.exception.InvalidParameterValueException;
-import com.cloud.hypervisor.vmware.mo.VirtualSwitchType;
-import com.cloud.network.Networks.TrafficType;
+import org.apache.exception.InvalidParameterValueException;
+import org.apache.hypervisor.vmware.mo.VirtualSwitchType;
+import org.apache.network.TrafficLabel;
+import org.apache.network.Networks.TrafficType;
+
 
 public class VmwareTrafficLabel implements TrafficLabel {
 	public static final String DEFAULT_VSWITCH_NAME = "vSwitch0";

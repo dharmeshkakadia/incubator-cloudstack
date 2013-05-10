@@ -18,8 +18,8 @@ package org.apache.cloudstack.api.response;
 
 import org.apache.cloudstack.api.ApiConstants;
 import org.apache.cloudstack.api.BaseResponse;
+import org.apache.serializer.Param;
 
-import com.cloud.serializer.Param;
 import com.google.gson.annotations.SerializedName;
 
 public class ConfigurationResponse extends BaseResponse {
@@ -32,8 +32,15 @@ public class ConfigurationResponse extends BaseResponse {
     @SerializedName(ApiConstants.VALUE) @Param(description="the value of the configuration")
     private String value;
 
+    @SerializedName(ApiConstants.SCOPE) @Param(description="scope(zone/cluster/pool/account) of the parameter that needs to be updated")
+    private String scope;
+
+    @SerializedName(ApiConstants.ID) @Param(description="the value of the configuration")
+    private Long id;
+
     @SerializedName(ApiConstants.DESCRIPTION) @Param(description="the description of the configuration")
     private String description;
+
 
     public String getCategory() {
         return category;
@@ -65,5 +72,13 @@ public class ConfigurationResponse extends BaseResponse {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getScope() {
+        return scope;
+    }
+
+    public void setScope(String scope) {
+        this.scope = scope;
     }
 }

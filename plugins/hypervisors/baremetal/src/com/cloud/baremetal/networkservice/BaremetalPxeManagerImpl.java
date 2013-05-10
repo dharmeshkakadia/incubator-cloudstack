@@ -31,41 +31,41 @@ import javax.ejb.Local;
 import javax.inject.Inject;
 import javax.naming.ConfigurationException;
 
+import org.apache.agent.AgentManager;
+import org.apache.agent.api.Answer;
+import org.apache.agent.api.StartupCommand;
+import org.apache.agent.api.StartupPxeServerCommand;
+import org.apache.agent.api.routing.VmDataCommand;
+import org.apache.configuration.dao.ConfigurationDao;
+import org.apache.dc.dao.DataCenterDao;
+import org.apache.deploy.DeployDestination;
+import org.apache.host.Host;
+import org.apache.host.HostVO;
+import org.apache.host.dao.HostDao;
 import org.apache.log4j.Logger;
+import org.apache.network.dao.PhysicalNetworkDao;
+import org.apache.network.dao.PhysicalNetworkVO;
+import org.apache.resource.ResourceManager;
+import org.apache.resource.ResourceStateAdapter;
+import org.apache.resource.ServerResource;
+import org.apache.resource.UnableDeleteHostException;
+import org.apache.service.dao.ServiceOfferingDao;
+import org.apache.uservm.UserVm;
+import org.apache.utils.StringUtils;
+import org.apache.utils.component.ManagerBase;
+import org.apache.utils.db.SearchCriteria2;
+import org.apache.utils.db.SearchCriteriaService;
+import org.apache.utils.db.SearchCriteria.Op;
+import org.apache.utils.exception.CloudRuntimeException;
+import org.apache.vm.NicProfile;
+import org.apache.vm.NicVO;
+import org.apache.vm.ReservationContext;
+import org.apache.vm.UserVmVO;
+import org.apache.vm.VirtualMachineProfile;
+import org.apache.vm.dao.NicDao;
+import org.apache.vm.dao.UserVmDao;
 
-import com.cloud.agent.AgentManager;
-import com.cloud.agent.api.Answer;
-import com.cloud.agent.api.StartupCommand;
-import com.cloud.agent.api.StartupPxeServerCommand;
-import com.cloud.agent.api.routing.VmDataCommand;
 import com.cloud.baremetal.database.BaremetalPxeVO;
-import com.cloud.configuration.dao.ConfigurationDao;
-import com.cloud.dc.dao.DataCenterDao;
-import com.cloud.deploy.DeployDestination;
-import com.cloud.host.Host;
-import com.cloud.host.HostVO;
-import com.cloud.host.dao.HostDao;
-import com.cloud.network.dao.PhysicalNetworkDao;
-import com.cloud.network.dao.PhysicalNetworkVO;
-import com.cloud.resource.ResourceManager;
-import com.cloud.resource.ResourceStateAdapter;
-import com.cloud.resource.ServerResource;
-import com.cloud.resource.UnableDeleteHostException;
-import com.cloud.service.dao.ServiceOfferingDao;
-import com.cloud.uservm.UserVm;
-import com.cloud.utils.StringUtils;
-import com.cloud.utils.component.ManagerBase;
-import com.cloud.utils.db.SearchCriteria.Op;
-import com.cloud.utils.db.SearchCriteria2;
-import com.cloud.utils.db.SearchCriteriaService;
-import com.cloud.utils.exception.CloudRuntimeException;
-import com.cloud.vm.NicProfile;
-import com.cloud.vm.NicVO;
-import com.cloud.vm.ReservationContext;
-import com.cloud.vm.UserVmVO;
-import com.cloud.vm.VirtualMachineProfile;
-import com.cloud.vm.dao.NicDao;
-import com.cloud.vm.dao.UserVmDao;
 
 @Local(value = {BaremetalPxeManager.class})
 public class BaremetalPxeManagerImpl extends ManagerBase implements BaremetalPxeManager, ResourceStateAdapter {
@@ -111,10 +111,10 @@ public class BaremetalPxeManagerImpl extends ManagerBase implements BaremetalPxe
 		        return service;
 		    }
 		}
-		
+
 		throw new CloudRuntimeException("Cannot find PXE service for " + type);
 	}
-	
+
 	@Override
 	public boolean prepare(VirtualMachineProfile profile, NicProfile nic, DeployDestination dest, ReservationContext context) {
 	    //TODO: select type from template

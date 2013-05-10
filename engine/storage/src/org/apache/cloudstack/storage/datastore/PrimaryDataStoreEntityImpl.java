@@ -25,9 +25,9 @@ import java.util.Map;
 
 import org.apache.cloudstack.engine.datacenter.entity.api.StorageEntity;
 import org.apache.cloudstack.engine.subsystem.api.storage.PrimaryDataStoreInfo;
+import org.apache.storage.StoragePoolStatus;
+import org.apache.storage.Storage.StoragePoolType;
 
-import com.cloud.storage.Storage.StoragePoolType;
-import com.cloud.storage.StoragePoolStatus;
 
 public class PrimaryDataStoreEntityImpl implements StorageEntity {
     private PrimaryDataStoreInfo dataStore;

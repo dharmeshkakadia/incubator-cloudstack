@@ -29,11 +29,11 @@ import org.apache.cloudstack.api.response.DomainResponse;
 import org.apache.cloudstack.api.response.ListResponse;
 import org.apache.cloudstack.api.response.ProjectResponse;
 import org.apache.cloudstack.api.response.ResourceCountResponse;
+import org.apache.configuration.ResourceCount;
 import org.apache.log4j.Logger;
+import org.apache.user.Account;
+import org.apache.user.UserContext;
 
-import com.cloud.configuration.ResourceCount;
-import com.cloud.user.Account;
-import com.cloud.user.UserContext;
 
 @APICommand(name = "updateResourceCount", description="Recalculate and update resource count for an account or domain.", responseObject=ResourceCountResponse.class)
 public class UpdateResourceCountCmd extends BaseCmd {
@@ -53,7 +53,7 @@ public class UpdateResourceCountCmd extends BaseCmd {
             required=true, description="If account parameter specified then updates resource counts for a specified account in this domain else update resource counts for all accounts & child domains in specified domain.")
     private Long domainId;
 
-    @Parameter(name=ApiConstants.RESOURCE_TYPE, type=CommandType.INTEGER, description=  "Type of resource to update. If specifies valid values are 0, 1, 2, 3, 4, 5, 6, 7, 8 and 9. If not specified will update all resource counts" +
+    @Parameter(name=ApiConstants.RESOURCE_TYPE, type=CommandType.INTEGER, description=  "Type of resource to update. If specifies valid values are 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 and 11. If not specified will update all resource counts" +
                                                                                         "0 - Instance. Number of instances a user can create. " +
                                                                                         "1 - IP. Number of public IP addresses a user can own. " +
                                                                                         "2 - Volume. Number of disk volumes a user can create." +
@@ -63,7 +63,9 @@ public class UpdateResourceCountCmd extends BaseCmd {
                                                                                         "6 - Network. Number of guest network a user can create." +
                                                                                         "7 - VPC. Number of VPC a user can create." +
                                                                                         "8 - CPU. Total number of CPU cores a user can use." +
-                                                                                        "9 - Memory. Total Memory (in MB) a user can use." )
+                                                                                        "9 - Memory. Total Memory (in MB) a user can use." +
+                                                                                        "10 - PrimaryStorage. Total primary storage space (in GiB) a user can use." +
+                                                                                        "11 - SecondaryStorage. Total secondary storage space (in GiB) a user can use." )
     private Integer resourceType;
 
     @Parameter(name=ApiConstants.PROJECT_ID, type=CommandType.UUID, entityType = ProjectResponse.class,

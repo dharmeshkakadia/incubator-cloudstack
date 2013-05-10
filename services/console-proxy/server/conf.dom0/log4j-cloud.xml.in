@@ -59,15 +59,15 @@ under the License.
      <priority value="WARN"/>
    </category>
    
-   <category name="com.cloud.consoleproxy.ConsoleProxyAjaxImageHandler">
+   <category name="org.apache.consoleproxy.ConsoleProxyAjaxImageHandler">
      <priority value="WARN"/>
    </category>
    
-   <category name="com.cloud.consoleproxy.ConsoleProxyViwer">
+   <category name="org.apache.consoleproxy.ConsoleProxyViwer">
      <priority value="WARN"/>
    </category>
 
-   <category name="com.cloud.consoleproxy">
+   <category name="org.apache.consoleproxy">
      <priority value="INFO"/>
    </category>
 

@@ -34,18 +34,18 @@ import org.apache.cloudstack.engine.subsystem.api.storage.Scope;
 import org.apache.cloudstack.engine.subsystem.api.storage.ScopeType;
 import org.apache.cloudstack.engine.subsystem.api.storage.disktype.DiskFormat;
 import org.apache.cloudstack.storage.HypervisorHostEndPoint;
+import org.apache.host.HostVO;
+import org.apache.host.Status;
+import org.apache.host.dao.HostDao;
 import org.apache.log4j.Logger;
+import org.apache.utils.db.DB;
+import org.apache.utils.db.SearchCriteria2;
+import org.apache.utils.db.SearchCriteriaService;
+import org.apache.utils.db.Transaction;
+import org.apache.utils.db.SearchCriteria.Op;
+import org.apache.utils.exception.CloudRuntimeException;
 import org.springframework.stereotype.Component;
 
-import com.cloud.host.HostVO;
-import com.cloud.host.Status;
-import com.cloud.host.dao.HostDao;
-import com.cloud.utils.db.DB;
-import com.cloud.utils.db.SearchCriteria2;
-import com.cloud.utils.db.SearchCriteriaService;
-import com.cloud.utils.db.Transaction;
-import com.cloud.utils.db.SearchCriteria.Op;
-import com.cloud.utils.exception.CloudRuntimeException;
 
 @Component
 public class DefaultEndPointSelector implements EndPointSelector {

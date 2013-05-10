@@ -14,7 +14,7 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
-// 
+//
 package com.cloud.ucs.database;
 
 import java.util.List;
@@ -22,12 +22,13 @@ import java.util.Map;
 
 import javax.naming.ConfigurationException;
 
-import com.cloud.utils.db.Filter;
-import com.cloud.utils.db.GenericDao;
-import com.cloud.utils.db.GenericSearchBuilder;
-import com.cloud.utils.db.SearchBuilder;
-import com.cloud.utils.db.SearchCriteria;
-import com.cloud.utils.db.SearchCriteria2;
+import org.apache.utils.db.Filter;
+import org.apache.utils.db.GenericDao;
+import org.apache.utils.db.GenericSearchBuilder;
+import org.apache.utils.db.SearchBuilder;
+import org.apache.utils.db.SearchCriteria;
+import org.apache.utils.db.SearchCriteria2;
+
 
 public interface UcsManagerDao extends GenericDao<UcsManagerVO, Long> {
 }

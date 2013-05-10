@@ -18,8 +18,8 @@ package com.cloud.hypervisor.kvm.storage;
 
 import java.util.List;
 
-import com.cloud.hypervisor.kvm.storage.KVMPhysicalDisk.PhysicalDiskFormat;
-import com.cloud.storage.Storage.StoragePoolType;
+import org.apache.cloudstack.utils.qemu.QemuImg.PhysicalDiskFormat;
+import org.apache.storage.Storage.StoragePoolType;
 
 public interface KVMStoragePool {
     public KVMPhysicalDisk createPhysicalDisk(String name,
@@ -38,6 +38,8 @@ public interface KVMStoragePool {
     public long getCapacity();
 
     public long getUsed();
+
+    public long getAvailable();
 
     public boolean refresh();
 

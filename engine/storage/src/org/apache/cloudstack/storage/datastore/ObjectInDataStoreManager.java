@@ -22,8 +22,8 @@ import org.apache.cloudstack.engine.subsystem.api.storage.DataObjectType;
 import org.apache.cloudstack.engine.subsystem.api.storage.DataStore;
 import org.apache.cloudstack.engine.subsystem.api.storage.DataStoreRole;
 import org.apache.cloudstack.engine.subsystem.api.storage.ObjectInDataStoreStateMachine.Event;
+import org.apache.utils.fsm.NoTransitionException;
 
-import com.cloud.utils.fsm.NoTransitionException;
 
 public interface ObjectInDataStoreManager {
     public DataObject create(DataObject template, DataStore dataStore);

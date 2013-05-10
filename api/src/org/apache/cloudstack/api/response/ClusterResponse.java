@@ -22,9 +22,9 @@ import java.util.List;
 import org.apache.cloudstack.api.ApiConstants;
 import org.apache.cloudstack.api.BaseResponse;
 import org.apache.cloudstack.api.EntityReference;
+import org.apache.org.Cluster;
+import org.apache.serializer.Param;
 
-import com.cloud.org.Cluster;
-import com.cloud.serializer.Param;
 import com.google.gson.annotations.SerializedName;
 
 @EntityReference(value = Cluster.class)
@@ -46,7 +46,10 @@ public class ClusterResponse extends BaseResponse {
 
     @SerializedName(ApiConstants.ZONE_NAME) @Param(description="the Zone name of the cluster")
     private String zoneName;
-
+    
+    @SerializedName(ApiConstants.ZONE_TYPE) @Param(description = "network type of the availability zone")
+    private String zoneType;
+    
     @SerializedName("hypervisortype") @Param(description="the hypervisor type of the cluster")
     private String hypervisorType;
 
@@ -116,6 +119,10 @@ public class ClusterResponse extends BaseResponse {
         this.zoneName = zoneName;
     }
 
+    public void setZoneType(String zoneType) {
+        this.zoneType = zoneType;
+    }
+    
     public String getClusterType() {
         return clusterType;
     }

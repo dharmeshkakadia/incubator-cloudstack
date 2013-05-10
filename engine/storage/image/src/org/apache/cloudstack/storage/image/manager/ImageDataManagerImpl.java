@@ -22,8 +22,8 @@ import org.apache.cloudstack.engine.subsystem.api.storage.TemplateEvent;
 import org.apache.cloudstack.engine.subsystem.api.storage.TemplateState;
 import org.springframework.stereotype.Component;
 
-import com.cloud.storage.VMTemplateVO;
-import com.cloud.utils.fsm.StateMachine2;
+import org.apache.storage.VMTemplateVO;
+import org.apache.utils.fsm.StateMachine2;
 
 @Component
 public class ImageDataManagerImpl implements ImageDataManager {

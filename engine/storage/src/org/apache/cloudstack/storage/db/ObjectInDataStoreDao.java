@@ -18,9 +18,9 @@ package org.apache.cloudstack.storage.db;
 
 import org.apache.cloudstack.engine.subsystem.api.storage.DataObjectInStore;
 import org.apache.cloudstack.engine.subsystem.api.storage.ObjectInDataStoreStateMachine;
+import org.apache.utils.db.GenericDao;
+import org.apache.utils.fsm.StateDao;
 
-import com.cloud.utils.db.GenericDao;
-import com.cloud.utils.fsm.StateDao;
 
 public interface ObjectInDataStoreDao extends GenericDao<ObjectInDataStoreVO, Long>, StateDao<ObjectInDataStoreStateMachine.State, ObjectInDataStoreStateMachine.Event, DataObjectInStore>  {
 

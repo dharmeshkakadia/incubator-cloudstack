@@ -23,10 +23,10 @@ import java.util.Map;
 import org.apache.cloudstack.api.ApiConstants;
 import org.apache.cloudstack.api.BaseResponse;
 import org.apache.cloudstack.api.EntityReference;
+import org.apache.serializer.Param;
+import org.apache.storage.Storage.ImageFormat;
+import org.apache.template.VirtualMachineTemplate;
 
-import com.cloud.serializer.Param;
-import com.cloud.storage.Storage.ImageFormat;
-import com.cloud.template.VirtualMachineTemplate;
 import com.google.gson.annotations.SerializedName;
 
 @EntityReference(value=VirtualMachineTemplate.class)
@@ -87,6 +87,9 @@ public class TemplateResponse extends BaseResponse implements ControlledEntityRe
 
     @SerializedName(ApiConstants.ZONE_NAME) @Param(description="the name of the zone for this template")
     private String zoneName;
+    
+    @SerializedName(ApiConstants.ZONE_TYPE) @Param(description="the networktype of the zone for this template")
+    private String zoneType;
 
     @SerializedName(ApiConstants.STATUS) @Param(description="the status of the template")
     private String status;
@@ -156,6 +159,10 @@ public class TemplateResponse extends BaseResponse implements ControlledEntityRe
         this.zoneName = zoneName;
     }
 
+    public void setZoneType(String zoneType) {
+        this.zoneType = zoneType;
+    }
+    
     public void setAccountId(String accountId) {
         this.accountId = accountId;
     }

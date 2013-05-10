@@ -24,15 +24,16 @@ package com.cloud.baremetal.networkservice;
 
 import java.util.List;
 
+import org.apache.deploy.DeployDestination;
+import org.apache.host.Host;
+import org.apache.uservm.UserVm;
+import org.apache.utils.component.Adapter;
+import org.apache.vm.NicProfile;
+import org.apache.vm.ReservationContext;
+import org.apache.vm.UserVmVO;
+import org.apache.vm.VirtualMachineProfile;
+
 import com.cloud.baremetal.database.BaremetalPxeVO;
-import com.cloud.deploy.DeployDestination;
-import com.cloud.host.Host;
-import com.cloud.uservm.UserVm;
-import com.cloud.utils.component.Adapter;
-import com.cloud.vm.NicProfile;
-import com.cloud.vm.ReservationContext;
-import com.cloud.vm.UserVmVO;
-import com.cloud.vm.VirtualMachineProfile;
 
 public interface BaremetalPxeService extends Adapter {
 	

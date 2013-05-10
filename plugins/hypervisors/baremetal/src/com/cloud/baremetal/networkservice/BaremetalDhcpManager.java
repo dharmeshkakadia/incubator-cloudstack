@@ -24,19 +24,20 @@ package com.cloud.baremetal.networkservice;
 
 import java.util.List;
 
+import org.apache.deploy.DeployDestination;
+import org.apache.exception.ResourceUnavailableException;
+import org.apache.host.Host;
+import org.apache.network.Network;
+import org.apache.network.Network.Provider;
+import org.apache.uservm.UserVm;
+import org.apache.utils.component.Manager;
+import org.apache.utils.component.PluggableService;
+import org.apache.vm.NicProfile;
+import org.apache.vm.ReservationContext;
+import org.apache.vm.VirtualMachine;
+import org.apache.vm.VirtualMachineProfile;
+
 import com.cloud.baremetal.database.BaremetalDhcpVO;
-import com.cloud.deploy.DeployDestination;
-import com.cloud.exception.ResourceUnavailableException;
-import com.cloud.host.Host;
-import com.cloud.network.Network;
-import com.cloud.network.Network.Provider;
-import com.cloud.uservm.UserVm;
-import com.cloud.utils.component.Manager;
-import com.cloud.utils.component.PluggableService;
-import com.cloud.vm.NicProfile;
-import com.cloud.vm.ReservationContext;
-import com.cloud.vm.VirtualMachine;
-import com.cloud.vm.VirtualMachineProfile;
 
 public interface BaremetalDhcpManager extends Manager, PluggableService {
     public static enum BaremetalDhcpType {

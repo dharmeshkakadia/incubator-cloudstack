@@ -23,6 +23,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import org.apache.agent.api.StoragePoolInfo;
 import org.apache.cloudstack.engine.subsystem.api.storage.ClusterScope;
 import org.apache.cloudstack.engine.subsystem.api.storage.DataStore;
 import org.apache.cloudstack.engine.subsystem.api.storage.EndPoint;
@@ -37,11 +38,12 @@ import org.apache.cloudstack.storage.datastore.db.StoragePoolVO;
 import org.apache.cloudstack.storage.endpoint.EndPointSelector;
 import org.apache.cloudstack.storage.volume.datastore.PrimaryDataStoreHelper;
 
-import com.cloud.agent.api.StoragePoolInfo;
-import com.cloud.host.HostVO;
-import com.cloud.host.dao.HostDao;
-import com.cloud.hypervisor.Hypervisor.HypervisorType;
-import com.cloud.storage.StoragePoolStatus;
+
+import org.apache.host.HostVO;
+import org.apache.host.dao.HostDao;
+import org.apache.hypervisor.Hypervisor.HypervisorType;
+import org.apache.storage.StoragePoolStatus;
+
 
 public class DefaultPrimaryDataStoreLifeCycleImpl implements PrimaryDataStoreLifeCycle {
     @Inject

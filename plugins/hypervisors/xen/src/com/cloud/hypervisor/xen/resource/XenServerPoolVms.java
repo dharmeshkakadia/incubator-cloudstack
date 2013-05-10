@@ -19,9 +19,10 @@ package com.cloud.hypervisor.xen.resource;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.log4j.Logger;
+import org.apache.utils.Pair;
+import org.apache.vm.VirtualMachine.State;
+
 import java.util.concurrent.ConcurrentHashMap;
-import com.cloud.utils.Pair;
-import com.cloud.vm.VirtualMachine.State;
 
  
 public class XenServerPoolVms {

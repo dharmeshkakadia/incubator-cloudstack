@@ -18,7 +18,7 @@
  */
 package org.apache.cloudstack.engine.subsystem.api.storage;
 
-import com.cloud.utils.exception.CloudRuntimeException;
+import org.apache.utils.exception.CloudRuntimeException;
 
 public enum DataStoreRole {
     Primary("primary"),

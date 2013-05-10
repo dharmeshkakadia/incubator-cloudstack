@@ -20,14 +20,14 @@ import java.util.List;
 import javax.ejb.Local;
 
 import org.apache.log4j.Logger;
+import org.apache.utils.db.DB;
+import org.apache.utils.db.GenericDaoBase;
+import org.apache.utils.db.SearchBuilder;
+import org.apache.utils.db.SearchCriteria;
+import org.apache.utils.db.SearchCriteria.Op;
 import org.springframework.stereotype.Component;
 
 import com.cloud.network.CiscoNexusVSMDeviceVO;
-import com.cloud.utils.db.DB;
-import com.cloud.utils.db.GenericDaoBase;
-import com.cloud.utils.db.SearchBuilder;
-import com.cloud.utils.db.SearchCriteria;
-import com.cloud.utils.db.SearchCriteria.Op;
 
 @Component
 @Local(value=CiscoNexusVSMDeviceDao.class) @DB(txn=false)

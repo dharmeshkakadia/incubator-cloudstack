@@ -25,6 +25,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import org.apache.log4j.Logger;
+import org.apache.utils.db.Transaction;
 
 import com.cloud.bridge.model.MultiPartPartsVO;
 import com.cloud.bridge.model.MultiPartUploadsVO;
@@ -33,7 +34,6 @@ import com.cloud.bridge.service.core.s3.S3MetaDataEntry;
 import com.cloud.bridge.service.core.s3.S3MultipartPart;
 import com.cloud.bridge.service.core.s3.S3MultipartUpload;
 import com.cloud.bridge.util.OrderedPair;
-import com.cloud.utils.db.Transaction;
 
 public class MultipartLoadDao {
     public static final Logger logger = Logger.getLogger(MultipartLoadDao.class);

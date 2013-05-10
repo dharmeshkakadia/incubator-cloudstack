@@ -26,9 +26,9 @@ import org.apache.cloudstack.api.response.ListResponse;
 import org.apache.cloudstack.api.response.TemplateResponse;
 import org.apache.cloudstack.api.response.ZoneResponse;
 import org.apache.log4j.Logger;
+import org.apache.template.VirtualMachineTemplate;
+import org.apache.user.Account;
 
-import com.cloud.template.VirtualMachineTemplate;
-import com.cloud.user.Account;
 
 @APICommand(name = "prepareTemplate", responseObject=TemplateResponse.class, description="load template into primary storage")
 public class PrepareTemplateCmd extends BaseCmd {

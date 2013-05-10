@@ -19,16 +19,16 @@ package com.cloud.bridge.persist.dao;
 import javax.ejb.Local;
 
 import org.apache.log4j.Logger;
+import org.apache.utils.db.GenericDaoBase;
+import org.apache.utils.db.SearchBuilder;
+import org.apache.utils.db.SearchCriteria;
+import org.apache.utils.db.Transaction;
 import org.springframework.stereotype.Component;
 
 import com.cloud.bridge.model.CloudStackServiceOfferingVO;
 import com.cloud.bridge.model.SHostVO;
 import com.cloud.stack.models.CloudStackConfiguration;
 import com.cloud.stack.models.CloudStackServiceOffering;
-import com.cloud.utils.db.GenericDaoBase;
-import com.cloud.utils.db.SearchBuilder;
-import com.cloud.utils.db.SearchCriteria;
-import com.cloud.utils.db.Transaction;
 
 @Component
 @Local(value={CloudStackSvcOfferingDao.class})

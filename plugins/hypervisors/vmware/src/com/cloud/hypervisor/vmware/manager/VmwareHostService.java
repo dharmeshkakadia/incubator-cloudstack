@@ -16,9 +16,10 @@
 // under the License.
 package com.cloud.hypervisor.vmware.manager;
 
-import com.cloud.agent.api.Command;
-import com.cloud.hypervisor.vmware.mo.VmwareHypervisorHost;
-import com.cloud.hypervisor.vmware.util.VmwareContext;
+import org.apache.agent.api.Command;
+import org.apache.hypervisor.vmware.mo.VmwareHypervisorHost;
+import org.apache.hypervisor.vmware.util.VmwareContext;
+
 
 public interface VmwareHostService {
 	VmwareContext getServiceContext(Command cmd);

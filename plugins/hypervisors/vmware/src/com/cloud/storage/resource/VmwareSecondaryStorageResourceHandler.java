@@ -18,29 +18,33 @@ package com.cloud.storage.resource;
 
 import java.util.List;
 
+import org.apache.agent.api.Answer;
+import org.apache.agent.api.BackupSnapshotCommand;
+import org.apache.agent.api.Command;
+import org.apache.agent.api.CreatePrivateTemplateFromSnapshotCommand;
+import org.apache.agent.api.CreatePrivateTemplateFromVolumeCommand;
+import org.apache.agent.api.CreateVolumeFromSnapshotCommand;
+import org.apache.agent.api.storage.CopyVolumeCommand;
+import org.apache.agent.api.storage.CreateVolumeOVAAnswer;
+import org.apache.agent.api.storage.CreateVolumeOVACommand;
+import org.apache.agent.api.storage.PrepareOVAPackingCommand;
+import org.apache.agent.api.storage.PrimaryStorageDownloadCommand;
+import org.apache.cloudstack.storage.resource.SecondaryStorageResourceHandler;
+import org.apache.hypervisor.vmware.mo.ClusterMO;
+import org.apache.hypervisor.vmware.mo.HostMO;
+import org.apache.hypervisor.vmware.mo.VmwareHostType;
+import org.apache.hypervisor.vmware.mo.VmwareHypervisorHost;
+import org.apache.hypervisor.vmware.mo.VmwareHypervisorHostNetworkSummary;
+import org.apache.hypervisor.vmware.util.VmwareContext;
+import org.apache.hypervisor.vmware.util.VmwareHelper;
 import org.apache.log4j.Logger;
+import org.apache.serializer.GsonHelper;
+import org.apache.utils.Pair;
 
-import com.cloud.agent.api.Answer;
-import com.cloud.agent.api.BackupSnapshotCommand;
-import com.cloud.agent.api.Command;
-import com.cloud.agent.api.CreatePrivateTemplateFromSnapshotCommand;
-import com.cloud.agent.api.CreatePrivateTemplateFromVolumeCommand;
-import com.cloud.agent.api.CreateVolumeFromSnapshotCommand;
-import com.cloud.agent.api.storage.CopyVolumeCommand;
-import com.cloud.agent.api.storage.PrimaryStorageDownloadCommand;
 import com.cloud.hypervisor.vmware.manager.VmwareHostService;
 import com.cloud.hypervisor.vmware.manager.VmwareStorageManager;
 import com.cloud.hypervisor.vmware.manager.VmwareStorageManagerImpl;
 import com.cloud.hypervisor.vmware.manager.VmwareStorageMount;
-import com.cloud.hypervisor.vmware.mo.ClusterMO;
-import com.cloud.hypervisor.vmware.mo.HostMO;
-import com.cloud.hypervisor.vmware.mo.VmwareHostType;
-import com.cloud.hypervisor.vmware.mo.VmwareHypervisorHost;
-import com.cloud.hypervisor.vmware.mo.VmwareHypervisorHostNetworkSummary;
-import com.cloud.hypervisor.vmware.util.VmwareContext;
-import com.cloud.hypervisor.vmware.util.VmwareHelper;
-import com.cloud.serializer.GsonHelper;
-import com.cloud.utils.Pair;
 import com.google.gson.Gson;
 import com.vmware.vim25.ManagedObjectReference;
 
@@ -75,6 +79,10 @@ public class VmwareSecondaryStorageResourceHandler implements SecondaryStorageRe
             answer = execute((CreatePrivateTemplateFromSnapshotCommand)cmd);
         } else if(cmd instanceof CopyVolumeCommand) {
             answer = execute((CopyVolumeCommand)cmd);
+        } else if(cmd instanceof CreateVolumeOVACommand) {
+            answer = execute((CreateVolumeOVACommand)cmd);
+        } else if (cmd instanceof PrepareOVAPackingCommand) {
+            answer = execute((PrepareOVAPackingCommand)cmd);
         } else if(cmd instanceof CreateVolumeFromSnapshotCommand) {
             answer = execute((CreateVolumeFromSnapshotCommand)cmd);
         } else {
@@ -135,6 +143,23 @@ public class VmwareSecondaryStorageResourceHandler implements SecondaryStorageRe
         }
 
         return _storageMgr.execute(this, cmd);
+    }
+
+    private Answer execute(PrepareOVAPackingCommand cmd) {
+        s_logger.info("Fang: VmwareSecStorageResourceHandler: exec cmd. cmd is  " + cmd.toString());
+        if (s_logger.isDebugEnabled()) {
+            s_logger.debug("Executing resource PrepareOVAPackingCommand: " + _gson.toJson(cmd));
+        }
+
+        return _storageMgr.execute(this, cmd);
+    }
+
+    private CreateVolumeOVAAnswer execute(CreateVolumeOVACommand cmd) {
+        if (s_logger.isDebugEnabled()) {
+            s_logger.debug("Executing resource CreateVolumeOVACommand: " + _gson.toJson(cmd));
+        }
+
+        return (CreateVolumeOVAAnswer) _storageMgr.execute(this, cmd);
     }
 
     private Answer execute(CreateVolumeFromSnapshotCommand cmd) {

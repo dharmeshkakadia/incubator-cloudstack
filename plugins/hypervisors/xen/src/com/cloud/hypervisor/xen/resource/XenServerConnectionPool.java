@@ -33,12 +33,12 @@ import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLSession;
 
 import org.apache.log4j.Logger;
+import org.apache.utils.NumbersUtil;
+import org.apache.utils.PropertiesUtil;
+import org.apache.utils.exception.CloudRuntimeException;
 import org.apache.xmlrpc.XmlRpcException;
 import org.apache.xmlrpc.client.XmlRpcClientException;
 
-import com.cloud.utils.NumbersUtil;
-import com.cloud.utils.PropertiesUtil;
-import com.cloud.utils.exception.CloudRuntimeException;
 import com.xensource.xenapi.APIVersion;
 import com.xensource.xenapi.Connection;
 import com.xensource.xenapi.Host;

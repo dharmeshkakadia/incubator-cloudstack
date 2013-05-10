@@ -19,6 +19,7 @@ package org.apache.cloudstack.api.command.user.snapshot;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.async.AsyncJob;
 import org.apache.cloudstack.api.APICommand;
 import org.apache.cloudstack.api.ApiConstants;
 import org.apache.cloudstack.api.BaseListTaggedResourcesCmd;
@@ -27,10 +28,9 @@ import org.apache.cloudstack.api.response.ListResponse;
 import org.apache.cloudstack.api.response.SnapshotResponse;
 import org.apache.cloudstack.api.response.VolumeResponse;
 import org.apache.log4j.Logger;
+import org.apache.storage.Snapshot;
+import org.apache.utils.Pair;
 
-import com.cloud.async.AsyncJob;
-import com.cloud.storage.Snapshot;
-import com.cloud.utils.Pair;
 
 @APICommand(name = "listSnapshots", description="Lists all available snapshots for the account.", responseObject=SnapshotResponse.class)
 public class ListSnapshotsCmd extends BaseListTaggedResourcesCmd {
@@ -58,6 +58,9 @@ public class ListSnapshotsCmd extends BaseListTaggedResourcesCmd {
     @Parameter(name=ApiConstants.VOLUME_ID, type=CommandType.UUID, entityType = VolumeResponse.class,
             description="the ID of the disk volume")
     private Long volumeId;
+    
+    @Parameter(name=ApiConstants.ZONE_TYPE, type=CommandType.STRING, description="the network type of the zone that the virtual machine belongs to")
+    private String zoneType;
 
     /////////////////////////////////////////////////////
     /////////////////// Accessors ///////////////////////
@@ -83,6 +86,10 @@ public class ListSnapshotsCmd extends BaseListTaggedResourcesCmd {
         return volumeId;
     }
 
+    public String getZoneType() {
+        return zoneType;
+    }
+    
     /////////////////////////////////////////////////////
     /////////////// API Implementation///////////////////
     /////////////////////////////////////////////////////

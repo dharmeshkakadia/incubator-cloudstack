@@ -21,6 +21,7 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
+import org.apache.agent.api.Answer;
 import org.apache.cloudstack.engine.subsystem.api.storage.CommandResult;
 import org.apache.cloudstack.engine.subsystem.api.storage.CopyCommandResult;
 import org.apache.cloudstack.engine.subsystem.api.storage.CreateCmdResult;
@@ -37,13 +38,12 @@ import org.apache.cloudstack.storage.command.CreateObjectCommand;
 import org.apache.cloudstack.storage.command.DeleteCommand;
 import org.apache.cloudstack.storage.datastore.DataObjectManager;
 import org.apache.cloudstack.storage.endpoint.EndPointSelector;
-import org.apache.log4j.Logger;
 
-import com.cloud.agent.api.Answer;
-import com.cloud.storage.dao.StoragePoolHostDao;
-import com.cloud.utils.exception.CloudRuntimeException;
-import com.cloud.utils.storage.encoding.DecodedDataObject;
-import com.cloud.utils.storage.encoding.Decoder;
+import org.apache.log4j.Logger;
+import org.apache.storage.dao.StoragePoolHostDao;
+import org.apache.utils.exception.CloudRuntimeException;
+import org.apache.utils.storage.encoding.DecodedDataObject;
+import org.apache.utils.storage.encoding.Decoder;
 
 
 public class DefaultPrimaryDataStoreDriverImpl implements PrimaryDataStoreDriver {
@@ -144,12 +144,12 @@ public class DefaultPrimaryDataStoreDriverImpl implements PrimaryDataStoreDriver
         CreateVolumeAnswer answer = (CreateVolumeAnswer)callback.getResult();
         CommandResult result = new CommandResult();
         if (answer == null || answer.getDetails() != null) {
-            result.setSucess(false);
+            result.setSuccess(false);
             if (answer != null) {
                 result.setResult(answer.getDetails());
             }
         } else {
-            result.setSucess(true);
+            result.setSuccess(true);
             VolumeObject volume = context.getVolume();
             volume.setPath(answer.getVolumeUuid());
         }

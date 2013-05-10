@@ -57,6 +57,7 @@ import org.apache.axis2.databinding.ADBException;
 import org.apache.axis2.databinding.utils.writer.MTOMAwareXMLSerializer;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.Logger;
+import org.apache.utils.db.Transaction;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
@@ -153,7 +154,6 @@ import com.cloud.bridge.util.AuthenticationUtils;
 import com.cloud.bridge.util.ConfigurationHelper;
 import com.cloud.bridge.util.EC2RestAuth;
 import com.cloud.stack.models.CloudStackAccount;
-import com.cloud.utils.db.Transaction;
 
 @Component("EC2RestServlet")
 public class EC2RestServlet extends HttpServlet {
@@ -209,7 +209,7 @@ public class EC2RestServlet extends HttpServlet {
             if (installedPath == null) installedPath = System.getProperty("catalina.home");
             String webappPath = config.getServletContext().getRealPath("/");
             //pathToKeystore = new String( installedPath + File.separator + "webapps" + File.separator + webappName + File.separator + "WEB-INF" + File.separator + "classes" + File.separator + keystore );
-            pathToKeystore = new String( webappPath +  File.separator +  "\\WEB-INF" + File.separator + "classes" + File.separator + keystore );
+            pathToKeystore = new String( webappPath +  File.separator +  "WEB-INF" + File.separator + "classes" + File.separator + keystore );
         }
     }
 

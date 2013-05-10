@@ -33,10 +33,10 @@ import org.apache.cloudstack.framework.async.AsyncCompletionCallback;
 import org.apache.cloudstack.framework.async.AsyncRpcConext;
 import org.apache.cloudstack.storage.motion.DataMotionService;
 import org.apache.log4j.Logger;
+import org.apache.utils.exception.CloudRuntimeException;
+import org.apache.utils.fsm.NoTransitionException;
 import org.springframework.stereotype.Component;
 
-import com.cloud.utils.exception.CloudRuntimeException;
-import com.cloud.utils.fsm.NoTransitionException;
 
 @Component
 public class DataObjectManagerImpl implements DataObjectManager {
@@ -109,7 +109,7 @@ public class DataObjectManagerImpl implements DataObjectManager {
                 if (obj == null) {
                     CreateCmdResult result = new CreateCmdResult(
                             null, null);
-                    result.setSucess(false);
+                    result.setSuccess(false);
                     result.setResult(e.toString());
                     callback.complete(result);
                     return;
@@ -124,7 +124,7 @@ public class DataObjectManagerImpl implements DataObjectManager {
                         data, store);
             } catch (Exception e) {
                 CreateCmdResult result = new CreateCmdResult(null, null);
-                result.setSucess(false);
+                result.setSuccess(false);
                 result.setResult(e.toString());
                 callback.complete(result);
                 return;
@@ -153,7 +153,7 @@ public class DataObjectManagerImpl implements DataObjectManager {
                 s_logger.debug("state transation failed", e1);
             }
             CreateCmdResult result = new CreateCmdResult(null, null);
-            result.setSucess(false);
+            result.setSuccess(false);
             result.setResult(e.toString());
             callback.complete(result);
             return;

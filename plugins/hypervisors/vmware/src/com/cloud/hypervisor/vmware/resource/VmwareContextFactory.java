@@ -19,13 +19,13 @@ package com.cloud.hypervisor.vmware.resource;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
+import org.apache.hypervisor.vmware.util.VmwareClient;
+import org.apache.hypervisor.vmware.util.VmwareContext;
 import org.apache.log4j.Logger;
+import org.apache.utils.StringUtils;
 import org.springframework.stereotype.Component;
 
 import com.cloud.hypervisor.vmware.manager.VmwareManager;
-import com.cloud.hypervisor.vmware.util.VmwareClient;
-import com.cloud.hypervisor.vmware.util.VmwareContext;
-import com.cloud.utils.StringUtils;
 
 @Component
 public class VmwareContextFactory {

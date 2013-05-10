@@ -23,10 +23,10 @@ import org.apache.cloudstack.api.command.admin.network.AddNetworkDeviceCmd;
 import org.apache.cloudstack.api.command.admin.network.DeleteNetworkDeviceCmd;
 import org.apache.cloudstack.api.command.admin.network.ListNetworkDeviceCmd;
 import org.apache.cloudstack.api.response.NetworkDeviceResponse;
+import org.apache.host.Host;
+import org.apache.network.Network;
+import org.apache.utils.component.Manager;
 
-import com.cloud.host.Host;
-import com.cloud.network.Network;
-import com.cloud.utils.component.Manager;
 
 public interface ExternalNetworkDeviceManager extends Manager {
 
@@ -43,7 +43,7 @@ public interface ExternalNetworkDeviceManager extends Manager {
         public static final NetworkDevice F5BigIpLoadBalancer = new NetworkDevice("F5BigIpLoadBalancer", Network.Provider.F5BigIp.getName());
         public static final NetworkDevice JuniperSRXFirewall = new NetworkDevice("JuniperSRXFirewall", Network.Provider.JuniperSRX.getName());
         public static final NetworkDevice NiciraNvp = new NetworkDevice("NiciraNvp", Network.Provider.NiciraNvp.getName());
-        public static final NetworkDevice MidokuraMidonet = new NetworkDevice("MidokuraMidonet", Network.Provider.MidokuraMidonet.getName());
+        public static final NetworkDevice CiscoVnmc = new NetworkDevice("CiscoVnmc", Network.Provider.CiscoVnmc.getName());
 
         public NetworkDevice(String deviceName, String ntwkServiceprovider) {
             _name = deviceName;

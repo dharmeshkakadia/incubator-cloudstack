@@ -36,9 +36,9 @@ import org.mockito.Mockito;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.cloud.dc.ClusterVO;
-import com.cloud.dc.dao.ClusterDao;
-import com.cloud.hypervisor.Hypervisor.HypervisorType;
+import org.apache.dc.ClusterVO;
+import org.apache.dc.dao.ClusterDao;
+import org.apache.hypervisor.Hypervisor.HypervisorType;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations="classpath:/testContext.xml")

@@ -29,8 +29,8 @@ import org.apache.cloudstack.api.response.ConditionResponse;
 import org.apache.cloudstack.api.response.CounterResponse;
 import org.apache.cloudstack.api.response.ListResponse;
 import org.apache.log4j.Logger;
+import org.apache.network.as.Condition;
 
-import com.cloud.network.as.Condition;
 
 @APICommand(name = "listConditions", description = "List Conditions for the specific user", responseObject = CounterResponse.class)
 public class ListConditionsCmd extends BaseListAccountResourcesCmd {

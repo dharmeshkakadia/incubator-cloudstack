@@ -30,11 +30,11 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import org.apache.cloudstack.engine.subsystem.api.storage.ScopeType;
+import org.apache.storage.StoragePool;
+import org.apache.storage.StoragePoolStatus;
+import org.apache.storage.Storage.StoragePoolType;
+import org.apache.utils.db.GenericDao;
 
-import com.cloud.storage.Storage.StoragePoolType;
-import com.cloud.storage.StoragePool;
-import com.cloud.storage.StoragePoolStatus;
-import com.cloud.utils.db.GenericDao;
 
 @Entity
 @Table(name="storage_pool")

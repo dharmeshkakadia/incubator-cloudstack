@@ -22,9 +22,9 @@ import org.apache.cloudstack.api.BaseUpdateTemplateOrIsoCmd;
 import org.apache.cloudstack.api.ServerApiException;
 import org.apache.cloudstack.api.response.TemplateResponse;
 import org.apache.log4j.Logger;
+import org.apache.template.VirtualMachineTemplate;
+import org.apache.user.Account;
 
-import com.cloud.template.VirtualMachineTemplate;
-import com.cloud.user.Account;
 
 @APICommand(name = "updateTemplate", description="Updates attributes of a template.", responseObject=TemplateResponse.class)
 public class UpdateTemplateCmd extends BaseUpdateTemplateOrIsoCmd {

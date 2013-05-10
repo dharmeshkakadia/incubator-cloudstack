@@ -18,8 +18,9 @@ package com.cloud.netapp.dao;
 
 import java.util.List;
 
+import org.apache.utils.db.GenericDao;
+
 import com.cloud.netapp.NetappVolumeVO;
-import com.cloud.utils.db.GenericDao;
 
 public interface VolumeDao extends GenericDao<NetappVolumeVO, Long> {
 

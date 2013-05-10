@@ -21,7 +21,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.cloud.utils.Pair;
+import org.apache.utils.Pair;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 

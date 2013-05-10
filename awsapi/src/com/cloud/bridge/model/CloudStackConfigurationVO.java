@@ -21,7 +21,8 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import com.cloud.utils.db.DB;
+import org.apache.utils.db.DB;
+
 
 @Entity
 @Table(name="configuration")

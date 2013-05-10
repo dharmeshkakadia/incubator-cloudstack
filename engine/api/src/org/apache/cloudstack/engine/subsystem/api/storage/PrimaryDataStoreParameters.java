@@ -20,7 +20,8 @@ package org.apache.cloudstack.engine.subsystem.api.storage;
 
 import java.util.Map;
 
-import com.cloud.storage.Storage.StoragePoolType;
+import org.apache.storage.Storage.StoragePoolType;
+
 
 public class PrimaryDataStoreParameters {
     private Long zoneId;

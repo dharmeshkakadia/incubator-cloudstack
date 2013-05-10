@@ -18,10 +18,11 @@ package com.cloud.network.lb.dao;
 
 import java.util.List;
 
+import org.apache.network.dao.LoadBalancerVO;
+import org.apache.utils.db.GenericDao;
+import org.apache.vm.DomainRouterVO;
+
 import com.cloud.network.ElasticLbVmMapVO;
-import com.cloud.network.dao.LoadBalancerVO;
-import com.cloud.utils.db.GenericDao;
-import com.cloud.vm.DomainRouterVO;
 
 public interface ElasticLbVmMapDao extends GenericDao<ElasticLbVmMapVO, Long> {
     ElasticLbVmMapVO findOneByLbIdAndElbVmId(long lbId, long elbVmId);

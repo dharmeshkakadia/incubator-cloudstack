@@ -27,10 +27,10 @@ import org.apache.cloudstack.api.response.HostResponse;
 import org.apache.cloudstack.api.response.ListResponse;
 import org.apache.cloudstack.api.response.SwiftResponse;
 import org.apache.log4j.Logger;
+import org.apache.storage.Swift;
+import org.apache.user.Account;
+import org.apache.utils.Pair;
 
-import com.cloud.storage.Swift;
-import com.cloud.user.Account;
-import com.cloud.utils.Pair;
 
 @APICommand(name = "listSwifts", description = "List Swift.", responseObject = HostResponse.class, since="3.0.0")
 public class ListSwiftsCmd extends BaseListCmd {
