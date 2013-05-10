@@ -38,7 +38,7 @@ public class JmxUtil {
     public static ObjectName registerMBean(String objTypeName, String objInstanceName, Object mbean) 
     	throws MalformedObjectNameException, InstanceAlreadyExistsException, MBeanRegistrationException, NotCompliantMBeanException {
 
-        String name = "com.cloud:type=" + objTypeName;
+        String name = "org.apache:type=" + objTypeName;
         if(objInstanceName != null && !objInstanceName.isEmpty())
         	name += ", name=" + objInstanceName;
         ObjectName objectName = new ObjectName(name);
@@ -80,7 +80,7 @@ public class JmxUtil {
     private static ObjectName composeMBeanName(String objTypeName, String objInstanceName) 
     	throws MalformedObjectNameException {
         
-    	String name = "com.cloud:type=" + objTypeName;
+    	String name = "org.apache:type=" + objTypeName;
         if(objInstanceName != null && !objInstanceName.isEmpty())
         	name += ", name=" + objInstanceName;
         

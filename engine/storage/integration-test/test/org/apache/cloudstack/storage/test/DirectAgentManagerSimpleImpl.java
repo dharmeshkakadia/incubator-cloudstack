@@ -41,11 +41,11 @@ import org.apache.host.HostVO;
 import org.apache.host.Status.Event;
 import org.apache.host.dao.HostDao;
 import org.apache.hypervisor.Hypervisor.HypervisorType;
+import org.apache.hypervisor.xen.resource.XcpOssResource;
 import org.apache.log4j.Logger;
 import org.apache.resource.ServerResource;
 import org.apache.utils.component.ManagerBase;
 
-import com.cloud.hypervisor.xen.resource.XcpOssResource;
 
 
 

@@ -19,7 +19,6 @@
 
 package org.apache.network.resource;
 
-import com.cloud.hypervisor.kvm.resource.*;
 import com.midokura.midonet.client.resource.Bridge;
 import com.midokura.midonet.client.resource.Router;
 import com.midokura.midonet.client.resource.BridgePort;
@@ -29,6 +28,7 @@ import com.midokura.midonet.client.resource.Host;
 import org.apache.agent.api.to.NicTO;
 import org.apache.agent.resource.virtualnetwork.VirtualRoutingResource;
 import org.apache.exception.InternalErrorException;
+import org.apache.hypervisor.kvm.resource.*;
 import org.apache.log4j.Logger;
 import org.apache.network.Networks;
 import org.apache.utils.NumbersUtil;

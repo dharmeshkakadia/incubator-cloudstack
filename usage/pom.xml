@@ -63,7 +63,7 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
             <excludes>
-                <exclude>com/cloud/usage/UsageManagerTest.java</exclude>
+                <exclude>org/apache/usage/UsageManagerTest.java</exclude>
             </excludes>
         </configuration>
       </plugin>

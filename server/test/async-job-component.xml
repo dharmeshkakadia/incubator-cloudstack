@@ -86,7 +86,7 @@ under the License.
         <dao name="Load Balancer Mapping" class="org.apache.network.dao.LoadBalancerVMMapDaoImpl"/>
         <dao name="IP Addresses" class="org.apache.network.dao.IPAddressDaoImpl"/>
 		<dao name="Datacenter IP Addresses" class="org.apache.dc.dao.DataCenterIpAddressDaoImpl"/>
-        <dao name="Pricing" class="com.cloud.pricing.dao.PricingDaoImpl"/>
+        <dao name="Pricing" class="org.apache.dao.PricingDaoImpl"/>
         <dao name="Usage" class="org.apache.usage.dao.UsageDaoImpl"/>
         <dao name="UsageJob" class="org.apache.usage.dao.UsageJobDaoImpl"/>
         <dao name="Alert" class="org.apache.alert.dao.AlertDaoImpl"/>

@@ -83,7 +83,7 @@ under the License.
    <!-- Limit categories -->
    <!-- ================ -->
 
-   <category name="com.cloud">
+   <category name="org.apache">
      <priority value="DEBUG"/>
    </category>
    
@@ -100,7 +100,7 @@ under the License.
      <priority value="INFO"/>
    </category>
 
-   <category name="apiserver.com.cloud">
+   <category name="apiserver.org.apache">
      <priority value="DEBUG"/>
    </category>
 

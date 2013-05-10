@@ -175,8 +175,8 @@
   <bean id="autoScaleVmGroupDaoImpl" class="org.apache.network.as.dao.AutoScaleVmGroupDaoImpl" />
   <bean id="autoScaleVmGroupPolicyMapDaoImpl" class="org.apache.network.as.dao.AutoScaleVmGroupPolicyMapDaoImpl" />
   <bean id="autoScaleVmProfileDaoImpl" class="org.apache.network.as.dao.AutoScaleVmProfileDaoImpl" />
-  <bean id="baremetalDhcpDaoImpl" class="com.cloud.baremetal.database.BaremetalDhcpDaoImpl" />
-  <bean id="baremetalPxeDaoImpl" class="com.cloud.baremetal.database.BaremetalPxeDaoImpl" />
+  <bean id="baremetalDhcpDaoImpl" class="org.apache.baremetal.database.BaremetalDhcpDaoImpl" />
+  <bean id="baremetalPxeDaoImpl" class="org.apache.baremetal.database.BaremetalPxeDaoImpl" />
   <bean id="capacityDaoImpl" class="org.apache.capacity.dao.CapacityDaoImpl" />
   <bean id="certificateDaoImpl" class="org.apache.certificate.dao.CertificateDaoImpl" />
   <bean id="clusterDaoImpl" class="org.apache.dc.dao.ClusterDaoImpl" />
@@ -491,7 +491,7 @@
   <bean id="KVMFencer" class="org.apache.ha.KVMFencer">
     <property name="name" value="KVMFenceBuilder"/>
   </bean>
-  <bean id="OvmFencer" class="com.cloud.ovm.hypervisor.OvmFencer">
+  <bean id="OvmFencer" class="org.apache.ovm.hypervisor.OvmFencer">
     <property name="name" value="OvmFenceBuilder"/>
   </bean>
 
@@ -518,7 +518,7 @@
     <property name="name" value="SCVMMServer"/>
   </bean>
 
-  <bean id="OvmDiscoverer" class="com.cloud.ovm.hypervisor.OvmDiscoverer">
+  <bean id="OvmDiscoverer" class="org.apache.ovm.hypervisor.OvmDiscoverer">
     <property name="name" value="Ovm Discover"/>
   </bean>
   
@@ -591,7 +591,7 @@
     <property name="name" value="LXCGuru"/>
   </bean>
 
-  <bean id="OvmGuru" class="com.cloud.ovm.hypervisor.OvmGuru">
+  <bean id="OvmGuru" class="org.apache.ovm.hypervisor.OvmGuru">
     <property name="name" value="OvmGuru"/>
   </bean>
   
@@ -802,43 +802,43 @@
   -->
   
 <!--
-  <bean id="BareMetalDhcp" class="com.cloud.baremetal.networkservice.BaremetalDhcpElement">
+  <bean id="BareMetalDhcp" class="org.apache.baremetal.networkservice.BaremetalDhcpElement">
     <property name="name" value="BareMetalDhcp"/>
   </bean>
-  <bean id="BareMetalPxe" class="com.cloud.baremetal.networkservice.BaremetalPxeElement">
+  <bean id="BareMetalPxe" class="org.apache.baremetal.networkservice.BaremetalPxeElement">
     <property name="name" value="BareMetalPxe"/>
   </bean>
-  <bean id="BareMetalUserdata" class="com.cloud.baremetal.networkservice.BaremetalUserdataElement">
+  <bean id="BareMetalUserdata" class="org.apache.baremetal.networkservice.BaremetalUserdataElement">
       <property name="name" value="BareMetalUserdata"/>
   </bean>
 
-  <bean id="BareMetalTemplateAdapter" class="com.cloud.baremetal.manager.BareMetalTemplateAdapter" />
+  <bean id="BareMetalTemplateAdapter" class="org.apache.baremetal.manager.BareMetalTemplateAdapter" />
 
-  <bean id="BareMetalDiscoverer" class="com.cloud.baremetal.manager.BareMetalDiscoverer">
+  <bean id="BareMetalDiscoverer" class="org.apache.baremetal.manager.BareMetalDiscoverer">
     <property name="name" value="Bare Metal Agent"/>
   </bean>
 
-  <bean id="BareMetalPlanner" class="com.cloud.baremetal.manager.BareMetalPlanner">
+  <bean id="BareMetalPlanner" class="org.apache.baremetal.manager.BareMetalPlanner">
     <property name="name" value="BareMetal Fit"/>
   </bean>
   
-  <bean id="BaremetalGuru" class="com.cloud.baremetal.manager.BareMetalGuru">
+  <bean id="BaremetalGuru" class="org.apache.baremetal.manager.BareMetalGuru">
     <property name="name" value="BaremetalGuru"/>
   </bean>
 
-  <bean id="BaremetalPlannerSelector" class="com.cloud.baremetal.manager.BaremetalPlannerSelector">
+  <bean id="BaremetalPlannerSelector" class="org.apache.baremetal.manager.BaremetalPlannerSelector">
     <property name="name" value="BaremetalPlannerSelector"/>
   </bean>
 
-  <bean id="BaremetalManager" class="com.cloud.baremetal.manager.BaremetalManagerImpl"/>
-  <bean id="BaremetalDhcpManager" class="com.cloud.baremetal.networkservice.BaremetalDhcpManagerImpl"/>
-  <bean id="BaremetalKickStartPxeService" class="com.cloud.baremetal.networkservice.BaremetalKickStartServiceImpl"/>
-  <bean id="BaremetalPingPxeService" class="com.cloud.baremetal.networkservice.BareMetalPingServiceImpl" />
-  <bean id="BaremetalPxeManager" class="com.cloud.baremetal.networkservice.BaremetalPxeManagerImpl" /> 
+  <bean id="BaremetalManager" class="org.apache.baremetal.manager.BaremetalManagerImpl"/>
+  <bean id="BaremetalDhcpManager" class="org.apache.baremetal.networkservice.BaremetalDhcpManagerImpl"/>
+  <bean id="BaremetalKickStartPxeService" class="org.apache.baremetal.networkservice.BaremetalKickStartServiceImpl"/>
+  <bean id="BaremetalPingPxeService" class="org.apache.baremetal.networkservice.BareMetalPingServiceImpl" />
+  <bean id="BaremetalPxeManager" class="org.apache.baremetal.networkservice.BaremetalPxeManagerImpl" /> 
     
   <bean id="BAREMETAL" class="org.apache.cloudstack.storage.image.format.BAREMETAL" />
-  <bean id="baremetalDhcpDaoImpl" class="com.cloud.baremetal.database.BaremetalDhcpDaoImpl" />
-  <bean id="baremetalPxeDaoImpl" class="com.cloud.baremetal.database.BaremetalPxeDaoImpl" />
+  <bean id="baremetalDhcpDaoImpl" class="org.apache.baremetal.database.BaremetalDhcpDaoImpl" />
+  <bean id="baremetalPxeDaoImpl" class="org.apache.baremetal.database.BaremetalPxeDaoImpl" />
 -->
 
   <bean id="AffinityGroupServiceImpl" class="org.apache.cloudstack.affinity.AffinityGroupServiceImpl"/>

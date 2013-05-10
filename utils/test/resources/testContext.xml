@@ -32,7 +32,7 @@
 
   <context:annotation-config />
 
-  <context:component-scan base-package="org.apache.cloudstack, com.cloud" />
+  <context:component-scan base-package="org.apache.cloudstack, org.apache" />
 
   <!--
     @DB support

@@ -63,7 +63,7 @@ public class FirewallManagerTest {
 //    @Before
 //    public void setUp() {
 //        Logger daoLogger = Logger.getLogger(GenericDaoBase.class);
-//        Logger cloudLogger = Logger.getLogger("com.cloud");
+//        Logger cloudLogger = Logger.getLogger("org.apache");
 //
 //        componentlogger.setLevel(Level.WARN);
 //        daoLogger.setLevel(Level.ERROR);

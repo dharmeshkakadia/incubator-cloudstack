@@ -613,7 +613,7 @@ class cloudAgentConfig(serviceCfgBase):
                 cfo.addEntry("local.storage.uuid", str(bash("uuidgen").getStdout()))
             cfo.addEntry("guid", str(self.syscfg.env.uuid))
             cfo.addEntry("mount.path", "/mnt")
-            cfo.addEntry("resource", "com.cloud.storage.resource.LocalSecondaryStorageResource|com.cloud.agent.resource.computing.CloudZonesComputingResource")
+            cfo.addEntry("resource", "org.apche.storage.resource.LocalSecondaryStorageResource|org.apache.agent.resource.computing.CloudZonesComputingResource")
             cfo.save()
 
             #self.syscfg.svo.stopService("cloud-agent")
@@ -636,7 +636,7 @@ class cloudAgentConfig(serviceCfgBase):
             cfo.addEntry("guid", str(self.syscfg.env.uuid))
             if cfo.getEntry("local.storage.uuid") == "":
                 cfo.addEntry("local.storage.uuid", str(bash("uuidgen").getStdout()))
-            cfo.addEntry("resource", "com.cloud.hypervisor.kvm.resource.LibvirtComputingResource")
+            cfo.addEntry("resource", "org.apache.hypervisor.kvm.resource.LibvirtComputingResource")
             cfo.save()
 
             self.syscfg.svo.stopService("cloudstack-agent")
@@ -658,7 +658,7 @@ class cloudAgentConfig(serviceCfgBase):
             cfo.addEntry("public.network.device", self.syscfg.env.nics[1])
             cfo.addEntry("guest.network.device", self.syscfg.env.nics[2])
             cfo.addEntry("guid", str(self.syscfg.env.uuid))
-            cfo.addEntry("resource", "com.cloud.agent.resource.computing.consoleProxyResource")
+            cfo.addEntry("resource", "org.apache.agent.resource.computing.consoleProxyResource")
             cfo.save()
 
             self.syscfg.svo.stopService("cloudstack-agent")

@@ -243,7 +243,7 @@ class S3Client(object):
 def parseArguments(args):
 
     # The keys in the args map will correspond to the properties defined on
-    # the com.cloud.utils.S3Utils#ClientOptions interface
+    # the org.apache.utils.S3Utils#ClientOptions interface
     client = S3Client(
         args['accessKey'], args['secretKey'], args['endPoint'],
         args['isHttps'], args['connectionTimeout'], args['socketTimeout'])

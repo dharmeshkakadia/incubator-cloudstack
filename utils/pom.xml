@@ -190,8 +190,8 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
           <excludes>
-            <exclude>com/cloud/utils/testcase/*TestCase*</exclude>
-            <exclude>com/cloud/utils/db/*Test*</exclude>
+            <exclude>org/apache/utils/testcase/*TestCase*</exclude>
+            <exclude>org/apache/utils/db/*Test*</exclude>
           </excludes>
         </configuration>
       </plugin>      

@@ -56,7 +56,7 @@ under the License.
    <!-- Limit categories -->
    <!-- ================ -->
 
-   <category name="com.cloud.console.ConsoleCanvas">
+   <category name="org.apache.console.ConsoleCanvas">
      <priority value="WARN"/>
    </category>
    
@@ -72,7 +72,7 @@ under the License.
      <priority value="INFO"/>
    </category>
 
-   <category name="com.cloud">
+   <category name="org.apache">
      <priority value="DEBUG"/>
    </category>
    

@@ -29,7 +29,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations="classpath:/com/cloud/utils/db/transactioncontextBuilderTest.xml")
+@ContextConfiguration(locations="classpath:/org/apache/utils/db/transactioncontextBuilderTest.xml")
 public class TransactionContextBuilderTest {
 
 	@Inject
